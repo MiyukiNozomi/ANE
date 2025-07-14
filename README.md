@@ -1,3 +1,5 @@
+!(ANE's Logo)[/GalateaCDN/default/images/ane-old-logo.png]
+
 # ANE
 Anemachi is my website, and this repository holds every micro service used in it
 
