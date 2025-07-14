@@ -7,16 +7,10 @@ import serveIndex from "serve-index";
 import cors from "cors";
 
 const DEFAULT_CDN_FOLDER = "./default";
+const CURRENT_STORAGE_FOLDER = "./storage";
 
-const config: {
-    storageFolder: string,
-} = require("./config.json");
-
-if (readdirSync(config.storageFolder).length == 0) {
-    console.log(config.storageFolder + " is empty, copying default folder instead.");
-    cpSync(DEFAULT_CDN_FOLDER, config.storageFolder, {
-        recursive: true,
-    });
+if (readdirSync(CURRENT_STORAGE_FOLDER).length == 0) {
+    throw ("Cannot proceed: Missing storage folder at " + CURRENT_STORAGE_FOLDER);
 }
 
 const app = express();
@@ -31,15 +25,15 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.use("/dl", express.static(config.storageFolder, {
+app.use("/dl", express.static(CURRENT_STORAGE_FOLDER, {
     cacheControl: true
 }));
 
-app.use("/dl", serveIndex(config.storageFolder, {
+app.use("/dl", serveIndex(CURRENT_STORAGE_FOLDER, {
     stylesheet: path.join(__dirname, "filelist-index.css")
 }));
 
-app.use(serveFavicon(path.join(config.storageFolder, "galatea.png")));
+app.use(serveFavicon(path.join(CURRENT_STORAGE_FOLDER, "galatea.png")));
 
 app.listen(port, () => {
     console.log(`CDN Launched at ${port}`);
