@@ -54,7 +54,7 @@ class Database
         }
         else
         {
-            const databaseName = "ANE.db";
+            const databaseName = "~/ANE.db";
         }
 
         const pth = getExecutionPath();

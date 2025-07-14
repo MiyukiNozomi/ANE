@@ -7,10 +7,13 @@ import serveIndex from "serve-index";
 import cors from "cors";
 
 const DEFAULT_CDN_FOLDER = "./default";
-const CURRENT_STORAGE_FOLDER = "./storage";
+const CURRENT_STORAGE_FOLDER = "~/storage";
 
 if (readdirSync(CURRENT_STORAGE_FOLDER).length == 0) {
-    throw ("Cannot proceed: Missing storage folder at " + CURRENT_STORAGE_FOLDER);
+    console.log(CURRENT_STORAGE_FOLDER + " is empty, copying default folder instead.");
+    cpSync(DEFAULT_CDN_FOLDER, CURRENT_STORAGE_FOLDER, {
+        recursive: true,
+    });
 }
 
 const app = express();

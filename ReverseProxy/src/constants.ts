@@ -1,7 +1,17 @@
-import { readFileSync } from "fs";
+import { exists, mkdirSync, readFileSync } from "fs";
 
-export const ErrorsFile = "./logs/errors.txt";
-export const LogFile = "./logs/log.txt";
+export let LogFolder = "~/proxy-logs";
+
+if (process.argv.includes("--dev")) {
+    LogFolder = "./logs";
+}
+
+mkdirSync(LogFolder, {
+    recursive: true
+});
+
+export const ErrorsFile = LogFolder + "/errors.txt";
+export const LogFile = LogFolder + "/log.txt";
 export const DomainName = "ane.jp.net";
 
 export const SSLConfig = process.argv.includes("--dev") ? null : {
