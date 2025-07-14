@@ -1,0 +1,6 @@
+# (TODOS In order of priority)
+
+- Streamline Database Exceptions
+
+- A migration table
+    yes, keep track of migrations, we really wouldn't want to re-apply the same migration again.
