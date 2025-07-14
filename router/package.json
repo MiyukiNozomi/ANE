@@ -1,0 +1,6 @@
+{
+	"main": "bin/index.js",
+	"dependencies": {
+		"@types/node": "^24.0.12"
+	}
+}

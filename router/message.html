@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="darkreader-lock">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap" rel="stylesheet">
+
+    <title>%title</title>
+
+    <style>
+        .kumbh-sans-light {
+            font-family: "Kumbh Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
+            font-variation-settings:
+                "YOPQ" 300;
+            font-size: 1.3em;
+        }
+
+        .kumbh-sans-medium {
+            font-family: "Kumbh Sans", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: normal;
+            font-style: normal;
+            font-variation-settings:
+                "YOPQ" 300;
+
+            font-size: 6em;
+        }
+
+        .pane {
+            padding: 1.5em;
+            margin: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+
+            border-radius: 1em;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 2;
+        }
+
+        .pane h1 {
+            margin: 0;
+        }
+
+        body {
+            display: flow-root;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+
+            color: white;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+    <script>
+        const MaxColorVariation = 50;
+
+        function getRndInteger(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        function gBlur(blur, canvas, ctx) {
+            let start = +new Date();
+
+            let sum = 0;
+            let delta = 5;
+            let alpha_left = 1 / (2 * Math.PI * delta * delta);
+            let step = blur < 3 ? 1 : 2;
+            for (let y = -blur; y <= blur; y += step) {
+                for (let x = -blur; x <= blur; x += step) {
+                    let weight = alpha_left * Math.exp(-(x * x + y * y) / (2 * delta * delta));
+                    sum += weight;
+                }
+            }
+            let count = 0;
+            for (let y = -blur; y <= blur; y += step) {
+                for (let x = -blur; x <= blur; x += step) {
+                    count++;
+                    ctx.globalAlpha = alpha_left * Math.exp(-(x * x + y * y) / (2 * delta * delta)) / sum * blur;
+                    ctx.drawImage(canvas, x, y);
+                }
+            }
+            ctx.globalAlpha = 1;
+            console.log("time: " + (+new Date() - start))
+        }
+
+        function drawStars(stars, canvas, ctx) {
+            for (let star of stars) {
+                const r = Math.random() * MaxColorVariation + (255 - MaxColorVariation);
+                const g = Math.random() * MaxColorVariation + (255 - MaxColorVariation);
+                const b = Math.random() * MaxColorVariation + (255 - MaxColorVariation);
+
+                let yRatio = star.y / canvas.height;
+
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${1.0 - yRatio})`;
+                ctx.fillRect(star.x, star.y, star.scale, star.scale);
+            }
+        }
+
+        async function genStarsImage() {
+            return new Promise(resolve => {
+                const canvas = document.createElement("canvas");
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const ctx = canvas.getContext("2d");
+
+                let starCount = getRndInteger(200, 2048);
+
+                let stars = new Array();
+
+                for (let i = 0; i < starCount; i++) {
+                    let x = Math.floor(Math.random() * canvas.width);
+                    let y = Math.floor(Math.random() * canvas.height);
+
+                    let duplicate = false;
+                    for (let o = 0; o < stars.length; o++) {
+                        const star = stars[o];
+
+                        const squareDistance = Math.sqrt(Math.abs(star.x - x) + Math.abs(star.y - y));
+
+                        if ((star.x == x && star.y == y) ||
+                            squareDistance < 2
+                        ) {
+                            duplicate = true;
+                            break;
+                        }
+                    }
+
+                    let scale = getRndInteger(1, 2);
+                    if (!duplicate)
+                        stars.push({ x, y, scale });
+                }
+
+                drawStars(stars, canvas, ctx);
+                gBlur(2, canvas, ctx);
+                drawStars(stars, canvas, ctx);
+
+                const image = new Image();
+                image.src = canvas.toDataURL();
+                image.onload = () => resolve(image);
+            });
+        }
+
+
+        async function genSunsetImage() {
+            return new Promise(resolve => {
+                const sunsetWidth = window.innerWidth / 4;
+                const sunsetHeight = sunsetWidth;
+
+                const padding = sunsetWidth / 4;
+
+                const canvas = document.createElement("canvas");
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                const ctx = canvas.getContext("2d");
+
+                let startX = canvas.width - sunsetWidth
+                let startY = canvas.height - sunsetHeight;
+
+                // sunset
+                const sunsetGradient = ctx.createLinearGradient(startX, startY + (sunsetHeight * 0.1), canvas.width - (sunsetWidth * 0.6), canvas.height);
+                sunsetGradient.addColorStop(0, '#00000000'); // Start color
+                sunsetGradient.addColorStop(0.85, '#F76218AA'); // End color
+                sunsetGradient.addColorStop(1, '#F2C447FF'); // End color
+
+                ctx.fillStyle = sunsetGradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                console.log(canvas.width, canvas.height);
+                console.log(window.innerWidth, window.innerHeight);
+
+                const image = new Image();
+                image.src = canvas.toDataURL();
+                image.onload = () => resolve(image);
+            });
+        }
+
+        window.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.style.display = "fixed";
+            canvas.style.left = 0;
+            canvas.style.top = 0;
+            canvas.style.zIndex = 1;
+
+            const resize = async () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                const ctx = canvas.getContext("2d");
+                if (ctx == null)
+                    return;
+
+                const stars = await genStarsImage();
+                const sunset = await genSunsetImage();
+
+                {
+                    // nightsky
+                    const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                    bgGradient.addColorStop(0, '#000005'); // Start color
+                    bgGradient.addColorStop(0.4, '#000005'); // Start color
+                    bgGradient.addColorStop(0.6, '#00114E'); // Start color
+                    bgGradient.addColorStop(1, '#237EF3'); // End color
+
+                    ctx.fillStyle = bgGradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                }
+
+                ctx.fillStyle = "";
+                ctx.drawImage(sunset, canvas.width - sunset.width, canvas.height - sunset.height, sunset.width, sunset.height);
+                ctx.drawImage(stars, 0, 0, stars.width, stars.height);
+            };
+
+            resize();
+            window.onresize = resize;
+
+            document.body.appendChild(canvas);
+        }
+    </script>
+</head>
+
+<body>
+    <div class="pane">
+        <h1 class="kumbh-sans-medium">%title</h1>
+        <p class="kumbh-sans-light">%message</p>
+
+        <p class="kumbh-sans-light">
+            <strong>Why am i seeing this message?</strong>
+        </p>
+        <p class="kumbh-sans-light">
+            This usually happens because you tried to access a host that doesn't exists in ane.jp.net<br>
+            Or this host does not have a mapping associated with it.
+        </p>
+        <p class="kumbh-sans-light">
+            <strong>What should I do?</strong>
+        </p>
+        <p class="kumbh-sans-light">
+            Contact miyuki@ane.jp.net on email or through the discord 'miyukinozomi' informing your ray id:
+            <strong>%rayid</strong>. <br>
+            <strong>Note:</strong> you might fall into this page if you tried to access a subdomain that doesn't have a
+            webserver, An example of this is suikawa.ane.jp.net and mc.ane.jp.net <br>
+        </p>
+    </div>
+</body>
+
+</html>

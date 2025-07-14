@@ -1,0 +1,6 @@
+2025-07-14T15:41:59.179Z: [response-error] RayID for error is e2ac535c3912448a86b6fd38bd13c9c2
+2025-07-14T15:41:59.179Z: [response-error] Message is Unregistered gateway host: 'localhost:6060' (not found in mappings).
+2025-07-14T15:41:59.218Z: [response-error] RayID for error is f733b37039da48efb1536a37b4483c59
+2025-07-14T15:41:59.218Z: [response-error] Message is Unregistered gateway host: 'localhost:6060' (not found in mappings).
+2025-07-14T15:41:59.359Z: [response-error] RayID for error is fbb23bac735342109661040dc42fd90d
+2025-07-14T15:41:59.359Z: [response-error] Message is Unregistered gateway host: 'localhost:6060' (not found in mappings).

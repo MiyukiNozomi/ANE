@@ -4,6 +4,8 @@ import path from "path";
 import serveFavicon from "serve-favicon";
 import serveIndex from "serve-index";
 
+import cors from "cors";
+
 const DEFAULT_CDN_FOLDER = "./default";
 
 const config: {
@@ -18,6 +20,11 @@ if (readdirSync(config.storageFolder).length == 0) {
 }
 
 const app = express();
+
+app.use(cors({
+    origin: "*"
+}));
+
 const port = 3000;
 
 app.get("/", (req, res) => {
