@@ -89,3 +89,17 @@ run_rc_command "$1"
 
 Update and run it when a new production release is made. Github Actions? idk what's that.
 Note: it will not create the jail, create it beforehand, Miyuki.
+
+# Creating a new microservice
+
+Use this template for setup.sh (it will be called by the production update script)
+
+```sh
+#!bin/sh
+echo "Setting up..."
+cd /SERVICE
+
+# code here
+
+echo "No errors above? good, all done!"
+```
