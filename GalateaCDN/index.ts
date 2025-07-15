@@ -1,13 +1,16 @@
 import express from "express";
-import { cpSync, existsSync, readdir, readdirSync, readFileSync, statSync } from "fs";
+
+import { cpSync, readdirSync } from "fs";
+import os from "os";
 import path from "path";
+
 import serveFavicon from "serve-favicon";
 import serveIndex from "serve-index";
 
 import cors from "cors";
 
 const DEFAULT_CDN_FOLDER = "./default";
-const CURRENT_STORAGE_FOLDER = "~/storage";
+const CURRENT_STORAGE_FOLDER = path.join(os.homedir(), "/storage");
 
 if (readdirSync(CURRENT_STORAGE_FOLDER).length == 0) {
     console.log(CURRENT_STORAGE_FOLDER + " is empty, copying default folder instead.");

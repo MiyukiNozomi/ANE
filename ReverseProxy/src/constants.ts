@@ -1,6 +1,8 @@
 import { exists, mkdirSync, readFileSync } from "fs";
+import { join } from "path";
+import { homedir } from "os";
 
-export let LogFolder = "~/proxy-logs";
+export let LogFolder = join(homedir(), "/proxy-logs");
 
 if (process.argv.includes("--dev")) {
     LogFolder = "./logs";
