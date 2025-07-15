@@ -32,13 +32,13 @@ export function replaceAll(msg: string, t: string, s: string) {
 }
 
 export function writeGatewayError(code: number, message: string, req: http.IncomingMessage, res: http.ServerResponse) {
-    const isPost = (req.method ?? "post").toLowerCase() == "post";
+    const isAPIEndpoint = (req.method ?? "post").toLowerCase() != "get";
 
     const rayid = replaceAll(randomUUID(), "-", "");
     log("[response-error] RayID for error is " + rayid);
     log("[response-error] Message is " + message);
 
-    if (isPost) {
+    if (isAPIEndpoint) {
         res.write(JSON.stringify({
             error: true,
             message,
