@@ -39,7 +39,7 @@ const handleFunc = function (req: http.IncomingMessage, res: http.ServerResponse
 
     log("[request]", "[" + targetHost + "]", req.method, req.url);
 
-    if (CORSCheck(res, req.headers["host"] ?? "<UNDEFINED HOSTNAME! HEADER NOT SENT>")) {
+    if (req.headers["origin"] && CORSCheck(res, req.headers["origin"])) {
         // CORSCheck already handles errors like this anyway
         return;
     }

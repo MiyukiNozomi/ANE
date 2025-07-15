@@ -58,7 +58,7 @@ export function gatewayError(code: number, message: string, req: http.IncomingMe
     const isPost = (req.method ?? "post").toLowerCase() == "post";
 
     if (!res.headersSent) {
-        res.writeHead(499, {
+        res.writeHead(code, {
             "content-type": isPost ? "application/json" : "text/html"
         });
     } else {
