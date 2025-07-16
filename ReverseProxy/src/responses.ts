@@ -7,7 +7,7 @@ import { NoCORSCheckList } from ".";
 import { log } from "./logging";
 
 export function CORSCheck(res: http.ServerResponse, desiredHost: string, calleeHost: string) {
-    if (!NoCORSCheckList.includes(desiredHost)) {
+    if (NoCORSCheckList.includes(desiredHost)) {
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Access-Control-Allow-Credentials", "false");
         res.setHeader("Access-Control-Allow-Methods", "GET, HEAD");
