@@ -2,11 +2,7 @@ import { exists, mkdirSync, readFileSync } from "fs";
 import { join } from "path";
 import { homedir } from "os";
 
-export let LogFolder = join(homedir(), "/proxy-logs");
-
-if (process.argv.includes("--dev")) {
-    LogFolder = "./logs";
-}
+export const LogFolder = process.argv.includes("--dev") ? "./logs" : join(homedir(), "proxy-logs");
 
 mkdirSync(LogFolder, {
     recursive: true

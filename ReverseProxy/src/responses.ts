@@ -1,11 +1,19 @@
-import { log } from "console";
 
 import { randomUUID } from "crypto";
 import { readFileSync } from "fs";
 import http from "http";
 import { DomainName } from "./constants";
+import { NoCORSCheckList } from ".";
+import { log } from "./logging";
 
-export function CORSCheck(res: http.ServerResponse, calleeHost: string) {
+export function CORSCheck(res: http.ServerResponse, desiredHost: string, calleeHost: string) {
+    if (!NoCORSCheckList.includes(desiredHost)) {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Credentials", "false");
+        res.setHeader("Access-Control-Allow-Methods", "GET, HEAD");
+        return false;
+    }
+
     if (calleeHost.endsWith(DomainName)) {
         res.setHeader("Access-Control-Allow-Origin", calleeHost);
     } else {

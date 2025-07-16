@@ -1,14 +1,15 @@
 
 import { readFileSync } from "fs";
 
-import { log } from "console";
 import http from "http";
 import https from "https";
 import { DomainName, SSLConfig } from "./constants";
 import { redirectTraffic } from "./redirect";
 import { CORSCheck, gatewayError } from "./responses";
+import { log } from "./logging";
 
 let mappings = new Map<string, number>();
+export let NoCORSCheckList = new Array<string>();
 
 {
     const confLines = readFileSync("./rules.conf").toString().split("\n").filter(v => v.trim().length > 0 && !v.trim().startsWith("#"));
@@ -16,11 +17,18 @@ let mappings = new Map<string, number>();
         console.log(line);
         let ii = line.indexOf("=");
         let domain = line.substring(0, ii);
-        let port = parseInt(line.substring(ii + 1));
+        let values = line.substring(ii + 1);
+        let valuesArray = values.split(",");
+
+        let port = parseInt(valuesArray[0]);
 
         if (isNaN(port))
-            log("You fucking moron! port was NOT a number for '" + domain + "': " + line.substring(ii + 1));
+            throw ("You moron! port was NOT a number for '" + domain + "': " + line.substring(ii + 1) + "recheck configuration!");
 
+        if (values.includes("no-cors-check")) {
+            log("Mapping for " + domain + " has CORS protection disabled, this isn't critical, but take note.");
+            NoCORSCheckList.push(domain);
+        }
         mappings.set(domain, port);
     }
     log("Loaded mappings: " + confLines);
@@ -39,7 +47,7 @@ const handleFunc = function (req: http.IncomingMessage, res: http.ServerResponse
 
     log("[request]", "[" + targetHost + "]", req.method, req.url);
 
-    if (req.headers["origin"] && CORSCheck(res, req.headers["origin"])) {
+    if (req.headers["origin"] && CORSCheck(res, targetHost, req.headers["origin"])) {
         // CORSCheck already handles errors like this anyway
         return;
     }
