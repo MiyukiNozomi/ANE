@@ -19,6 +19,7 @@ export function redirectTraffic(host: string, localPort: number, req: http.Incom
             },
             (proxyRes) => {
                 log("[response] [" + host + "] Reply for " + requestMethod + " " + req.url + " was " + proxyRes.statusCode);
+                proxyRes.headers["server"] = "Hoshimachi Anemachi";
                 res.writeHead(proxyRes.statusCode ?? 500, proxyRes.headers);
                 proxyRes.pipe(res, { end: true });
             }

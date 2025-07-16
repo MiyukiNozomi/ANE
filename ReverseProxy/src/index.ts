@@ -40,6 +40,7 @@ const handleFunc = function (req: http.IncomingMessage, res: http.ServerResponse
     if (req.url?.startsWith("/@")) {
         let hostnamePath = req.url.substring(2);
         targetHost = hostnamePath.includes("/") ? hostnamePath.substring(0, hostnamePath.indexOf("/")) : hostnamePath;
+        req.url = req.url.substring(targetHost.length + 2);
     } else if (targetHost && targetHost.includes(`.${DomainName}`)) {
         targetHost = targetHost.substring(0, targetHost.indexOf(`.${DomainName}`));
     }
