@@ -1,7 +1,9 @@
 #!/bin/sh
 
-echo "Stopping all microservices..."
-service jail stop galatea reverse-proxy
+echo "Stopping all microservices (aka:"
+echo "Forbiding jails from running previous services)..."
+jexec -u root galatea       service jailservice stop 
+jexec -u root reverse-proxy service jailservice stop
 
 echo "Removing previous services..."
 rm -rf /jails/containers/Galatea/SERVICE
@@ -18,3 +20,4 @@ jexec -u root galatea       /SERVICE/setup.sh
 jexec -u root reverse-proxy /SERVICE/setup.sh
 
 echo "Production is ready!"
+echo "Do manual configuration now before restarting those services."
