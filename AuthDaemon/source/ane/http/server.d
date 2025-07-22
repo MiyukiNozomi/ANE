@@ -70,6 +70,11 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
     HttpServerResponse res = new HttpServerResponse();
     switch (message.path)
     {
+        // Test endpoint
+    case "/is-alive":
+        res.statusCode = 200;
+        res.setPayload("text/plain", "OK");
+        return res;
         /**
         Generic endpoints    
     */
@@ -111,6 +116,10 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
     case "/signed/delete-sessions":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(db, res, message, &clearAccountSessionsEndpoint);
+        });
+    case "/signed/me":
+        return postOnlyEndpoint(db, res, message, (db, res, message) {
+            return SignedInEndpointRequirement(db, res, message, &currentAccountInfo);
         });
     default:
         throw new HttpException(404, "HTTP見つかりません");

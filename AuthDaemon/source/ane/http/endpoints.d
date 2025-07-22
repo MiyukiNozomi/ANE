@@ -328,3 +328,8 @@ void clearAccountSessionsEndpoint(Account account, Database db, HttpServerRespon
     deleteAccountSessions(account);
     return response.jsonOK();
 }
+
+void currentAccountInfo(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
+{
+    return response.jsonMessage(account.asJSONData());
+}

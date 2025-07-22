@@ -223,6 +223,11 @@ class Account
 
         value["id"] = this.id;
         value["createdAt"] = this.createdAt;
+
+        debug
+        {
+            writeln("Encoded: ", value);
+        }
         return value;
     }
 

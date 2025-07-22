@@ -2,7 +2,6 @@
 
 Documentation of Endpoints from Ane's Authentication Daemon
 
-
 ## General Purpose, Authentication not required
 
 POST /get-account
@@ -10,6 +9,9 @@ POST /get-account
         {id: number}
     or 
         {username: string}
+
+GET|POST /is-alive
+    returns 'OK', use it to ensure the auth backend is alive
 
 ##  Entrance, Authentication not required
 
@@ -56,3 +58,6 @@ POST /signed/get-sessions
 POST /signed/delete-sessions
     no parameters
 
+POST /signed/me
+    no parameters
+    returns an Account Info (like get-account)

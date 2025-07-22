@@ -13,8 +13,8 @@ echo "Updating SERVICES.."
 cp -r /root/ANE/GalateaCDN   /jails/containers/Galatea/SERVICE
 cp -r /root/ANE/ReverseProxy /jails/containers/ReverseProxy/SERVICE
 
-echo "Restarting jails and running setup scripts..."
-service jail start galatea reverse-proxy
+# echo "Restarting jails and running setup scripts..."
+# service jail start galatea reverse-proxy
 
 jexec -u root galatea       /SERVICE/setup.sh
 jexec -u root reverse-proxy /SERVICE/setup.sh
