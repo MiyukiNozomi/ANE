@@ -1,6 +1,6 @@
 import express from "express";
 
-import { cpSync, readdirSync } from "fs";
+import { cpSync, existsSync, readdirSync } from "fs";
 import os from "os";
 import path from "path";
 
@@ -8,15 +8,11 @@ import serveFavicon from "serve-favicon";
 import serveIndex from "serve-index";
 
 import cors from "cors";
+import { CURRENT_STORAGE_FOLDER } from "./prebuild";
 
-const DEFAULT_CDN_FOLDER = "./default";
-const CURRENT_STORAGE_FOLDER = path.join(os.homedir(), "/storage");
-
-if (readdirSync(CURRENT_STORAGE_FOLDER).length == 0) {
-    console.log(CURRENT_STORAGE_FOLDER + " is empty, copying default folder instead.");
-    cpSync(DEFAULT_CDN_FOLDER, CURRENT_STORAGE_FOLDER, {
-        recursive: true,
-    });
+if (!existsSync(CURRENT_STORAGE_FOLDER)) {
+    console.error(CURRENT_STORAGE_FOLDER + ' does not exist. did you run prebuild.js first?');
+    process.exit(-1);
 }
 
 const app = express();
