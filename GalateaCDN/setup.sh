@@ -6,6 +6,6 @@ echo "Galatea uses PNPM! ensure it is installed beforehand!"
 
 pnpm i
 tsc
-su -m AZKi -c 'node prebuild.js'
+su - AZKi -c 'node prebuild.js'
 
 echo "No errors above? good, all done!"
