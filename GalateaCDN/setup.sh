@@ -2,7 +2,9 @@
 echo "Setting up..."
 cd /SERVICE
 
-npm i
+echo "Galatea uses PNPM! ensure it is installed beforehand!"
+
+pnpm i
 tsc
 node prebuild.js
 
