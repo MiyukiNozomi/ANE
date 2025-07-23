@@ -15,3 +15,10 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 # Contributing
 Don't, if you think anything is off, open an issue.
 I will not merge any PRs unless they're so critical that I absolutely need to change it.
+
+# TODO
+
+[ ] Say the servicename on setup.sh scripts
+[ ] Finish auth.ane.jp
+[ ] Finish git.ane.jp
+[ ] Finish root.ane.jp (aka ane.jp)
