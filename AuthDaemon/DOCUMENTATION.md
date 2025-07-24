@@ -45,6 +45,9 @@ POST /signed/2fa-disable
         recovery-key: string
     }
 
+POST /signed/get-security-info
+    no parameters
+
 POST /signed/set-display-name
     {
         displayname: string
