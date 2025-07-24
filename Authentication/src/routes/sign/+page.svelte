@@ -1,9 +1,11 @@
 <script lang="ts">
     import { renderBackgroundCanvas } from "$lib/background";
     import { onMount, tick } from "svelte";
-    import type { PageData } from "../$types";
+    import type { PageData } from "./$types";
     import Input from "$lib/components/input.svelte";
     import {
+        getAccountInfo,
+        invalidateSession,
         invokeAPI,
         isUsernameValidClientCheck,
         MAX_USERNAME_LENGTH,
@@ -14,6 +16,7 @@
         UserSessionInfo,
         AccountInfo,
     } from "$lib/server/backend-types";
+    import { slide } from "svelte/transition";
 
     let canvas: HTMLCanvasElement;
     let { data }: { data: PageData } = $props();
@@ -27,7 +30,11 @@
 
         ACCOUNT_REGISTERED: 10,
         ACCOUNT_SIGNED_IN: 11,
+
+        ALREADY_HAS_SESSION: 20,
     };
+
+    const accountInfo = getAccountInfo();
 
     let disableBackButton = $state(false);
 
@@ -83,10 +90,10 @@
 
     async function nextStep() {
         errorMessage = "";
-        if (isUsernameInvalid()) return;
 
         switch (currentStep) {
             case Steps.USERNAME_STEP: {
+                if (isUsernameInvalid()) return;
                 const existingAccountInfo = await invokeAPI<AccountInfo>(
                     "get-account",
                     { username },
@@ -152,13 +159,23 @@
                 authSession = accountSession?.data!;
                 break;
             }
+            case Steps.ALREADY_HAS_SESSION:
             case Steps.ACCOUNT_REGISTERED:
             case Steps.ACCOUNT_SIGNED_IN: {
-                document.cookie = `AuthToken: ${authSession?.sessionToken}; SameSite=Lax; Path=/`;
+                if (currentStep != Steps.ALREADY_HAS_SESSION)
+                    await installSession();
                 if (currentStep == Steps.ACCOUNT_REGISTERED) {
                     window.location.pathname = "/home/settings";
                     return;
                 }
+                let pth: string | undefined;
+                const rawRedirect = new URLSearchParams(
+                    window.location.search,
+                ).get("redir");
+
+                if (rawRedirect) pth = decodeURI(rawRedirect);
+
+                window.location.href = pth ?? "/home";
                 break;
             }
             default:
@@ -169,6 +186,21 @@
                 );
                 return;
         }
+    }
+
+    async function installSession() {
+        if (!authSession)
+            return alert(
+                "This is a bug: installSession called with authSession being null",
+            );
+
+        document.cookie = `AuthToken=${authSession.sessionToken}; SameSite=Lax; Path=/`;
+        document.cookie = `AccountInfo=${btoa(JSON.stringify(authSession.accountInfo))}; SameSite=Lax; Path=/`;
+    }
+
+    if (data.isUserSessionValid && accountInfo != null) {
+        disableBackButton = true;
+        currentStep = Steps.ALREADY_HAS_SESSION;
     }
 </script>
 
@@ -183,79 +215,118 @@
         border-indigo-800 border-solid border-2
         backdrop-blur-lg gap-3"
         >
-            <img
-                src="https://galatea.ane.jp.net/dl/images/ane-logo-final.png"
-                class="w-36 md:w-2/4"
-                alt=""
-            />
-            <div
-                class="flex flex-col gap-2"
-                style="animation: fade 1s ease-in-out"
+            <a href="/">
+                <img
+                    src="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
+                    class="w-36 md:w-2/4"
+                    alt=""
+                /></a
             >
+            <div class="flex flex-col gap-2">
                 {#if currentStep == Steps.USERNAME_STEP}
-                    <h1>Welcome!</h1>
-                    <Input
-                        type="text"
-                        placeholder="Input your username"
-                        maxLength={MAX_USERNAME_LENGTH}
-                        bind:text={username}
-                    />
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>
+                            Welcome! {!data.isUserSessionValid &&
+                            accountInfo != null
+                                ? "Your session has expired, sorry!"
+                                : ""}
+                        </h1>
+                        <Input
+                            type="text"
+                            placeholder="Input your username"
+                            maxLength={MAX_USERNAME_LENGTH}
+                            bind:text={username}
+                        />
+                    </div>
                 {:else if currentStep == Steps.ACCOUNT_DOES_NOT_EXIST}
-                    <h1>Welcome {username}, to ANE!</h1>
-                    <p>
-                        Your username isn't taken, therefore you have entered
-                        the registration pathway!
-                    </p>
-                    <Input
-                        type="password"
-                        placeholder="Input a unique password here"
-                        bind:text={password}
-                    />
-                    <Input
-                        type="password"
-                        placeholder="Repeat your unique password here"
-                        bind:text={repeatPassword}
-                    />
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>Welcome {username}, to ANE!</h1>
+                        <p>
+                            Your username isn't taken, therefore you have
+                            entered the registration pathway!
+                        </p>
+                        <Input
+                            type="password"
+                            placeholder="Input a unique password here"
+                            bind:text={password}
+                        />
+                        <Input
+                            type="password"
+                            placeholder="Repeat your unique password here"
+                            bind:text={repeatPassword}
+                        />
+                    </div>
                 {:else if currentStep == Steps.ACCOUNT_EXISTS}
-                    <h1>Welcome back, {username}!</h1>
-                    <p>
-                        Input your password, if you have 2FA enabled, we will
-                        ask for your OTP code later.
-                    </p>
-                    <Input
-                        type="password"
-                        placeholder="Input your password"
-                        bind:text={password}
-                    />
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>Welcome back, {username}!</h1>
+                        <p>
+                            Input your password, if you have 2FA enabled, we
+                            will ask for your OTP code later.
+                        </p>
+                        <Input
+                            type="password"
+                            placeholder="Input your password"
+                            bind:text={password}
+                        />
+                    </div>
                 {:else if currentStep == Steps.TWOFACTOR_CODE_INPUT}
-                    <h1>Security demands it, {username}.</h1>
-                    <p>
-                        Your account has two factor authentication enabled,
-                        therefore...
-                    </p>
-                    <Input
-                        type="text"
-                        placeholder="Input your one time password."
-                        maxLength={6}
-                        bind:text={totpCode}
-                    />
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>Security demands it, {username}.</h1>
+                        <p>
+                            Your account has two factor authentication enabled,
+                            therefore...
+                        </p>
+                        <Input
+                            type="text"
+                            placeholder="Input your one time password."
+                            maxLength={6}
+                            bind:text={totpCode}
+                        />
+                    </div>
                 {:else if currentStep == Steps.ACCOUNT_REGISTERED}
-                    <h1>Welcome to the community!</h1>
-                    <p>
-                        This page will now take you to your account's settings,
-                        I'm glad you're here.
-                    </p>
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>Welcome to the community!</h1>
+                        <p>
+                            This page will now take you to your account's
+                            settings, I'm glad you're here.
+                        </p>
+                    </div>
                 {:else if currentStep == Steps.ACCOUNT_SIGNED_IN}
-                    <h1>Welcome back, {username}!</h1>
-                    <p>
-                        I'll soon redirect you back to the resource you wanted.
-                    </p>
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>Welcome back, {username}!</h1>
+                        <p>
+                            I'll soon redirect you back to the resource you
+                            wanted.
+                        </p>
+                    </div>
+                {:else if currentStep == Steps.ALREADY_HAS_SESSION && accountInfo}
+                    <div transition:slide class="flex flex-col gap-2">
+                        <h1>Welcome back, {accountInfo.name}!</h1>
+                        <p>
+                            Since you have a valid session, there's no need to
+                            authenticate again.
+                        </p>
+                        <p>
+                            However, If you wish to sign in with a different
+                            account, <a
+                                href="#"
+                                onclick={(event) => {
+                                    event.preventDefault();
+                                    invalidateSession();
+                                    window.location.reload();
+                                }}
+                                class="text-red-500 underline">click here</a
+                            >.
+                        </p>
+                    </div>
                 {:else}
-                    <p>
-                        <strong>Error!</strong> you stumbled upon a unknown or
-                        Unimplemented step (Current step: {currentStep})
-                    </p>
-                    <p>Please report this to miyuki@ane.jp.net</p>
+                    <div transition:slide class="flex flex-col gap-2">
+                        <p>
+                            <strong>Error!</strong> you stumbled upon a unknown
+                            or Unimplemented step (Current step: {currentStep})
+                        </p>
+                        <p>Please report this to miyuki@ane.jp.net</p>
+                    </div>
                 {/if}
                 <p class="text-red-500">{errorMessage}</p>
                 <div class="flex flex-row">

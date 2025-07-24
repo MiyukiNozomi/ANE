@@ -259,7 +259,7 @@ void verifyAndSetup2FAEndpoint(Account account, Database db, HttpServerResponse 
     string* secretOrNull = account.ID in temporaryAccountSecrets;
     if (secretOrNull is null)
     {
-
+        /** Side note, this might not exactly be the greatest of ideas, but it's fine.*/
         throw new HttpException(412, "二要素認証のステップ1が欠落しています 「2FA Step-1 Missing」");
     }
 

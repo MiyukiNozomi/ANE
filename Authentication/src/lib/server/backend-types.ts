@@ -19,3 +19,15 @@ export type AccountInfo = {
     name: string,
     createdAt: number
 }
+
+export type AccountSecurityInfo = {
+    has2FA: boolean
+}
+
+export type TwoFactorStep1Start = {
+    "shared-secret": string
+}
+
+export type TwoFactorStepFinish = {
+    "recovery-key": string
+}

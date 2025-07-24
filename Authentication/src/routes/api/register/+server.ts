@@ -10,7 +10,13 @@ let requestData = z.object({
 });
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-    const { username, password } = await requestData.parseAsync(await request.json());
+    const obj = await requestData.safeParse(await request.json());
+    if (!obj.success) {
+        console.log(obj.error);
+        return error(400);
+    }
+
+    const { username, password } = obj.data;
     if (!isUsernameValid(username))
         return error(400);
 

@@ -1,9 +1,20 @@
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "./backend"
 import { DB_Errors, isUsernameValid } from "./backend"
-import type { AccountInfo, BackendResponse, UserSessionInfo } from "./backend-types";
+import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish } from "./backend-types";
 
 export namespace Backend {
     const BACKEND_URL = "http://localhost:4050";
+
+    export async function isAlive() {
+        try {
+            const checkRes = await fetch("http://localhost:4050/is-alive", { method: "get" });
+            if (checkRes.status != 200)
+                return false;
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
 
     export async function getAccount(username?: string, accountId?: number) {
         if (!username && !accountId) {
@@ -35,14 +46,48 @@ export namespace Backend {
     /**
        Logged in endpoints
    */
-    async function doAPIEndpoint<T>(endpoint: string, payload: any) {
+    export async function twoFactorEnableStep1(authToken: string) {
+        return await doAPIEndpoint<TwoFactorStep1Start>("/signed/2fa-enable/step1", undefined, authToken);
+    }
+
+    export async function twoFactorEnableFinalStep(twofactorCode: string, authToken: string) {
+        return await doAPIEndpoint<TwoFactorStepFinish>("/signed/2fa-enable/setup", { "twofactor-code": twofactorCode }, authToken);
+    }
+
+    export async function disable2FASupport(recoveryKey: string, authToken: string) {
+        return await doAPIEndpoint<unknown>("/signed/2fa-disable", { "recovery-key": recoveryKey }, authToken);
+    }
+
+    export async function getSecurityInfo(authToken: string) {
+        return await doAPIEndpoint<AccountSecurityInfo>("/signed/get-security-info", undefined, authToken);
+    }
+
+    export async function setDisplayName(displayname: string, authToken: string) {
+        return await doAPIEndpoint<any>("/signed/set-display-name", { displayname }, authToken);
+    }
+
+    /**
+      Account session management
+     */
+    export async function getSessionAccount(authToken: string) {
+        return await doAPIEndpoint<AccountInfo>("/signed/me", undefined, authToken);
+    }
+
+    async function doAPIEndpoint<T>(endpoint: string, payload: any, authToken?: string): Promise<BackendResponse<T> | null> {
         try {
             const response = await fetch(BACKEND_URL + endpoint, {
                 method: "POST",
-                body: JSON.stringify(payload)
+                body: JSON.stringify(payload),
+                credentials: "include",
+                headers: authToken ? {
+                    "Authorization": "Bearer " + authToken,
+                    "Content-Type": "application/json"
+                } : {}
             });
             if (response.status != 200) {
                 console.error("API gave " + response.status + " which is unsupported. ");
+                console.log("Message: " + await response.text());
+                return null;
             }
             const jsonData = await response.json();
             if (jsonData.error) {

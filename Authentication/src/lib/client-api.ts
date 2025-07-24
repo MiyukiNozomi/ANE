@@ -1,4 +1,5 @@
-import type { BackendResponse } from "./server/backend-types";
+import { browser } from "$app/environment";
+import type { AccountInfo, BackendResponse } from "./server/backend-types";
 
 export type LocalResponse<T> =
     { translatedError?: string } & BackendResponse<T>;
@@ -26,4 +27,32 @@ export async function invokeAPI<T>(endpoint: string, payload: any): Promise<Loca
     } catch (err) {
         return null;
     }
+}
+
+export function invalidateSession() {
+    document.cookie = `AuthToken=CLEARLY_INVALID; SameSite=Lax; Path=/`;
+    document.cookie = `AccountInfo=CLEARLY_INVALID; SameSite=Lax; Path=/`;
+}
+
+export function getAccountInfo(): AccountInfo | null {
+    const cookie = getCookie("AccountInfo");
+    if (cookie == null) return null;
+    try {
+        return JSON.parse(atob(cookie)) as AccountInfo;
+    } catch (err) {
+        console.error("AccountInfo cookie is likely not JSON, error: ", err);
+        return null;
+    }
+}
+
+export function getCookie(name: string) {
+    if (!browser) return null;
+    const cookies = document.cookie.split('; ');
+    for (let cookie of cookies) {
+        const [key, value] = cookie.split('=');
+        if (key.toLowerCase() === name.toLowerCase()) {
+            return decodeURIComponent(value);
+        }
+    }
+    return null; // Return null if the cookie is not found
 }
