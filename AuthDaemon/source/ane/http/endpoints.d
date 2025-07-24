@@ -302,6 +302,14 @@ void disable2FAEndpoint(Account account, Database db, HttpServerResponse respons
     response.databaseError(DB_Errors.INCORRECT_BACKUP_CODE);
 }
 
+void getAccountSecurityInfoEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
+{
+    JSONValue info = [
+        "has2FA": account.has2FA()
+    ];
+    response.jsonMessage(info);
+}
+
 void displayNameSetterEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
 {
     string displayName;

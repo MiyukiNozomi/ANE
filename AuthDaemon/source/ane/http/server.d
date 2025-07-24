@@ -102,6 +102,10 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(db, res, message, &disable2FAEndpoint);
         });
+    case "/signed/get-security-info":
+        return postOnlyEndpoint(db, res, message, (db, res, message) {
+            return SignedInEndpointRequirement(db, res, message, &getAccountSecurityInfoEndpoint);
+        });
     case "/signed/set-display-name":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(db, res, message, &displayNameSetterEndpoint);

@@ -83,12 +83,14 @@ class Database
         {
             return DB_Errors.ALREADY_EXISTS;
         }
-        auto stmt = newPreparedStatement("INSERT INTO users (name, passwordHash) VALUES (?, ?)");
+        auto stmt = newPreparedStatement(
+            "INSERT INTO users (displayName, name, passwordHash) VALUES (?, ?, ?)");
         scope (exit)
             sqlite3_finalize(stmt);
 
-        if (bindText(stmt, 1, username) != SQLITE_OK ||
-            bindText(stmt, 2, argon2i(password)) != SQLITE_OK)
+        if (bindText(stmt, 1, (cast(char) username[0].toUpper() ~ username[1 .. $])) != SQLITE_OK ||
+            bindText(stmt, 2, username) != SQLITE_OK ||
+            bindText(stmt, 3, argon2i(password)) != SQLITE_OK)
         {
             throw new Exception("BIND FAILED");
         }
