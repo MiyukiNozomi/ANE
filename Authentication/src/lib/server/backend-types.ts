@@ -8,7 +8,9 @@ export type BackendResponse<T> = {
 export type UserSessionInfo = {
     ID: number,
     username: string,
-    sessionToken: string
+    sessionToken: string,
+
+    accountInfo: AccountInfo,
 }
 
 export type AccountInfo = {

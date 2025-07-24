@@ -103,13 +103,10 @@ class HttpIncomingMessage
             throw new HttpException(400, "Bad content-length");
         }
 
-        if (contentSizeInteger > payloadString.length || contentSizeInteger < 0)
+        if (contentSizeInteger >= payloadString.length || contentSizeInteger < 0)
             throw new HttpException(400, "Content-length surpasses HTTP message length");
 
         auto offset = payloadString.length - contentSizeInteger;
-
-        if (offset >= payloadString.length)
-            throw new HttpException(400, "Content-length surpasses HTTP message length");
 
         this.payload = cast(ubyte[]) payloadString[offset .. $];
     }
@@ -254,6 +251,7 @@ class HttpServerResponse
             "username": account.Name
         ];
         o["ID"] = account.ID();
+        o["accountInfo"] = account.asJSONData();
         this.jsonMessage(o);
     }
 
