@@ -25,7 +25,7 @@
     </div>
 
     <div
-        class="text-gray-200 font-kumbh text-xl p-6 m-4 bg-slate-800 gap-2 flex flex-col"
+        class="text-gray-200 font-kumbh text-xl p-6 m-4 bg-slate-800 rounded-lg gap-2 flex flex-col"
     >
         <h1 class="font-semibold text-4xl text-white" id="intro">
             Basics of this Subsystem
@@ -42,7 +42,7 @@
         <p>
             Stumbling upon any 5xx error code indicates a Bug. Please report
             such occurances with the payload and endpoint URL to the email <a
-                class="text-blue-500 underline"
+                class="text-red-500 underline"
                 href="mailto:miyuki@ane.jp.net">miyuki@ane.jp.net</a
             >
         </p>

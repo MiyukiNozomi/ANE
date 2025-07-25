@@ -308,14 +308,14 @@
                         </p>
                         <p>
                             However, If you wish to sign in with a different
-                            account, <a
-                                href="#"
+                            account, <button
                                 onclick={(event) => {
                                     event.preventDefault();
                                     invalidateSession();
                                     window.location.reload();
                                 }}
-                                class="text-red-500 underline">click here</a
+                                class="text-red-500 underline cursor-pointer"
+                                >click here</button
                             >.
                         </p>
                     </div>

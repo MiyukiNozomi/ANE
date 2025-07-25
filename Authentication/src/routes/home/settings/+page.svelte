@@ -75,7 +75,8 @@
                 Edit information such as your Display name or in the future,
                 your profile picture.
                 <br />
-                Note that you're not allowed to change your display name.
+                Note that you're not allowed to change your user name (the name you
+                use to log in).
             </p>
 
             <div class="w-full md:w-96">
@@ -105,6 +106,10 @@
                     You have two factor authentication enabled, good!
                 </p>
             {/if}
+            <a
+                class="bg-blue-600 w-fit rounded-md px-4 py-2"
+                href="/home/settings/sessions">Manage Sessions</a
+            >
         </div>
         <!-- The daaaaanger zoneeee -->
         <div class="flex flex-col gap-2" id="danger-zone">
