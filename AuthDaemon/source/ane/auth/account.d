@@ -3,7 +3,7 @@ module ane.auth.account;
 import std.stdio : writeln;
 import std.format;
 
-import ane.auth.db;
+import ane.db;
 
 import etc.c.sqlite3;
 

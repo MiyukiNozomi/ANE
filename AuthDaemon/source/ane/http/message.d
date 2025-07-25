@@ -7,7 +7,7 @@ import std.regex;
 import std.algorithm.iteration;
 import std.datetime.systime;
 import std.socket;
-import ane.auth.db;
+import ane.db;
 import std.json;
 import ane.auth.account;
 
@@ -293,7 +293,8 @@ class HttpException : Exception
 {
     int statusCode;
 
-    this(int statusCode, string msg, string file = __FILE__, size_t line = __LINE__, Throwable nextInChain = null) pure nothrow @nogc @safe
+    this(int statusCode, string msg, string file = __FILE__, size_t line = __LINE__,
+        Throwable nextInChain = null) pure nothrow @nogc @safe
     {
         super(msg, file, line, nextInChain);
         this.statusCode = statusCode;

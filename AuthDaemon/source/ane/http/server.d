@@ -5,7 +5,7 @@ import std.stdio;
 import std.process;
 import ane.http.message;
 import ane.http.endpoints;
-import ane.auth.db;
+import ane.db;
 
 const string SOCKET_ADDRESS = "/tmp/jp.ane.auth";
 

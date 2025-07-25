@@ -1,6 +1,6 @@
 import std.stdio;
 
-import ane.auth.db;
+import ane.db;
 import ane.http.server;
 
 void main(string[] args)

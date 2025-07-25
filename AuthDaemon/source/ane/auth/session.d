@@ -3,7 +3,7 @@ module ane.auth.session;
 import std.datetime;
 import std.stdio : writeln;
 
-import ane.auth.db;
+import ane.db;
 import ane.auth.account;
 
 import etc.c.sqlite3;
@@ -14,7 +14,8 @@ import std.json;
 
 // in miliseconds
 // sessions will only last for a day.
-const MaxSessionLifespan = 24 * 60 * 60;
+const MaxSessionLifespan = 2 * 24 * 60 * 60;
+const MaxThirdPartySessionLifespan = MaxSessionLifespan / 2;
 
 string genSessionSecret()
 {
@@ -23,16 +24,32 @@ string genSessionSecret()
 
 void clearExpiredSessions(Database db)
 {
-    auto stmt = db.newPreparedStatement(
-        "DELETE FROM sessions WHERE strftime('%s','now') - created_at > ?");
+    {
+        auto stmt = db.newPreparedStatement(
+            "DELETE FROM sessions WHERE isThirdPartySession = FALSE 
+                AND strftime('%s','now') - created_at > ?");
 
-    db.bindInt(stmt, 1, MaxSessionLifespan);
+        db.bindInt(stmt, 1, MaxSessionLifespan);
 
-    scope (exit)
-        sqlite3_finalize(stmt);
+        scope (exit)
+            sqlite3_finalize(stmt);
 
-    if (sqlite3_step(stmt) != SQLITE_DONE)
-        throw new Exception("Failed to delete expired rows!");
+        if (sqlite3_step(stmt) != SQLITE_DONE)
+            throw new Exception("Failed to delete expired rows!");
+    }
+    {
+        auto stmt = db.newPreparedStatement(
+            "DELETE FROM sessions WHERE isThirdPartySession = TRUE 
+                AND strftime('%s','now') - created_at > ?");
+
+        db.bindInt(stmt, 1, MaxThirdPartySessionLifespan);
+
+        scope (exit)
+            sqlite3_finalize(stmt);
+
+        if (sqlite3_step(stmt) != SQLITE_DONE)
+            throw new Exception("Failed to delete expired rows!");
+    }
 }
 
 /**
@@ -41,7 +58,7 @@ void clearExpiredSessions(Database db)
 Account getSession(Database db, string sessionToken)
 {
     auto stmt = db.newPreparedStatement(
-        "SELECT created_at, user_id FROM sessions WHERE id = ?");
+        "SELECT created_at, user_id, isThirdPartySession FROM sessions WHERE id = ?");
     scope (exit)
         sqlite3_finalize(stmt);
 
@@ -57,15 +74,17 @@ Account getSession(Database db, string sessionToken)
 
     auto createdAt = sqlite3_column_int(stmt, 0);
     auto userId = sqlite3_column_int(stmt, 1);
+    auto isThirdPartySession = sqlite3_column_int(stmt, 2);
 
     SysTime currentTime = Clock.currTime();
 
-    if (createdAt - currentTime.toUnixTime() > MaxSessionLifespan)
+    if (createdAt - currentTime.toUnixTime() >
+        (isThirdPartySession ? MaxThirdPartySessionLifespan : MaxSessionLifespan))
     {
         debug
         {
             writeln("Attempted to use an expired session: (now ", currentTime.toUnixTime(),
-                ") (session date ", createdAt, ")");
+                ") (session date ", createdAt, ") (is third party? ", isThirdPartySession ? "yes" : "no", ".)");
         }
         return null;
     }
@@ -76,20 +95,20 @@ Account getSession(Database db, string sessionToken)
 /**
     Creates a session for the associated account and returns it token
 */
-string createSession(Account account)
+string createSession(Account account, bool isThirdPartySession)
 {
     clearExpiredSessions(account.db);
     const id = genSessionSecret();
     writeln("Generating new session for user: ", account.Name, " (", account.ID, ")");
 
     auto stmt = account.db.newPreparedStatement(
-        "INSERT INTO sessions (id, user_id) VALUES (?, ?)");
+        "INSERT INTO sessions (id, user_id, isThirdPartySession) VALUES (?, ?, ?)");
 
     scope (exit)
         sqlite3_finalize(stmt);
-
     if (account.db.bindText(stmt, 1, id) != SQLITE_OK ||
-        account.db.bindInt(stmt, 2, account.ID) != SQLITE_OK)
+        account.db.bindInt(stmt, 2, account.ID) != SQLITE_OK ||
+        account.db.bindInt(stmt, 3, isThirdPartySession) != SQLITE_OK)
     {
         throw new Exception("BIND FAILED!");
     }
@@ -98,7 +117,8 @@ string createSession(Account account)
     if (retval != SQLITE_DONE)
     {
         writeln(account.db.getError(retval));
-        throw new Exception("INSERT FAILED!");
+        throw new Exception(
+            "INSERT FAILED!");
     }
 
     writeln("New session: " ~ account.Name ~ " id: " ~ id);
@@ -119,9 +139,10 @@ void deleteAccountSessions(Account account)
 
     scope (exit)
         sqlite3_finalize(stmt);
-
-    if (sqlite3_step(stmt) != SQLITE_DONE)
-        throw new Exception("Failed to delete expired rows!");
+    if (
+        sqlite3_step(stmt) != SQLITE_DONE)
+        throw new Exception(
+            "Failed to delete expired rows!");
 }
 
 /**
@@ -131,12 +152,10 @@ void deleteAccountSessions(Account account)
 JSONValue[] getAccountSessions(Account account)
 {
     JSONValue[] list;
-
     auto stmt = account.db.newPreparedStatement(
         "SELECT id, created_at FROM sessions WHERE user_id = ? ORDER BY created_at DESC");
     scope (exit)
         sqlite3_finalize(stmt);
-
     if (account.db.bindInt(stmt, 1, account.ID()) != SQLITE_OK)
     {
         throw new Exception("BIND FAILED");
@@ -144,7 +163,8 @@ JSONValue[] getAccountSessions(Account account)
 
     while (sqlite3_step(stmt) == SQLITE_ROW)
     {
-        const id = cast(string) fromStringz(sqlite3_column_text(stmt, 0)).dup;
+        const id = cast(string) fromStringz(
+            sqlite3_column_text(stmt, 0)).dup;
         const createdAt = sqlite3_column_int(stmt, 1);
 
         JSONValue listElm;

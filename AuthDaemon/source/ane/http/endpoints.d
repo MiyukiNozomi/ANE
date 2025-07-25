@@ -4,12 +4,12 @@ import std.json;
 import std.stdio;
 import std.string;
 
-import ane.auth.db;
 import ane.auth.session;
-import ane.auth.validation;
+import ane.db;
+import ane.security.validation;
 
-import ane.http.message;
 import ane.auth.account;
+import ane.http.message;
 import ane.security.totp;
 
 string getUsernameSafe(JSONValue json, bool mandatory = true)
@@ -88,7 +88,7 @@ void validateParameters(HttpIncomingMessage message, void delegate(JSONValue jso
     catch (Throwable b)
     {
         writeln("JSON parse exception: ", b.message);
-        throw new HttpException(400, "無効なペイロード (Invalid Payload)");
+        throw new HttpException(400, "無効なペイロード 「Invalid Payload」");
     }
 }
 
@@ -212,7 +212,11 @@ void logInEndpoint(Database db, HttpServerResponse response, HttpIncomingMessage
 
 void SignedInEndpointRequirement(
     Database db, HttpServerResponse response, HttpIncomingMessage message,
-    void function(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message) unsecuredEndpoint
+    void function(
+        Account account,
+        Database db,
+        HttpServerResponse response,
+        HttpIncomingMessage message) unsecuredEndpoint
 )
 {
     string sessionToken = message.getAuthorization();
@@ -233,7 +237,8 @@ void SignedInEndpointRequirement(
     }
     else
     {
-        writeln("Signed in endpoint request for: ", account.Name, " 「ID ", account.ID, "」 of session: <truncated(本番ビルド)>");
+        writeln("Signed in endpoint request for: ", account.Name,
+            " 「ID ", account.ID, "」 of session: <truncated(本番ビルド)>");
     }
 
     unsecuredEndpoint(account, db, response, message);
@@ -302,7 +307,11 @@ void disable2FAEndpoint(Account account, Database db, HttpServerResponse respons
     response.databaseError(DB_Errors.INCORRECT_BACKUP_CODE);
 }
 
-void getAccountSecurityInfoEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
+void getAccountSecurityInfoEndpoint(
+    Account account,
+    Database db,
+    HttpServerResponse response,
+    HttpIncomingMessage message)
 {
     JSONValue info = [
         "has2FA": account.has2FA()
@@ -331,7 +340,11 @@ void accountSessionsEndpoint(Account account, Database db, HttpServerResponse re
     return response.jsonMessage(json);
 }
 
-void clearAccountSessionsEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
+void clearAccountSessionsEndpoint(
+    Account account,
+    Database db,
+    HttpServerResponse response,
+    HttpIncomingMessage message)
 {
     deleteAccountSessions(account);
     return response.jsonOK();

@@ -1,4 +1,4 @@
-module ane.auth.validation;
+module ane.security.validation;
 
 import std.ascii;
 import std.string;
