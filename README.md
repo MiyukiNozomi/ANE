@@ -19,11 +19,17 @@ I will not merge any PRs unless they're so critical that I absolutely need to ch
 # TODO
 
 - [X] Say the servicename on setup.sh scripts
-- [ ] Add Embbed support in all pages
+- [ ] Add Embbed support in all pages (partial)
+    - [X] Galatea CDN
+    - [X] Reverse Proxy (might not be necessary)
+    - [ ] auth.ane.jp.net
 - [ ] Fix Responsiveness issue in Reverse Proxy error pages
-- [X] Finish auth.ane.jp (Functional, but missing features)
+- [X] Finish auth.ane.jp.net (Functional, but missing features)
     - [ ] Embbeds 
     - [ ] Profile Picture support
     - [ ] Session Manager
-- [ ] Finish git.ane.jp
-- [ ] Finish root.ane.jp (aka ane.jp)
+- [ ] Auth Daemon (Possible Security Concerns)
+    - [ ] Limit Secret size (minimum should be 16 characters and maximum should be 256)
+    - [ ] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)
+- [ ] Finish git.ane.jp.net
+- [ ] Finish root.ane.jp.net (aka ane.jp.net)
