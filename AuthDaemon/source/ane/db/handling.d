@@ -42,7 +42,7 @@ class SQLite3Handler
                 .toStringz(), &this.sqliteDb);
         if (retCode != SQLITE_OK)
         {
-            throw new Exception("Could not open database!");
+            throw new Exception("Could not open database! Error: " ~ this.getError(retCode));
         }
 
         this.migrationManager = new SQLite3MigrationManager(this);
