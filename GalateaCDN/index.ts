@@ -1,14 +1,13 @@
 import express from "express";
 
-import { cpSync, existsSync, readdirSync } from "fs";
-import os from "os";
+import { cpSync, existsSync } from "fs";
 import path from "path";
 
 import serveFavicon from "serve-favicon";
 import serveIndex from "serve-index";
 
 import cors from "cors";
-import { CURRENT_STORAGE_FOLDER } from "./prebuild";
+import { CURRENT_STORAGE_FOLDER } from "./constants";
 
 if (!existsSync(CURRENT_STORAGE_FOLDER)) {
     console.error(CURRENT_STORAGE_FOLDER + ' does not exist. did you run prebuild.js first?');

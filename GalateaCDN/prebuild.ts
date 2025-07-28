@@ -1,10 +1,8 @@
 import os from "os";
 import path from "path";
-import { cpSync, readdirSync, readdir, rmSync } from "fs";
+import { cpSync, readdir, rmSync } from "fs";
 import sharp from "sharp";
-
-export const DEFAULT_CDN_FOLDER = "./default";
-export const CURRENT_STORAGE_FOLDER = process.argv.includes("--dev") ? "./storage" : path.join(os.homedir(), "/storage");
+import { CURRENT_STORAGE_FOLDER, DEFAULT_CDN_FOLDER } from "./constants";
 
 console.log("copying default folder.");
 cpSync(DEFAULT_CDN_FOLDER, CURRENT_STORAGE_FOLDER, {
