@@ -6,6 +6,7 @@ import std.stdio;
 import ane.db;
 import ane.auth.account;
 import ane.auth.session;
+import ane.auth.authorizations;
 
 import ane.http.params;
 import ane.http.message;
@@ -125,4 +126,17 @@ void clearAccountSessionsEndpoint(
 void currentAccountInfo(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
 {
     return response.jsonMessage(account.asJSONData());
+}
+
+void giveAuthorizationEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
+{
+    string authReqCode;
+
+    validateParameters(message, (json) {
+        authReqCode = json.getStringSafe("request-code");
+    });
+
+    ThirdPartySessionRequest req = getAuthorizationRequestByCode(db, authReqCode);
+    authorizeRequest(db, account, req);
+    response.jsonOK();
 }

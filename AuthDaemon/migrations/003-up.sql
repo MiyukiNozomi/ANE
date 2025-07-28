@@ -1,11 +1,13 @@
 
 CREATE TABLE IF NOT EXISTS thirdPartySessionRequest  (
     id TEXT PRIMARY KEY,
+    /** used in the login URL, as the ID column is the request secret.*/
+    authorizationRequestCode TEXT NOT NULL UNIQUE,
     
-    /** if these are null, it's an app request without a redirection
-    so the user authorizes and the authbox wont do a redirect.*/
-    realm TEXT,
-    pathname TEXT,
+    /**
+        Realm is where the user is signing into.
+    */
+    realm TEXT NOT NULL,
 
     /** if null == not authorized yet*/
     session_id TEXT DEFAULT NULL,

@@ -93,7 +93,7 @@ class SQLite3Statement
 
     string columnString(int id)
     {
-        const raw = sqlite3_column_text(this.preparedStatement, 0);
+        const raw = sqlite3_column_text(this.preparedStatement, id);
         if (raw is null)
             return null;
         return cast(string) fromStringz(

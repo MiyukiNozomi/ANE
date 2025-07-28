@@ -80,9 +80,14 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
         return res;
         /**
         Generic endpoints    
+        Aka Public API endpoints
     */
     case "/get-account":
         return postOnlyEndpoint(db, res, message, &getAccountEndpoint);
+    case "/authorizations/new":
+        return postOnlyEndpoint(db, res, message, &requestAuthorizationEndpoint);
+    case "/authorizations/get-status":
+        return postOnlyEndpoint(db, res, message, &getAuthorizationStatusEndpoint);
         /**
         Entrance Endpoints
     */
@@ -128,6 +133,11 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
     case "/signed/me":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(false, db, res, message, &currentAccountInfo);
+        });
+        // This endpoint is to authorize external session requests
+    case "/signed/authorize":
+        return postOnlyEndpoint(db, res, message, (db, res, message) {
+            return SignedInEndpointRequirement(true, db, res, message, &giveAuthorizationEndpoint);
         });
     default:
         throw new HttpException(404, "HTTP見つかりません");
