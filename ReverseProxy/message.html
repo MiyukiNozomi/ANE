@@ -4,6 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="darkreader-lock">
+
+    <meta name="title" content="%title">
+    <meta name="theme-color" content="#FF0000">
+    <meta name="description" content="%message" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,6 +51,12 @@
             left: 0;
             top: 0;
             z-index: 2;
+            overflow: auto;
+        }
+
+        .pane-content {
+            font-size: 0.9em;
+            overflow: auto;
         }
 
         .pane h1 {
@@ -65,6 +76,21 @@
         html {
             width: 100%;
             height: 100%;
+        }
+
+        @media screen and (orientation: portrait) {
+            .pane {
+                padding: 0.5em;
+            }
+
+            .pane-content {
+                max-width: 80vw;
+                max-height: 90vh;
+            }
+
+            .pane-content p {
+                word-wrap: break-word;
+            }
         }
     </style>
 
@@ -120,7 +146,7 @@
                 canvas.height = window.innerHeight;
                 const ctx = canvas.getContext("2d");
 
-                let starCount = getRndInteger(200, 2048);
+                let starCount = getRndInteger(100, window.innerHeight > window.innerWidth ? 512 : 2048);
 
                 let stars = new Array();
 
@@ -237,25 +263,28 @@
 
 <body>
     <div class="pane">
-        <h1 class="kumbh-sans-medium">%title</h1>
-        <p class="kumbh-sans-light">%message</p>
+        <div class="pane-content">
+            <h1 class="kumbh-sans-medium">%title</h1>
+            <p class="kumbh-sans-light">%message</p>
 
-        <p class="kumbh-sans-light">
-            <strong>Why am i seeing this message?</strong>
-        </p>
-        <p class="kumbh-sans-light">
-            This usually happens because you tried to access a host that doesn't exists in ane.jp.net<br>
-            Or this host does not have a mapping associated with it.
-        </p>
-        <p class="kumbh-sans-light">
-            <strong>What should I do?</strong>
-        </p>
-        <p class="kumbh-sans-light">
-            Contact miyuki@ane.jp.net on email or through the discord 'miyukinozomi' informing your ray id:
-            <strong>%rayid</strong>. <br>
-            <strong>Note:</strong> you might fall into this page if you tried to access a subdomain that doesn't have a
-            webserver, An example of this is suikawa.ane.jp.net and mc.ane.jp.net <br>
-        </p>
+            <p class="kumbh-sans-light">
+                <strong>Why am i seeing this message?</strong>
+            </p>
+            <p class="kumbh-sans-light">
+                This usually happens because you tried to access a host that doesn't exists in ane.jp.net<br>
+                Or this host does not have a mapping associated with it.
+            </p>
+            <p class="kumbh-sans-light">
+                <strong>What should I do?</strong>
+            </p>
+            <p class="kumbh-sans-light">
+                Contact miyuki@ane.jp.net on email or through the discord 'miyukinozomi' informing your ray id:
+                <strong>%rayid</strong>. <br>
+                <strong>Note:</strong> you might fall into this page if you tried to access a subdomain that doesn't
+                have a
+                webserver, An example of this is suikawa.ane.jp.net and mc.ane.jp.net <br>
+            </p>
+        </div>
     </div>
 </body>
 
