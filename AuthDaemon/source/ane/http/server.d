@@ -1,11 +1,14 @@
 module ane.http.server;
 
+import ane.db;
+import ane.auth.session;
+import ane.auth.account;
+
 import std.socket;
 import std.stdio;
 import std.process;
 import ane.http.message;
 import ane.http.endpoints;
-import ane.db;
 
 const string SOCKET_ADDRESS = "/tmp/jp.ane.auth";
 
@@ -92,38 +95,39 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
     */
     case "/signed/2fa-enable/step1":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &enable2FAEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &enable2FAEndpoint);
         });
     case "/signed/2fa-enable/setup":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &verifyAndSetup2FAEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &verifyAndSetup2FAEndpoint);
         });
     case "/signed/2fa-disable":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &disable2FAEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &disable2FAEndpoint);
         });
     case "/signed/get-security-info":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &getAccountSecurityInfoEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &getAccountSecurityInfoEndpoint);
         });
     case "/signed/set-display-name":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &displayNameSetterEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &displayNameSetterEndpoint);
         });
         /**
         Session management
     */
     case "/signed/get-sessions":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &accountSessionsEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &accountSessionsEndpoint);
         });
     case "/signed/delete-sessions":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &clearAccountSessionsEndpoint);
+            return SignedInEndpointRequirement(true, db, res, message, &clearAccountSessionsEndpoint);
         });
+        // this only gets us the name, description and basic info of the account, it's fine if a third party session requests it.
     case "/signed/me":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
-            return SignedInEndpointRequirement(db, res, message, &currentAccountInfo);
+            return SignedInEndpointRequirement(false, db, res, message, &currentAccountInfo);
         });
     default:
         throw new HttpException(404, "HTTP見つかりません");
@@ -132,7 +136,7 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
     return res;
 }
 
-/** We all hope D inlines this crap below */
+/** We all hope D inlines  all this crap below */
 HttpServerResponse postOnlyEndpoint(Database db, HttpServerResponse response, HttpIncomingMessage message,
     void function(Database db, HttpServerResponse response, HttpIncomingMessage message) endpointFunc)
 {
@@ -140,4 +144,44 @@ HttpServerResponse postOnlyEndpoint(Database db, HttpServerResponse response, Ht
         throw new HttpException(400, "HTTPポストのみ 「HTTP Post Method Needed」");
     endpointFunc(db, response, message);
     return response;
+}
+
+void SignedInEndpointRequirement(
+    bool requiresNONthirdPartySession,
+    Database db, HttpServerResponse response, HttpIncomingMessage message,
+    void function(
+        Account account,
+        Database db,
+        HttpServerResponse response,
+        HttpIncomingMessage message) unsecuredEndpoint
+)
+{
+    string sessionToken = message.getAuthorization();
+    if (sessionToken == null || sessionToken.length == 0)
+    {
+        throw new HttpException(401, "認証が必要です 「HTTP Authorization Required」");
+    }
+
+    Account account = getSession(db, sessionToken);
+    if (account is null)
+    {
+        return response.databaseError(DB_Errors.EXPIRED_OR_MISSING_SESSION);
+    }
+
+    if (account.sessionInfo.isThirdParty && requiresNONthirdPartySession)
+    {
+        throw new HttpException(403, "アカウントセッションに権限がありません 「ANE Session lacking permission」");
+    }
+
+    debug
+    {
+        writeln("Signed in endpoint request for: ", account.Name, " 「ID ", account.ID, "」 of session: ", sessionToken);
+    }
+    else
+    {
+        writeln("Signed in endpoint request for: ", account.Name,
+            " 「ID ", account.ID, "」 of session: <truncated(本番ビルド)>");
+    }
+
+    unsecuredEndpoint(account, db, response, message);
 }

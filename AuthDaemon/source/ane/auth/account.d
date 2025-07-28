@@ -10,6 +10,7 @@ import etc.c.sqlite3;
 import ane.security.totp;
 import ane.security.argon2;
 import std.json;
+import ane.auth.session;
 
 class Account
 {
@@ -24,6 +25,11 @@ class Account
     private string totpBackupCode;
 
     private int createdAt;
+
+    /**
+        Use this to ensure the account cannot be modified if the token is from a third party authorization.
+    */
+    public SessionInfo sessionInfo;
 
     Database db;
 
@@ -43,6 +49,8 @@ class Account
         this.totpBackupCode = totpBackupCode;
 
         this.createdAt = createdAt;
+
+        this.sessionInfo = null;
     }
 
     // For later account settings 
@@ -93,18 +101,11 @@ class Account
     {
         auto stmt = db.newPreparedStatement(
             "UPDATE users SET recoveryEmail = ? WHERE id = ?");
-        scope (exit)
-            sqlite3_finalize(stmt);
-        if (db.bindText(stmt, 1, email) != SQLITE_OK ||
-            db.bindInt(stmt, 2, this.id) != SQLITE_OK)
-        {
-            throw new Exception("Failed to bind parameters");
-        }
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
-            throw new Exception("Failed to execute update");
-        }
+        stmt.bindText(1, email);
+        stmt.bindInt(2, this.id);
+
+        stmt.stepAndExpect(SQLITE_DONE);
 
         this.recoveryEmailOrNull = email;
     }
@@ -114,18 +115,11 @@ class Account
     {
         auto stmt = db.newPreparedStatement(
             "UPDATE users SET displayName = ? WHERE id = ?");
-        scope (exit)
-            sqlite3_finalize(stmt);
-        if (db.bindText(stmt, 1, displayName) != SQLITE_OK ||
-            db.bindInt(stmt, 2, this.id) != SQLITE_OK)
-        {
-            throw new Exception("Failed to bind parameters");
-        }
 
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
-            throw new Exception("Failed to execute update");
-        }
+        stmt.bindText(1, displayName);
+        stmt.bindInt(2, this.id);
+
+        stmt.stepAndExpect(SQLITE_DONE);
 
         this.displayName = displayName;
     }
@@ -248,19 +242,10 @@ class Account
         auto stmt = db.newPreparedStatement(
             "UPDATE users SET totpSecret = ?, totpBackupCode = ? WHERE id = ?");
 
-        scope (exit)
-            sqlite3_finalize(stmt);
+        stmt.bindText(1, totpSecret);
+        stmt.bindText(2, totpBackupCode);
+        stmt.bindInt(3, this.id);
 
-        if (db.bindText(stmt, 1, totpSecret) != SQLITE_OK ||
-            db.bindText(stmt, 2, totpBackupCode) != SQLITE_OK ||
-            db.bindInt(stmt, 3, this.id) != SQLITE_OK)
-        {
-            throw new Exception("Failed to bind parameters");
-        }
-
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
-            throw new Exception("Failed to execute update");
-        }
+        stmt.stepAndExpect(SQLITE_DONE);
     }
 }

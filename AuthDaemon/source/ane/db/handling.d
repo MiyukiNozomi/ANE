@@ -8,6 +8,7 @@ import std.string;
 
 import core.stdc.string : strlen;
 import etc.c.sqlite3;
+import ane.db.statements;
 
 pragma(lib, "sqlite3");
 
@@ -54,33 +55,9 @@ class SQLite3Handler
         }
     }
 
-    /* note ID is 1 based! */
-    int bindText(sqlite3_stmt* stmt, int id, string text)
+    SQLite3Statement newPreparedStatement(string statement)
     {
-        const txtnptr = toStringz(text);
-        return sqlite3_bind_text(stmt, id, txtnptr, cast(int) strlen(txtnptr), SQLITE_STATIC);
-    }
-
-    /* note ID is 1 based! */
-    int bindInt(sqlite3_stmt* stmt, int id, int val)
-    {
-        return sqlite3_bind_int(stmt, id, val);
-    }
-
-    sqlite3_stmt* newPreparedStatement(string statement)
-    {
-        const statm = toStringz(statement);
-
-        sqlite3_stmt* preparedStatement;
-
-        int retVal = sqlite3_prepare(this.sqliteDb, statm, cast(int) strlen(statm), &preparedStatement, null);
-
-        if (retVal != SQLITE_OK)
-        {
-            throw new Exception(format("Fuck! %s", fromStringz(sqlite3_errmsg(this.sqliteDb))));
-        }
-
-        return preparedStatement;
+        return new SQLite3Statement(this, statement);
     }
 
     string getError(int v)

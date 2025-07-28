@@ -5,9 +5,8 @@ import std.format;
 import std.stdio;
 import std.string;
 
+import ane.db;
 import ane.auth.account;
-import ane.db.basic;
-import ane.db.handling;
 import ane.security.argon2;
 
 import etc.c.sqlite3;
@@ -24,6 +23,8 @@ enum DB_Errors
     INCORRECT_BACKUP_CODE,
 
     EXPIRED_OR_MISSING_SESSION,
+
+    EXPIRED_OR_MISSING_AUTHORIZATION_REQUEST,
 
     OK,
 }
@@ -45,20 +46,11 @@ class Database : SQLite3Handler
         }
         auto stmt = newPreparedStatement(
             "INSERT INTO users (displayName, name, passwordHash) VALUES (?, ?, ?)");
-        scope (exit)
-            sqlite3_finalize(stmt);
 
-        if (bindText(stmt, 1, (cast(char) username[0].toUpper() ~ username[1 .. $])) != SQLITE_OK ||
-            bindText(stmt, 2, username) != SQLITE_OK ||
-            bindText(stmt, 3, argon2i(password)) != SQLITE_OK)
-        {
-            throw new Exception("BIND FAILED");
-        }
-
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
-            throw new Exception("Execution failed!");
-        }
+        stmt.bindText(1, (cast(char) username[0].toUpper() ~ username[1 .. $]));
+        stmt.bindText(2, username);
+        stmt.bindText(3, argon2i(password));
+        stmt.stepAndExpect();
         return DB_Errors.OK;
     }
 
@@ -71,17 +63,9 @@ class Database : SQLite3Handler
                 recoveryEmail, totpBackupCode, created_at
                 FROM users WHERE id = ?");
 
-        // holy shit D has go's defer, that is neat!
-        scope (exit)
-            sqlite3_finalize(stmt);
+        stmt.bindInt(1, id);
 
-        if (bindInt(stmt, 1, id) != SQLITE_OK)
-        {
-            throw new Exception("BIND FAILED");
-        }
-
-        int rc = sqlite3_step(stmt);
-        if (rc != SQLITE_ROW)
+        if (stmt.step() != SQLITE_ROW)
         {
             return null;
         }
@@ -100,17 +84,10 @@ class Database : SQLite3Handler
                 id, displayName, name, passwordHash, totpSecret,
                 recoveryEmail, totpBackupCode, created_at
                 FROM users WHERE name = ?");
-        // holy shit D has go's defer, that is neat!
-        scope (exit)
-            sqlite3_finalize(stmt);
 
-        if (bindText(stmt, 1, username) != SQLITE_OK)
-        {
-            throw new Exception("BIND FAILED");
-        }
+        stmt.bindText(1, username);
 
-        int rc = sqlite3_step(stmt);
-        if (rc != SQLITE_ROW)
+        if (stmt.step() != SQLITE_ROW)
         {
             return null;
         }
@@ -120,29 +97,18 @@ class Database : SQLite3Handler
     }
 
 package:
-    Account serializeFrom(sqlite3_stmt* stmt)
+    Account serializeFrom(SQLite3Statement stmt)
     {
-        auto id = sqlite3_column_int(stmt, 0);
-        auto displayNameRaw = sqlite3_column_text(stmt, 1);
-        auto name = cast(string) fromStringz!(char)(sqlite3_column_text(stmt, 2)).dup;
-        auto passwordHash = cast(string) fromStringz!(char)(sqlite3_column_text(stmt, 3)).dup;
+        auto id = stmt.columnInt(0);
+        auto displayNameOrNull = stmt.columnString(1);
+        auto name = cast(string) fromStringz!(char)(stmt.columnString(2)).dup;
+        auto passwordHash = cast(string) fromStringz!(char)(stmt.columnString(3)).dup;
 
-        const totpSecret = sqlite3_column_text(stmt, 4);
-        const recoveryEmail = sqlite3_column_text(stmt, 5);
-        const totpBackupCode = sqlite3_column_text(stmt, 6);
+        const totpSecretOrNull = stmt.columnString(4);
+        const recoveryEmailOrNull = stmt.columnString(5);
+        const totpBackupCodeOrNull = stmt.columnString(6);
 
-        const createdAt = sqlite3_column_int(stmt, 7);
-
-        auto displayNameOrNull = displayNameRaw !is null ? cast(string) fromStringz(
-            displayNameRaw).dup : null;
-
-        auto totpSecretOrNull = totpSecret !is null ? cast(string) fromStringz(totpSecret).dup
-            : null;
-        auto recoveryEmailOrNull = recoveryEmail !is null ? cast(string) fromStringz(
-            recoveryEmail).dup : null;
-
-        auto totpBackupCodeOrNull = totpBackupCode !is null ? cast(string) fromStringz(
-            totpBackupCode).dup : null;
+        const createdAt = stmt.columnInt(7);
 
         return new Account(this,
             id,

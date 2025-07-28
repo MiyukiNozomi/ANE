@@ -24,31 +24,21 @@ private:
     void registerMigration(string name)
     {
         auto stmt = sqlite.newPreparedStatement("INSERT INTO migrations (name) VALUES (?)");
-        scope (exit)
-            sqlite3_finalize(stmt);
 
-        if (sqlite.bindText(stmt, 1, name) != SQLITE_OK)
-            throw new Exception("Migration Bind Failed");
-
-        if (sqlite3_step(stmt) != SQLITE_DONE)
-        {
-            throw new Exception("Migration insertion Failed");
-        }
+        stmt.bindText(1, name);
+        stmt.stepAndExpect();
     }
 
     bool wasApplied(string name, out int date)
     {
         auto stmt = sqlite.newPreparedStatement("SELECT created_at FROM migrations WHERE name = ?");
-        scope (exit)
-            sqlite3_finalize(stmt);
 
-        if (sqlite.bindText(stmt, 1, name) != SQLITE_OK)
-            throw new Exception("Migration Bind Failed");
+        stmt.bindText(1, name);
 
-        if (sqlite3_step(stmt) != SQLITE_ROW)
+        if (stmt.step() != SQLITE_ROW)
             return false;
 
-        date = sqlite3_column_int(stmt, 0);
+        date = stmt.columnInt(0);
         return true;
     }
 
