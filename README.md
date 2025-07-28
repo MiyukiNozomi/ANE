@@ -1,4 +1,4 @@
-![ANE Logo](GalateaCDN/default/images/logos/ane-old-logo.png)
+![ANE Logo](GalateaCDN/default/images/logos/miyuki-studio.png)
 
 # 
 Anemachi is my website, and this repository holds every micro service used in it
