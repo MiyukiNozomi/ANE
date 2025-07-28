@@ -1,5 +1,5 @@
 #!bin/sh
-echo "Setting up..."
+echo "Setting up Reverse Proxy"
 cd /SERVICE
 
 npm i

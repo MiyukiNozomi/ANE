@@ -1,4 +1,4 @@
-![ANE Logo](GalateaCDN/default/images/ane-old-logo.png)
+![ANE Logo](GalateaCDN/default/images/logos/ane-old-logo.png)
 
 # 
 Anemachi is my website, and this repository holds every micro service used in it
@@ -18,7 +18,7 @@ I will not merge any PRs unless they're so critical that I absolutely need to ch
 
 # TODO
 
-[ ] Say the servicename on setup.sh scripts
-[ ] Finish auth.ane.jp
-[ ] Finish git.ane.jp
-[ ] Finish root.ane.jp (aka ane.jp)
+- [X] Say the servicename on setup.sh scripts
+- [X] Finish auth.ane.jp (Functional, but missing session manager)
+- [ ] Finish git.ane.jp
+- [ ] Finish root.ane.jp (aka ane.jp)

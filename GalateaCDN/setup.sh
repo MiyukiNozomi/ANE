@@ -1,5 +1,5 @@
 #!bin/sh
-echo "Setting up..."
+echo "Setting up GalateaCDN"
 cd /SERVICE
 
 echo "Galatea uses PNPM! ensure it is installed beforehand!"

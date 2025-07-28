@@ -15,8 +15,9 @@ void main(string[] args)
     {
         if (args.length > 1 && args[1] == "apply-migrations")
         {
-            db.applyMigrations();
-            writeln("Migrations applied!");
+            writeln("[SETUP] Preparing to apply migrations...");
+            db.migrationManager.applyMigrations();
+            writeln("[SETUP] Migrations applied!");
             db.close();
             return;
         }
