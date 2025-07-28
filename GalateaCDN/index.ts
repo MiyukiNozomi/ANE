@@ -34,7 +34,7 @@ app.use("/dl", serveIndex(CURRENT_STORAGE_FOLDER, {
     stylesheet: path.join(__dirname, "filelist-index.css")
 }));
 
-app.use(serveFavicon(path.join(CURRENT_STORAGE_FOLDER, "galatea.png")));
+app.use(serveFavicon(path.join(CURRENT_STORAGE_FOLDER, "galatea.webp")));
 
 app.listen(port, () => {
     console.log(`CDN Launched at ${port}`);
