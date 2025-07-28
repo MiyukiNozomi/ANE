@@ -29,16 +29,15 @@ class SQLite3Handler
     {
         debug
         {
-            const databaseName = "ANE-DEBUG.db";
+            const pth = getExecutionPath();
+            const databaseName = pth ~ "ANE-DEBUG.db";
         }
         else
         {
             const databaseName = "/home/AZKi/ANE.db";
         }
 
-        const pth = getExecutionPath();
-
-        int retCode = sqlite3_open(cast(const(char)*)(pth ~ databaseName)
+        int retCode = sqlite3_open(databaseName
                 .toStringz(), &this.sqliteDb);
         if (retCode != SQLITE_OK)
         {
