@@ -42,6 +42,7 @@ class SQLite3Handler
                 .toStringz(), &this.sqliteDb);
         if (retCode != SQLITE_OK)
         {
+            writeln("Note: failed to open ", databaseName);
             throw new Exception("Could not open database! Error: " ~ this.getError(retCode));
         }
 
