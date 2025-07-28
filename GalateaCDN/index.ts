@@ -31,7 +31,9 @@ app.use("/dl", express.static(CURRENT_STORAGE_FOLDER, {
 }));
 
 app.use("/dl", serveIndex(CURRENT_STORAGE_FOLDER, {
-    stylesheet: path.join(__dirname, "filelist-index.css")
+    stylesheet: path.join(__dirname, "filelist-index.css"),
+
+    template: path.join(__dirname, "directory.html")
 }));
 
 app.use(serveFavicon(path.join(CURRENT_STORAGE_FOLDER, "galatea.webp")));

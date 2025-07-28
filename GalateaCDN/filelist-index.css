@@ -12,7 +12,7 @@
 html,
 body {
   min-height: 100%;
-  background: #161515 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#141111), to(#161515));
+  background: #222020 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#141111), to(#161515));
   background: #161515 -moz-linear-gradient(top, #141111, #161515);
 }
 
@@ -23,75 +23,93 @@ body {
   color: #555;
   -webkit-font-smoothing: antialiased;
 }
+
 h1,
 h2,
 h3 {
   font-size: 22px;
   color: #343434;
 }
+
 h1 em,
 h2 em {
   padding: 0 5px;
   font-weight: normal;
 }
+
 h1 {
   font-size: 60px;
 }
+
 h2 {
   margin-top: 10px;
 }
+
 h3 {
   margin: 5px 0 10px 0;
   padding-bottom: 5px;
   border-bottom: 1px solid #eee;
   font-size: 18px;
 }
+
 ul li {
   list-style: none;
 }
+
 ul li:hover {
   cursor: pointer;
   color: #2e2e2e;
 }
+
 ul li .path {
   padding-left: 5px;
   font-weight: bold;
 }
+
 ul li .line {
   padding-right: 5px;
   font-style: italic;
 }
+
 ul li:first-child .path {
   padding-left: 0;
 }
+
 p {
   line-height: 1.5;
 }
+
 a {
   color: #555;
   text-decoration: none;
 }
+
 a:hover {
   color: #303030;
 }
+
 #stacktrace {
   margin-top: 15px;
 }
+
 .directory h1 {
   margin-bottom: 15px;
   font-size: 18px;
 }
+
 ul#files {
   width: 100%;
   height: 100%;
   overflow: hidden;
 }
+
 ul#files li {
   float: left;
   width: 30%;
   line-height: 25px;
   margin: 1px;
 }
+
 ul#files li a {
   display: block;
   height: 25px;
@@ -102,16 +120,19 @@ ul#files li a {
   overflow: hidden;
   white-space: nowrap;
 }
+
 ul#files li a:focus,
 ul#files li a:hover {
   background: rgba(255, 255, 255, 0.65);
   border: 1px solid #ececec;
 }
+
 ul#files li a.highlight {
   -webkit-transition: background 0.4s ease-in-out;
   background: #ffff4f;
   border-color: #e9dc51;
 }
+
 #search {
   display: block;
   position: fixed;
@@ -137,6 +158,7 @@ ul#files li a.highlight {
   opacity: 0.7;
   color: #888;
 }
+
 #search:focus {
   width: 120px;
   opacity: 1;
@@ -149,9 +171,11 @@ ul#files li a.highlight {
   text-overflow: ellipsis;
   text-indent: 10px;
 }
+
 #files .name {
   background-repeat: no-repeat;
 }
+
 #files .icon .name {
   text-indent: 28px;
 }
@@ -161,6 +185,7 @@ ul#files li a.highlight {
   width: 100%;
   background-position: 8px 5px;
 }
+
 .view-tiles .size,
 .view-tiles .date {
   display: none;
@@ -172,25 +197,31 @@ ul#files.view-details li {
   display: block;
   width: 90%;
 }
+
 ul#files.view-details li.header {
   height: 25px;
   background: #000;
   color: #fff;
   font-weight: bold;
 }
+
 .view-details .header {
   border-radius: 5px;
 }
+
 .view-details .name {
   width: 60%;
   background-position: 8px 5px;
 }
+
 .view-details .size {
   width: 10%;
 }
+
 .view-details .date {
   width: 30%;
 }
+
 .view-details .size,
 .view-details .date {
   text-align: right;
@@ -204,6 +235,7 @@ ul#files.view-details li.header {
     line-height: 16px;
     padding: 0;
   }
+
   #search {
     position: static;
     width: 100%;
@@ -215,11 +247,13 @@ ul#files.view-details li.header {
     padding: 10px 0;
     margin: 0;
   }
+
   #search:focus {
     width: 100%;
     border: 0;
     opacity: 1;
   }
+
   .directory h1 {
     font-size: 2em;
     line-height: 1.5em;
@@ -228,9 +262,11 @@ ul#files.view-details li.header {
     padding: 15px 10px;
     margin: 0;
   }
+
   ul#files {
     border-top: 1px solid #cacaca;
   }
+
   ul#files li {
     float: none;
     width: auto !important;
@@ -241,24 +277,29 @@ ul#files.view-details li.header {
     text-indent: 0;
     margin: 0;
   }
+
   ul#files li:nth-child(odd) {
     background: #e0e0e0;
   }
+
   ul#files li a {
     height: auto;
     border: 0;
     border-radius: 0;
     padding: 15px 10px;
   }
+
   ul#files li a:focus,
   ul#files li a:hover {
     border: 0;
   }
+
   #files .header,
   #files .size,
   #files .date {
     display: none !important;
   }
+
   #files .name {
     float: none;
     display: inline-block;
@@ -266,6 +307,7 @@ ul#files.view-details li.header {
     text-indent: 0;
     background-position: 0 50%;
   }
+
   #files .icon .name {
     text-indent: 41px;
   }
