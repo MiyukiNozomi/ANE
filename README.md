@@ -19,6 +19,11 @@ I will not merge any PRs unless they're so critical that I absolutely need to ch
 # TODO
 
 - [X] Say the servicename on setup.sh scripts
-- [X] Finish auth.ane.jp (Functional, but missing session manager)
+- [ ] Add Embbed support in all pages
+- [ ] Fix Responsiveness issue in Reverse Proxy error pages
+- [X] Finish auth.ane.jp (Functional, but missing features)
+    - [ ] Embbeds 
+    - [ ] Profile Picture support
+    - [ ] Session Manager
 - [ ] Finish git.ane.jp
 - [ ] Finish root.ane.jp (aka ane.jp)
