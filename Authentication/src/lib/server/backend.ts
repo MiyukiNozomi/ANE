@@ -17,6 +17,8 @@ export enum DB_Errors {
 
     EXPIRED_OR_MISSING_SESSION = "EXPIRED_OR_MISSING_SESSION",
 
+    EXPIRED_OR_MISSING_AUTHORIZATION_REQUEST = "EXPIRED_OR_MISSING_AUTHORIZATION_REQUEST",
+
     OK = "OK",
 }
 
@@ -45,6 +47,7 @@ export function translateDatabaseError(dbError: DB_Errors) {
             return "Incorrect backup code.";
         case DB_Errors.EXPIRED_OR_MISSING_SESSION:
             return "Invalid session.";
+        case DB_Errors.EXPIRED_OR_MISSING_AUTHORIZATION_REQUEST:
         case DB_Errors.TWO_FACTOR_REQUIRED:
         case DB_Errors.OK:
         default:

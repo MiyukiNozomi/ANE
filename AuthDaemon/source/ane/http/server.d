@@ -84,7 +84,7 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
     */
     case "/get-account":
         return postOnlyEndpoint(db, res, message, &getAccountEndpoint);
-    case "/authorizations/new":
+    case "/authorizations/new": // TODO consider if /authorizations/new shouldn't return the same type as get-status..
         return postOnlyEndpoint(db, res, message, &requestAuthorizationEndpoint);
     case "/authorizations/get-status":
         return postOnlyEndpoint(db, res, message, &getAuthorizationStatusEndpoint);

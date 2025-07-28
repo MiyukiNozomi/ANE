@@ -31,3 +31,11 @@ export type TwoFactorStep1Start = {
 export type TwoFactorStepFinish = {
     "recovery-key": string
 }
+
+export type AuthorizationStatus = {
+    "reqCode": string,
+    "realm": string,
+    createdAt: number,
+    session: string,
+    sessionStatus: string
+}

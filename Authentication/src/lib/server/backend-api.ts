@@ -1,6 +1,6 @@
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "./backend"
 import { DB_Errors, isUsernameValid } from "./backend"
-import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish } from "./backend-types";
+import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish, AuthorizationStatus } from "./backend-types";
 
 export namespace Backend {
     const BACKEND_URL = "http://localhost:4050";
@@ -16,6 +16,10 @@ export namespace Backend {
         return true;
     }
 
+    /**
+     *  Public API endpoints
+     */
+
     export async function getAccount(username?: string, accountId?: number) {
         if (!username && !accountId) {
             throw "Only one value allowed. BAD IMPLEMENTATION";
@@ -23,6 +27,23 @@ export namespace Backend {
 
         return await doAPIEndpoint<AccountInfo>("/get-account",
             username ? { username } : { id: accountId }
+        );
+    }
+
+    export async function newAuthorizationRequest(sharedSecret: string, realm: string) {
+        return await doAPIEndpoint<{ "request-code": string }>("/authorizations/new", {
+            "shared-secret": sharedSecret,
+            realm
+        });
+    }
+
+    export async function getAuthorizationStatus(secret?: string, authRequestCode?: string) {
+        if (!secret && !authRequestCode) {
+            throw "Only one value allowed. BAD IMPLEMENTATION";
+        }
+
+        return await doAPIEndpoint<AuthorizationStatus>("/authorizations/get-status",
+            secret ? { "shared-secret": secret } : { "request-code": authRequestCode }
         );
     }
     /**
@@ -69,6 +90,10 @@ export namespace Backend {
     /**
       Account session management
      */
+    export async function authorize(authRequestCode: string, authToken: string) {
+        return await doAPIEndpoint<any>("/signed/authorize", { "request-code": authRequestCode }, authToken);
+    }
+
     export async function getSessionAccount(authToken: string) {
         return await doAPIEndpoint<AccountInfo>("/signed/me", undefined, authToken);
     }

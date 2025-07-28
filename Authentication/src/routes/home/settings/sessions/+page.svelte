@@ -33,9 +33,8 @@
         </div>
         <div class="flex flex-col gap-2">
             <h2 class="font-bold text-4xl">List of active sessions</h2>
-            <!--
-            <p class="text-gray-200">NaN total</p>
-            -->
+
+            <p class="text-gray-200">This page is a work in progress! Sorry!</p>
         </div>
     </div>
 </div>

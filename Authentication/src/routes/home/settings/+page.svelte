@@ -1,6 +1,7 @@
 <script lang="ts">
     import {
         getAccountInfo,
+        getCookie,
         invalidateSession,
         invokeAPI,
         MAX_USERNAME_LENGTH,
@@ -109,6 +110,20 @@
             <a
                 class="bg-blue-600 w-fit rounded-md px-4 py-2"
                 href="/home/settings/sessions">Manage Sessions</a
+            >
+            <button
+                class="bg-blue-600 w-fit rounded-md px-4 py-2"
+                onclick={() => {
+                    if (
+                        window.confirm(
+                            "Wait! Be aware this token grants FULL permission over your account. Are you sure you wish to proceed?",
+                        )
+                    ) {
+                        window.alert(
+                            "Your Root Key: \n" + getCookie("AuthToken"),
+                        );
+                    }
+                }}>Get Root Key</button
             >
         </div>
         <!-- The daaaaanger zoneeee -->
