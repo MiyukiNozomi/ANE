@@ -49,6 +49,17 @@
                 createdAt: "Int (Unix Time)",
             },
         },
+
+        {
+            isProtected: true,
+            pathname: "/api/signed/session/delete-self",
+            description:
+                "Deletes the callee's session, really that's all it does. Use this if you want to revoke the authorization you were given.",
+            inputParams: undefined,
+            outputParams: {
+                ok: true,
+            },
+        },
     ];
 </script>
 
@@ -188,7 +199,7 @@
         </h2>
         <p>
             Blue pathnames (and without the 'X') do not require authentication.
-            token (see the Sessions and Authorizations section.)
+            (see the Sessions and Authorizations section.)
         </p>
         <div class="flex flex-col gap-4">
             {#each endpoints as ed}
