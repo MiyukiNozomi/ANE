@@ -21,7 +21,7 @@
             description:
                 "Returns the status of a requested authorization by either the authorization request code, or by the shared secret.\nPlease note it will *NOT* return the session token if requested by the authorization request code.",
             inputParams: {
-                sharedSecret: "String | undefined",
+                sharedSecret: "String(min 16, max 256) | undefined",
                 authRequestCode: "String | undefined",
             },
             outputParams: {
