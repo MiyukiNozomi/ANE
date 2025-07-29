@@ -312,9 +312,9 @@
                         <p>
                             However, If you wish to sign in with a different
                             account, <button
-                                onclick={(event) => {
+                                onclick={async (event) => {
                                     event.preventDefault();
-                                    invalidateSession();
+                                    await invalidateSession();
                                     window.location.reload();
                                 }}
                                 class="text-red-500 underline cursor-pointer"

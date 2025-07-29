@@ -17,3 +17,4 @@ CREATE TABLE IF NOT EXISTS thirdPartySessionRequest  (
 );
 
 ALTER TABLE sessions ADD COLUMN isThirdPartySession INTEGER DEFAULT FALSE;
+ALTER TABLE sessions ADD COLUMN realmName TEXT DEFAULT "";

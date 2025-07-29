@@ -29,8 +29,8 @@
             {#if !accountInfo}
                 <a
                     href="/sign?redir=/"
-                    onclick={() => {
-                        invalidateSession();
+                    onclick={async () => {
+                        await invalidateSession();
                     }}>Sign In</a
                 >
             {:else}

@@ -1,4 +1,4 @@
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { Backend } from '$lib/server/backend-api';
 import { text } from '@sveltejs/kit';
@@ -10,7 +10,11 @@ export const load = (async ({ locals, request }) => {
 
     const sessions = await Backend.getSessions(locals.sessionToken);
 
+    if (!sessions || sessions.error) {
+        return error(500, "An exception was thrown: " + (sessions?.error ?? null));
+    }
+
     return {
-        sessions
+        sessions: sessions.data!.sessions
     };
 }) satisfies PageServerLoad;

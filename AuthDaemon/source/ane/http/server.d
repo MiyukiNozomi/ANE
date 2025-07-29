@@ -125,6 +125,13 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(true, db, res, message, &accountSessionsEndpoint);
         });
+    case "/signed/delete-single-session":
+        return postOnlyEndpoint(db, res, message, (db, res, message) {
+            // Hi, miyuki from the past here
+            // the reason this endpoint does NOT require a root-level token is because it only deletes the session
+            // that is calling it, so there's no risk of it deleting a root-level token that isn't itself.
+            return SignedInEndpointRequirement(false, db, res, message, &deleteCurrentAccountSessionEndpoint);
+        });
     case "/signed/delete-sessions":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(true, db, res, message, &clearAccountSessionsEndpoint);

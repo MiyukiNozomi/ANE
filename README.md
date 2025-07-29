@@ -1,4 +1,4 @@
-![ANE Logo](GalateaCDN/default/images/logos/miyuki-studio.png)
+![ANE Logo](GalateaCDN/default/images/logos/ane-logo-final.png)
 
 # 
 Anemachi is my website, and this repository holds every micro service used in it
@@ -27,7 +27,7 @@ I will not merge any PRs unless they're so critical that I absolutely need to ch
 - [X] Finish auth.ane.jp.net (Functional, but missing features)
     - [ ] Embbeds 
     - [ ] Profile Picture support
-    - [ ] Session Manager
+    - [X] Session Manager
 - [X] Auth Daemon (Possible Security Concerns)
     - [X] Limit Secret size (minimum should be 16 characters and maximum should be 256)
     - [X] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)

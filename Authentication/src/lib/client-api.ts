@@ -29,14 +29,19 @@ export async function invokeAPI<T>(endpoint: string, payload: any): Promise<Loca
     }
 }
 
-export function invalidateSession() {
+export async function invalidateSession() {
+    console.log(
+        await invokeAPI<any>(
+            "signed/session/delete-self",
+            undefined,
+        ));
     document.cookie = `AuthToken=CLEARLY_INVALID; SameSite=Lax; Path=/`;
     document.cookie = `AccountInfo=CLEARLY_INVALID; SameSite=Lax; Path=/`;
 }
 
 export function getAccountInfo(): AccountInfo | null {
     const cookie = getCookie("AccountInfo");
-    if (cookie == null) return null;
+    if (cookie == null || cookie.length == 0) return null;
     try {
         return JSON.parse(atob(cookie)) as AccountInfo;
     } catch (err) {

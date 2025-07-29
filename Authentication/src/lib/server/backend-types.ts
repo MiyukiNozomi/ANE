@@ -32,6 +32,17 @@ export type TwoFactorStepFinish = {
     "recovery-key": string
 }
 
+export type SessionInfo = {
+    ID: string,
+    createdAt: number,
+    isThirdParty: boolean,
+    realmName: string
+}
+
+export type GetSessionsInfo = {
+    sessions: SessionInfo[]
+}
+
 export type AuthorizationStatus = {
     "reqCode": string,
     "realm": string,

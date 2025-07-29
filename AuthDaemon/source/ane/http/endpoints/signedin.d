@@ -123,6 +123,19 @@ void clearAccountSessionsEndpoint(
     return response.jsonOK();
 }
 
+// Note for future miyuki:
+// This endpoint pretty much deletes the session that is performing the request
+// this is so it can be used in both the session manager and to sign out at the same time.
+void deleteCurrentAccountSessionEndpoint(
+    Account account,
+    Database db,
+    HttpServerResponse response,
+    HttpIncomingMessage message)
+{
+    deleteCurrentAccountSession(account);
+    return response.jsonOK();
+}
+
 void currentAccountInfo(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
 {
     return response.jsonMessage(account.asJSONData());

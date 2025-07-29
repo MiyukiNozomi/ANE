@@ -36,7 +36,7 @@ class SQLite3Statement
 
             try
             {
-                writeln("Statement closed!");
+                writeln("[DEBUG] Statement closed! Someone finally ran the fucking GC!");
             }
             catch (Exception)
             {

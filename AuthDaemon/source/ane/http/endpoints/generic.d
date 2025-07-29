@@ -72,7 +72,7 @@ void registrationEndpoint(Database db, HttpServerResponse response, HttpIncoming
     }
 
     Account account = db.getUserByName(username);
-    string sessionToken = createSession(account, false);
+    string sessionToken = createSession(account);
 
     return response.session(account, sessionToken);
 }
@@ -120,6 +120,6 @@ void logInEndpoint(Database db, HttpServerResponse response, HttpIncomingMessage
         return response.databaseError(DB_Errors.INCORRECT_TWO_FACTOR);
     }
 
-    const sessionToken = createSession(account, false);
+    const sessionToken = createSession(account);
     return response.session(account, sessionToken);
 }

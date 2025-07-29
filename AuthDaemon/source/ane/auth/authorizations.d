@@ -193,7 +193,7 @@ string createAuthorizationRequest(Database db, string secret, string realm)
 void authorizeRequest(Database db, Account account, ThirdPartySessionRequest req)
 {
     clearExpiredAuthorizationRequests(db);
-    const session = createSession(account, true);
+    const session = createThirdPartySession(account, req.realm);
 
     auto stmt = db.newPreparedStatement("
         UPDATE thirdPartySessionRequest SET session_id = ? WHERE authorizationRequestCode = ?

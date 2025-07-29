@@ -1,6 +1,6 @@
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "./backend"
 import { DB_Errors, isUsernameValid } from "./backend"
-import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish, AuthorizationStatus } from "./backend-types";
+import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish, AuthorizationStatus, GetSessionsInfo } from "./backend-types";
 
 export namespace Backend {
     const BACKEND_URL = "http://localhost:4050";
@@ -90,6 +90,18 @@ export namespace Backend {
     /**
       Account session management
      */
+    export async function getSessions(authToken: string) {
+        return await doAPIEndpoint<GetSessionsInfo>("/signed/get-sessions", undefined, authToken);
+    }
+
+    export async function deleteSingleSession(authToken: string) {
+        return await doAPIEndpoint<any>("/signed/delete-single-session", undefined, authToken);
+    }
+
+    export async function deleteAllSessions(authToken: string) {
+        return await doAPIEndpoint<any>("/signed/delete-sessions", undefined, authToken);
+    }
+
     export async function authorize(authRequestCode: string, authToken: string) {
         return await doAPIEndpoint<any>("/signed/authorize", { "request-code": authRequestCode }, authToken);
     }

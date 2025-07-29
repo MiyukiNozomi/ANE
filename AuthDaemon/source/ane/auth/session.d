@@ -22,12 +22,14 @@ class SessionInfo
     const string ID;
     const int createdAt;
     const bool isThirdParty;
+    const string realmName;
 
-    this(string ID, int createdAt, bool isThirdParty)
+    this(string ID, int createdAt, bool isThirdParty, string realmName)
     {
         this.ID = ID;
         this.createdAt = createdAt;
         this.isThirdParty = isThirdParty;
+        this.realmName = realmName;
     }
 
     JSONValue toJSON()
@@ -37,6 +39,7 @@ class SessionInfo
         listElm["ID"] = this.ID;
         listElm["createdAt"] = this.createdAt;
         listElm["isThirdParty"] = this.isThirdParty;
+        listElm["realmName"] = this.realmName;
 
         return listElm;
     }
@@ -74,7 +77,7 @@ void clearExpiredSessions(Database db)
 Account getSession(Database db, string sessionToken)
 {
     auto stmt = db.newPreparedStatement(
-        "SELECT created_at, user_id, isThirdPartySession FROM sessions WHERE id = ?");
+        "SELECT created_at, user_id, isThirdPartySession, realmName FROM sessions WHERE id = ?");
 
     stmt.bindText(1, sessionToken);
 
@@ -86,6 +89,7 @@ Account getSession(Database db, string sessionToken)
     auto createdAt = stmt.columnInt(0);
     auto userId = stmt.columnInt(1);
     auto isThirdPartySession = cast(bool) stmt.columnInt(2);
+    auto realmName = stmt.columnString(3);
 
     SysTime currentTime = Clock.currTime();
 
@@ -104,26 +108,29 @@ Account getSession(Database db, string sessionToken)
     account.sessionInfo = new SessionInfo(
         sessionToken,
         createdAt,
-        isThirdPartySession
+        isThirdPartySession,
+        realmName
     );
     return account;
 }
 
 /**
     Creates a session for the associated account and returns it token
+
+    **NOTE**: This generates a Root-Level Token, NOT a third party session.
 */
-string createSession(Account account, bool isThirdPartySession)
+string createSession(Account account)
 {
     clearExpiredSessions(account.db);
+
     const id = genSessionSecret();
     writeln("Generating new session for user: ", account.Name, " (", account.ID, ")");
 
     auto stmt = account.db.newPreparedStatement(
-        "INSERT INTO sessions (id, user_id, isThirdPartySession) VALUES (?, ?, ?)");
+        "INSERT INTO sessions (id, user_id) VALUES (?, ?)");
 
     stmt.bindText(1, id);
     stmt.bindInt(2, account.ID);
-    stmt.bindInt(3, isThirdPartySession);
 
     stmt.stepAndExpect();
 
@@ -132,6 +139,47 @@ string createSession(Account account, bool isThirdPartySession)
     return id;
 }
 
+/**
+    Creates a session for the associated account and returns it token
+
+    **NOTE**: This generates a Root-Level Token, NOT a third party session.
+*/
+string createThirdPartySession(Account account, string realmName)
+{
+    clearExpiredSessions(account.db);
+    const id = genSessionSecret();
+    writeln("Generating new session for user: ", account.Name, " (", account.ID, ")");
+
+    auto stmt = account.db.newPreparedStatement(
+        "INSERT INTO sessions (id, user_id, isThirdPartySession, realmName) VALUES (?, ?, ?, ?)");
+
+    stmt.bindText(1, id);
+    stmt.bindInt(2, account.ID);
+    stmt.bindInt(3, true);
+    stmt.bindText(4, realmName);
+
+    stmt.stepAndExpect();
+
+    writeln("New third party session: " ~ account.Name ~ " id: " ~ id);
+
+    return id;
+}
+
+/**
+    Deletes a specific session, be it root level or not.
+*/
+
+void deleteCurrentAccountSession(Account account)
+{
+    auto stmt = account.db.newPreparedStatement(
+        "DELETE FROM sessions WHERE user_id = ? AND id = ?");
+
+    stmt.bindInt(1, account.ID);
+    stmt.bindText(2, account.sessionInfo.ID);
+    stmt.stepAndExpect();
+}
+
+/**
 /**
     Deletes every session from an account.
 */
@@ -151,9 +199,20 @@ void deleteAccountSessions(Account account)
 */
 JSONValue[] getAccountSessions(Account account)
 {
+    clearExpiredSessions(account.db);
+
     JSONValue[] list;
     auto stmt = account.db.newPreparedStatement(
-        "SELECT id, created_at, isThirdPartySession FROM sessions WHERE user_id = ? ORDER BY created_at DESC");
+        "SELECT 
+            id, 
+            created_at, 
+            isThirdPartySession, 
+            realmName 
+        FROM
+            sessions
+        WHERE 
+            user_id = ? 
+            ORDER BY created_at DESC");
 
     stmt.bindInt(1, account.ID());
 
@@ -162,9 +221,10 @@ JSONValue[] getAccountSessions(Account account)
         auto id =
             stmt.columnString(0);
         auto createdAt = stmt.columnInt(1);
-        auto isThirdPartySession = cast(bool) stmt.columnInt(1);
+        auto isThirdPartySession = cast(bool) stmt.columnInt(2);
+        auto realmName = stmt.columnString(3);
 
-        list ~= new SessionInfo(id, createdAt, isThirdPartySession).toJSON();
+        list ~= new SessionInfo(id, createdAt, isThirdPartySession, realmName).toJSON();
     }
 
     return list;
