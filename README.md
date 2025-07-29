@@ -7,14 +7,21 @@ This github repository is purely temporary as git.ane.jp.net is still missing
 # Should I run anything on this?
 No. I also hardcoded a lot of things during this project (mostly pathnames, but still, you shouldn't run this.)
 
-# Creating Services
+## Why the hell can I open the source code then?
+Mostly for user reference, lets say someone is curious about how the microservices work.
+The other reason is convenience, it's easier to clone and replace services if they're on GitHub instead of git.ane.jp.net;
+It also doubles as a backup system!.
 
-First off, install the respective service manually (for now)
-Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service file, you will have to manually write it into the jail's location
+From my perspective, it also doubles as a security measure: I wont have to store a github token in my server to clone/pull this repository.
 
 # Contributing
 Don't, if you think anything is off, open an issue.
 I will not merge any PRs unless they're so critical that I absolutely need to change it.
+
+# Creating Services
+
+First off, install the respective service manually (for now)
+Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service file, you will have to manually write it into the jail's location
 
 # TODO
 
