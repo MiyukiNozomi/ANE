@@ -175,7 +175,10 @@
 
                 if (rawRedirect) pth = decodeURI(rawRedirect);
 
-                window.location.href = pth ?? "/home";
+                pth = pth ?? "/home";
+                if (!pth.startsWith("/")) pth = "/" + pth;
+
+                window.location.href = pth;
                 break;
             }
             default:
