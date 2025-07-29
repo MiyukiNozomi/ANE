@@ -25,6 +25,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 # TODO
 
+- [ ] Add a README on all microservices
 - [X] Say the servicename on setup.sh scripts
 - [ ] Add Embbed support in all pages (partial)
     - [X] Galatea CDN
@@ -32,8 +33,8 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
     - [ ] auth.ane.jp.net
 - [X] Fix Responsiveness issue in Reverse Proxy error pages (done in a previous commit)
 - [X] Finish auth.ane.jp.net (Functional, but missing features)
-    - [ ] Embbeds 
-    - [ ] Profile Picture support
+    - [X] Embeds 
+    - [ ] Profile Picture support (this can wait)
     - [X] Session Manager
 - [X] Auth Daemon (Possible Security Concerns)
     - [X] Limit Secret size (minimum should be 16 characters and maximum should be 256)

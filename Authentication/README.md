@@ -1,3 +1,18 @@
+# ANE Authorization!
+This is the source code for the front end of auth.ane.jp.net;
+You wont see any actual database handling here.
+
+Yes, it is a SvelteKit project, but the SvelteKit is only a men in the middle that provides a secondary layer of verification.
+
+The actual database handling is in AuthDaemon.
+
+## Why Svelte?
+It's in my perspective one of the best Frameworks for web development out there, it's pretty much perfect for this project as it's both
+convenient and provides nice reactivity when needed.
+
+## Everything below is a lie...
+
+
 # sv
 
 Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).

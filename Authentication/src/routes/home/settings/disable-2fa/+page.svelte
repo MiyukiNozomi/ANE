@@ -30,6 +30,12 @@
     }
 </script>
 
+<svelte:head>
+    <title>Account 2FA Disable (Danger!)</title>
+    <meta name="title" content="Account 2FA Disable (Danger!)" />
+    <meta name="description" content="Protected Resource." />
+</svelte:head>
+
 <div class="min-h-screen bg-zinc-900 font-kumbh">
     <div class="w-full flex flex-row gap-4 items-center bg-red-700 px-8 py-2">
         <a class="text-white text-4xl" href="/home/settings">&equiv;</a>

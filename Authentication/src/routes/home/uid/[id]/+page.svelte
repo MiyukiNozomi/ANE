@@ -9,6 +9,18 @@
     const accountInfo = getAccountInfo();
 </script>
 
+<svelte:head>
+    <title>{data.homeAccountInfo.displayName}'s Profile</title>
+    <meta
+        name="title"
+        content={`${data.homeAccountInfo.displayName}'s Profile`}
+    />
+    <meta
+        name="description"
+        content="This page is a work-in-progress, a lot of features are in-fact missing."
+    />
+</svelte:head>
+
 <!--
     List of TODOs:
 

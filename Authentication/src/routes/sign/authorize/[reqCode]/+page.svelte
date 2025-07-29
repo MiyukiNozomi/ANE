@@ -63,6 +63,24 @@
     }
 </script>
 
+<svelte:head>
+    <title
+        >{data.reqInfo
+            ? `Authorize ${data.reqInfo.realm}`
+            : `Authorize.. a expired request?`}</title
+    >
+    <meta
+        name="title"
+        content={data.reqInfo
+            ? `Authorize ${data.reqInfo.realm}`
+            : `Authorize.. a expired request?`}
+    />
+    <meta
+        name="description"
+        content="The hell..? your crawler has an authentication token? crazy."
+    />
+</svelte:head>
+
 <div class="w-screen h-screen bg-black">
     <h2 class="z-0 text-blue-950">Background is rendering...</h2>
     <canvas bind:this={canvas} class="fixed top-0 left-0 z-10"> </canvas>

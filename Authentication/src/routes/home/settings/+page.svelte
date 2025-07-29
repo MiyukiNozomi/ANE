@@ -57,6 +57,12 @@
     }
 </script>
 
+<svelte:head>
+    <title>Account Settings</title>
+    <meta name="title" content="Account Settings" />
+    <meta name="description" content="Protected Resource." />
+</svelte:head>
+
 <div class="min-h-screen bg-zinc-900 font-kumbh">
     <div class="w-full flex flex-row gap-4 items-center bg-sky-700 px-8 py-2">
         <a class="text-white text-4xl" href="/">&equiv;</a>

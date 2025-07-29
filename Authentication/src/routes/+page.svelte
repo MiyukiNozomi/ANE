@@ -5,6 +5,15 @@
     const accountInfo = getAccountInfo();
 </script>
 
+<svelte:head>
+    <title>ANE-machi Authorization</title>
+    <meta name="title" content="ANE-machi Authorization" />
+    <meta
+        name="description"
+        content="The Authorization System used by every service under ane.jp.net, or anything Miyuki makes!"
+    />
+</svelte:head>
+
 <div class="min-h-screen bg-gray-900 relative">
     <div
         class="absolute w-full flex flex-col md:flex-row items-center bg-[#00000050] md:gap-8 z-40"
@@ -143,11 +152,13 @@
         <div
             class="font-kumbh flex flex-col md:flex-row p-4 gap-8 items-center"
         >
-            <img
-                src="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
-                class="w-42"
-                alt=""
-            />
+            <a href="https://ane.jp.net">
+                <img
+                    src="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
+                    class="w-42"
+                    alt=""
+                />
+            </a>
             <div class="ml-auto flex flex-col text-center md:text-start">
                 <h1 class="text-2xl">Miyuki Nozomi</h1>
                 <p>

@@ -63,6 +63,15 @@
     ];
 </script>
 
+<svelte:head>
+    <title>ANE Account Handbook</title>
+    <meta name="title" content="ANE Account Handbook" />
+    <meta
+        name="description"
+        content="Documentation on the Authorization System, Tokens and a few details on the APIs."
+    />
+</svelte:head>
+
 <div class="min-h-screen bg-gray-900 relative pb-2">
     <div
         class="w-full flex flex-col md:flex-row items-center bg-[#00000050] gap-8 z-40"

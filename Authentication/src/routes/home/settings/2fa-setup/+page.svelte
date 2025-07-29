@@ -47,6 +47,12 @@
     }
 </script>
 
+<svelte:head>
+    <title>Account 2FA Setup</title>
+    <meta name="title" content="Account 2FA Setup" />
+    <meta name="description" content="Protected Resource." />
+</svelte:head>
+
 {#if recoveryKey}
     <div
         class="fixed left-0 top-0 flex flex-row items-center w-screen h-screen bg-[#000000AA]"

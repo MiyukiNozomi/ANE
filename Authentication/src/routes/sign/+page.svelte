@@ -207,6 +207,15 @@
     }
 </script>
 
+<svelte:head>
+    <title>Sign In</title>
+    <meta name="title" content="Sign In" />
+    <meta
+        name="description"
+        content="A sign-in page. (You might see this with a few URLs that aren't a sign-in, this just means your crawler tried to access a protected resource)"
+    />
+</svelte:head>
+
 <div class="w-screen h-screen bg-black">
     <h2 class="z-0 text-blue-950">Background is rendering...</h2>
     <canvas bind:this={canvas} class="fixed top-0 left-0 z-10"> </canvas>
