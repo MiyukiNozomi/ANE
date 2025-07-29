@@ -34,8 +34,9 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [X] Fix Responsiveness issue in Reverse Proxy error pages (done in a previous commit)
 - [X] Finish auth.ane.jp.net (Functional, but missing features)
     - [X] Embeds 
-    - [ ] Profile Picture support (this can wait)
     - [X] Session Manager
+    - [ ] Profile Picture support (this can wait)
+    - [ ] Ensure it wont be possible to duplicate requests on all pages
 - [X] Auth Daemon (Possible Security Concerns)
     - [X] Limit Secret size (minimum should be 16 characters and maximum should be 256)
     - [X] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)
