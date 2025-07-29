@@ -23,13 +23,13 @@ I will not merge any PRs unless they're so critical that I absolutely need to ch
     - [X] Galatea CDN
     - [X] Reverse Proxy (might not be necessary)
     - [ ] auth.ane.jp.net
-- [ ] Fix Responsiveness issue in Reverse Proxy error pages
+- [X] Fix Responsiveness issue in Reverse Proxy error pages (done in a previous commit)
 - [X] Finish auth.ane.jp.net (Functional, but missing features)
     - [ ] Embbeds 
     - [ ] Profile Picture support
     - [ ] Session Manager
-- [ ] Auth Daemon (Possible Security Concerns)
-    - [ ] Limit Secret size (minimum should be 16 characters and maximum should be 256)
-    - [ ] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)
+- [X] Auth Daemon (Possible Security Concerns)
+    - [X] Limit Secret size (minimum should be 16 characters and maximum should be 256)
+    - [X] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)
 - [ ] Finish git.ane.jp.net
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)

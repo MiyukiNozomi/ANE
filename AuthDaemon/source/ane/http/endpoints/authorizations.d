@@ -18,8 +18,8 @@ void requestAuthorizationEndpoint(Database db, HttpServerResponse response, Http
     string realm;
 
     validateParameters(message, (json) {
-        sharedSecret = json.getStringSafe("shared-secret");
-        realm = json.getStringSafe("realm");
+        sharedSecret = json.getSharedSecretSafe();
+        realm = json.getRealmSafe();
     });
 
     auto rq = getAuthorizationRequest(db, sharedSecret);
@@ -40,7 +40,13 @@ void getAuthorizationStatusEndpoint(Database db, HttpServerResponse response, Ht
     string requestCode;
 
     validateParameters(message, (json) {
-        sharedSecret = json.getStringSafe("shared-secret", ("request-code" in json) is null);
+        sharedSecret = json.getSharedSecretSafe(("request-code" in json) is null);
+
+        // Uhh... this should have a limit, no?
+        // I mean.. the request size cannot go beyond 8 KB not just here but 
+        // in the SvelteKit frontend (the limit there is higher, 8 mb in fact)
+        // but still, i really feel like i should limit it further, but whatever.
+        // The request code isn't a real concern here.
         requestCode = json.getStringSafe("request-code", ("shared-secret" in json) is null);
     });
 

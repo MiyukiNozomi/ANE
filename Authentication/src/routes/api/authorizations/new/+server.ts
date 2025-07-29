@@ -2,10 +2,11 @@ import z from 'zod';
 import type { RequestHandler } from './$types';
 import { error, json } from '@sveltejs/kit';
 import { Backend } from '$lib/server/backend-api';
+import { MAX_REALM_LENGTH, MAX_SECRET_LENGTH, MIN_REALM_LENGTH, MIN_SECRET_LENGTH } from '$lib/server/backend';
 
 const requestData = z.object({
-    sharedSecret: z.string().min(4).max(256),
-    realm: z.string().min(1).max(256)
+    sharedSecret: z.string().min(MIN_SECRET_LENGTH).max(MAX_SECRET_LENGTH),
+    realm: z.string().min(MIN_REALM_LENGTH).max(MAX_REALM_LENGTH)
 });
 
 export const POST: RequestHandler = async ({ request }) => {

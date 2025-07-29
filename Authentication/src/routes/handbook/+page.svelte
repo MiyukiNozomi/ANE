@@ -8,8 +8,8 @@
             description:
                 "Creates a new Authorization Request and returns the authorization token used by the user. The realm is the name of the application.",
             inputParams: {
-                sharedSecret: "String(min 4, max 256)",
-                realm: "String(min 4, max 256)",
+                sharedSecret: "String(min 16, max 256)",
+                realm: "String(min 3, max 128)",
             },
             outputParams: {
                 "request-code": "String",

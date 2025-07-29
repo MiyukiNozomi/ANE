@@ -9,6 +9,12 @@ const MAX_USERNAME_LENGTH = 32;
 const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 200;
 
+const MIN_SECRET_LENGTH = 16;
+const MAX_SECRET_LENGTH = 256;
+
+const MIN_REALM_LENGTH = 3;
+const MAX_REALM_LENGTH = 128;
+
 bool isUsernameValid(ref string username)
 {
     username = username.strip().toLower();
@@ -41,4 +47,14 @@ bool isPasswordValid(ref string password)
     password = password.strip();
     return password.length > MIN_PASSWORD_LENGTH && password
         .length < MAX_PASSWORD_LENGTH;
+}
+
+bool isSecretValid(ref string secret)
+{
+    return secret.length > MIN_SECRET_LENGTH && secret.length < MAX_SECRET_LENGTH;
+}
+
+bool isRealmValid(ref string realm)
+{
+    return realm.length > MIN_REALM_LENGTH && realm.length < MAX_REALM_LENGTH;
 }

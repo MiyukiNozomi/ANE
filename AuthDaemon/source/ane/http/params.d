@@ -41,6 +41,28 @@ string getDisplaynameSafe(JSONValue json, bool mandatory = true)
     return displayName;
 }
 
+string getSharedSecretSafe(JSONValue json, bool mandatory = true)
+{
+    string sharedSecret = json.getStringSafe("shared-secret", mandatory);
+    if (sharedSecret.length == 0 && !mandatory)
+        return "";
+    if (!isSecretValid(sharedSecret))
+        throw new HttpException(400, "共有シークレットが不正です 「Bad Shared Secret」");
+
+    return sharedSecret;
+}
+
+string getRealmSafe(JSONValue json, bool mandatory = true)
+{
+    string realmName = json.getStringSafe("realm", mandatory);
+    if (realmName.length == 0 && !mandatory)
+        return "";
+    if (!isRealmValid(realmName))
+        throw new HttpException(400, "レルム名が不正です 「Bad Realm name」");
+
+    return realmName;
+}
+
 string getStringSafe(JSONValue value, string name, bool mandatory = true)
 {
     JSONValue* str = name in value;
