@@ -116,8 +116,12 @@
         <div class="flex flex-col gap-2">
             <h2 class="font-bold text-2xl">Individual Session Management</h2>
             <p class="text-gray-200">
-                These are sessions that have full permission over your account,
-                (read-write access)
+                Read-write sessions represent sessions generated when you log
+                into this website directly.
+            </p>
+            <p class="text-gray-200">
+                Read-only sessions represent sessions generated when you
+                authorize an application to access your profile.
             </p>
 
             <table class="text-center">
@@ -126,7 +130,7 @@
                         class="text-md bg-red-800 border-b-red-950 border-b-4 border-solid"
                     >
                         <th class="p-2">Realm</th>
-                        <th class="p-2"> Date</th>
+                        <th class="p-2">Date</th>
                         <th class="p-2">Permission</th>
                         <th class="p-2">Action</th>
                     </tr>
