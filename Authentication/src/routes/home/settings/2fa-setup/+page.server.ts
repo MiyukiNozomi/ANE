@@ -2,10 +2,11 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { Backend } from '$lib/server/backend-api';
 import { text } from '@sveltejs/kit';
+import { redirectToLoginPage } from '$lib/server/tools';
 
 export const load = (async ({ locals, request }) => {
     if (!locals.account)
-        return redirect(302, "/sign?redir=" + encodeURI(request.url));
+        return redirectToLoginPage(request.url);
 
     const securityInfo = await Backend.getSecurityInfo(locals.sessionToken!);
     if (!securityInfo || securityInfo.error) {
