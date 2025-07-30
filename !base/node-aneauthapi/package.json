@@ -1,0 +1,16 @@
+{
+  "name": "node-aneauthapi",
+  "version": "1.0.0",
+  "description": "ANE Authentication API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.13.1",
+  "devDependencies": {
+    "@types/node": "^24.1.0"
+  }
+}
