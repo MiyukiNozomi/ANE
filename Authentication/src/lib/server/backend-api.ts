@@ -1,6 +1,6 @@
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "./backend"
 import { DB_Errors, isUsernameValid } from "./backend"
-import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish, AuthorizationStatus, GetSessionsInfo } from "./backend-types";
+import type { AccountSecurityInfo, AccountInfo, BackendResponse, UserSessionInfo, TwoFactorStep1Start, TwoFactorStepFinish, AuthorizationStatus, GetSessionsInfo, APITokenInfo, SessionInfo } from "./backend-types";
 
 export namespace Backend {
     const BACKEND_URL = "http://localhost:4050";
@@ -77,6 +77,10 @@ export namespace Backend {
 
     export async function disable2FASupport(recoveryKey: string, authToken: string) {
         return await doAPIEndpoint<unknown>("/signed/2fa-disable", { "recovery-key": recoveryKey }, authToken);
+    }
+
+    export async function createAPIToken(tokenName: string, authToken: string) {
+        return await doAPIEndpoint<SessionInfo>("/signed/create-api-token", { name: tokenName }, authToken);
     }
 
     export async function getSecurityInfo(authToken: string) {

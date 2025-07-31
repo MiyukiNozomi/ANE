@@ -141,6 +141,22 @@ void currentAccountInfo(Account account, Database db, HttpServerResponse respons
     return response.jsonMessage(account.asJSONData());
 }
 
+void createAPITokenEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
+{
+    string name;
+
+    validateParameters(message, (json) { name = json.getStringSafe("name"); });
+
+    int ignored;
+    string sessionToken = createThirdPartySession(account, "(Custom Token by User) " ~ name);
+    SessionInfo sessionInfo = getSession(db, sessionToken, ignored);
+    if (sessionInfo is null)
+        throw new Exception(
+            "This is an internal exception: sessionInfo is null even if it wasn't possible to.");
+
+    response.jsonMessage(sessionInfo.toJSON());
+}
+
 void giveAuthorizationEndpoint(Account account, Database db, HttpServerResponse response, HttpIncomingMessage message)
 {
     string authReqCode;

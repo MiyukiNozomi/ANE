@@ -74,7 +74,26 @@ void clearExpiredSessions(Database db)
 /**
     Returns null if the session is invalid, the associated account otherwise.
 */
-Account getSession(Database db, string sessionToken)
+Account getAccountSession(Database db, string sessionToken)
+{
+    int userId;
+    SessionInfo sessionInfo = getSession(db, sessionToken, userId);
+    if (sessionInfo is null)
+        return null;
+    Account account = db.getUserById(userId);
+
+    // what the hell have i been smoking?
+    // why was there not a null check here???
+    // Usually, this isn't a problem.
+    // but if someone deletes their account but still has the session it would absolutely blow up without this line.
+    if (account is null)
+        return null;
+
+    account.sessionInfo = sessionInfo;
+    return account;
+}
+
+SessionInfo getSession(Database db, string sessionToken, out int userId)
 {
     auto stmt = db.newPreparedStatement(
         "SELECT created_at, user_id, isThirdPartySession, realmName FROM sessions WHERE id = ?");
@@ -87,7 +106,7 @@ Account getSession(Database db, string sessionToken)
     }
 
     auto createdAt = stmt.columnInt(0);
-    auto userId = stmt.columnInt(1);
+    userId = stmt.columnInt(1);
     auto isThirdPartySession = cast(bool) stmt.columnInt(2);
     auto realmName = stmt.columnString(3);
 
@@ -104,14 +123,12 @@ Account getSession(Database db, string sessionToken)
         return null;
     }
 
-    Account account = db.getUserById(userId);
-    account.sessionInfo = new SessionInfo(
+    return new SessionInfo(
         sessionToken,
         createdAt,
         isThirdPartySession,
         realmName
     );
-    return account;
 }
 
 /**
@@ -142,7 +159,7 @@ string createSession(Account account)
 /**
     Creates a session for the associated account and returns it token
 
-    **NOTE**: This generates a Root-Level Token, NOT a third party session.
+    **NOTE**: This generates a Third Party Session! Token, NOT a Root-Level session.
 */
 string createThirdPartySession(Account account, string realmName)
 {

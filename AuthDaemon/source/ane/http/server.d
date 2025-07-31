@@ -114,6 +114,10 @@ HttpServerResponse handleRequest(Database db, Socket socket, HttpIncomingMessage
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(true, db, res, message, &getAccountSecurityInfoEndpoint);
         });
+    case "/signed/create-api-token":
+        return postOnlyEndpoint(db, res, message, (db, res, message) {
+            return SignedInEndpointRequirement(true, db, res, message, &createAPITokenEndpoint);
+        });
     case "/signed/set-display-name":
         return postOnlyEndpoint(db, res, message, (db, res, message) {
             return SignedInEndpointRequirement(true, db, res, message, &displayNameSetterEndpoint);
@@ -179,7 +183,7 @@ void SignedInEndpointRequirement(
         throw new HttpException(401, "認証が必要です 「HTTP Authorization Required」");
     }
 
-    Account account = getSession(db, sessionToken);
+    Account account = getAccountSession(db, sessionToken);
     if (account is null)
     {
         return response.databaseError(DB_Errors.EXPIRED_OR_MISSING_SESSION);
