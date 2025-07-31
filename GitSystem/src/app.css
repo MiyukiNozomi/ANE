@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+@font-face {
+    font-family: "Kumbh";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/kumbh_sans.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: "MPLUS2";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/MPLUS2.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: "IBMPlex";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/IBMPlexMono.ttf) format('truetype')
+}
+
+@theme {
+    --default-font-family: "Kumbh", var(--font-sans);
+
+    --font-kumbh: "Kumbh", "sans-serif";
+    --font-mplus2: "MPLUS2", "sans-serif";
+    --font-ibmplex: "IBMPlex", "sans-serif";
+}
