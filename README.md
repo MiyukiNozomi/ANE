@@ -35,6 +35,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [X] Finish auth.ane.jp.net (Functional, but missing features)
     - [X] Embeds 
     - [X] Session Manager
+    - [ ] A way to create third party sessions yourself
     - [ ] Profile Picture support (this can wait)
     - [ ] Ensure it wont be possible to duplicate requests on all pages
     - [ ] When redirecting on the registration pathway, remove the leftover ?redir or any other search paths.
