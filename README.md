@@ -40,9 +40,9 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [x] Embeds
   - [x] Session Manager
   - [x] A way to create third party sessions yourself
-  - [ ] Profile Picture support (this can wait)
   - [x] Ensure it wont be possible to duplicate requests on all pages
-  - [ ] When redirecting on the registration pathway, remove the leftover ?redir or any other search paths.
+  - [x] When redirecting on the registration pathway, remove the leftover ?redir or any other search paths.
+  - [ ] Profile Picture support (this can wait)
 - [x] Auth Daemon (Possible Security Concerns)
   - [x] Limit Secret size (minimum should be 16 characters and maximum should be 256)
   - [x] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)

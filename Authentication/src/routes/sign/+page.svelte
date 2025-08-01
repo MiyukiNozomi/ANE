@@ -167,7 +167,7 @@
       case Steps.ACCOUNT_SIGNED_IN: {
         if (currentStep != Steps.ALREADY_HAS_SESSION) await installSession();
         if (currentStep == Steps.ACCOUNT_REGISTERED) {
-          window.location.pathname = "/home/settings";
+          window.location.href = "/home/settings";
           return;
         }
         let pth: string | undefined;
