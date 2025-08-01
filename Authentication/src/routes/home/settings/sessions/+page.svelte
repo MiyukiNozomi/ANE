@@ -3,7 +3,6 @@
     getAccountInfo,
     getCookie,
     invalidateSession,
-    invokeAPI,
     MIN_REALM_LENGTH,
   } from "$lib/client-api";
   import Input from "$lib/components/input.svelte";
@@ -11,8 +10,11 @@
   import { fade, slide } from "svelte/transition";
   import type { PageData } from "./$types";
   import { error } from "@sveltejs/kit";
+  import ProgressApi from "$lib/components/progressAPI.svelte";
 
   let { data }: { data: PageData } = $props();
+
+  let progressAPI: ProgressApi | undefined;
 
   // for the New API Token setup
   let showApiTokenSetup = $state(false);
@@ -41,7 +43,13 @@
   );
 
   async function onDeleteAll() {
-    const res = await invokeAPI<any>("signed/session/delete-all", undefined);
+    if (progressAPI?.isActive()) return;
+
+    const res = await progressAPI?.invokeAPIWithStatus<any>(
+      "Deleting all sessions...",
+      "signed/session/delete-all",
+      undefined
+    );
     if (!res || res.translatedError)
       setError(
         res?.translatedError ??
@@ -54,6 +62,8 @@
   }
 
   async function onDeleteSingleSession(idForDeletion: SessionInfo) {
+    if (progressAPI?.isActive()) return;
+
     if (
       !window.confirm(
         `Are you sure you wish to delete the session '${idForDeletion.realmName ?? "ANE"}'?
@@ -71,7 +81,11 @@
     // temporariarly switch to the session ID
     document.cookie = `AuthToken=${idForDeletion.ID}; SameSite=Lax; Path=/`;
 
-    const res = await invokeAPI<any>("signed/session/delete-self", undefined);
+    const res = await progressAPI?.invokeAPIWithStatus<any>(
+      "Removing " + idForDeletion.ID + "...",
+      "signed/session/delete-self",
+      undefined
+    );
 
     // switch back to our ID
     document.cookie = `AuthToken=${thisSession}; SameSite=Lax; Path=/`;
@@ -91,6 +105,8 @@
   }
 
   async function onCreateAPIToken() {
+    if (progressAPI?.isActive()) return;
+
     errorMessage = "";
     if (newTokenLabel.length < MIN_REALM_LENGTH)
       return (errorMessage =
@@ -98,9 +114,13 @@
         MIN_REALM_LENGTH +
         " characters in length.");
 
-    const res = await invokeAPI<SessionInfo>("signed/create-api-token", {
-      name: newTokenLabel,
-    });
+    const res = await progressAPI?.invokeAPIWithStatus<SessionInfo>(
+      "Creating API token...",
+      "signed/create-api-token",
+      {
+        name: newTokenLabel,
+      }
+    );
 
     if (!res || res.translatedError) {
       return (errorMessage =
@@ -177,6 +197,9 @@
       <p class="text-green-600 text-xl" id="success-msg">
         {successMessage}
       </p>
+      <div class="" transition:slide>
+        <ProgressApi bind:this={progressAPI} />
+      </div>
     </div>
     <div class="flex flex-col gap-2">
       <h1 class="font-bold text-4xl">List of active sessions</h1>
