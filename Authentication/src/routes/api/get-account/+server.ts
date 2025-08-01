@@ -19,7 +19,8 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     }
 
     const { username, accountId } = obj.data;
-    if ((!username && accountId == undefined) || (username && !isUsernameValid(username))) {
+    if ((accountId == null || accountId == undefined) 
+        && (!username || !isUsernameValid(username))) {
         console.log("Bad params: ", obj.data);
         return error(400);
     }
