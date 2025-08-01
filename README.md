@@ -34,7 +34,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [ ] Add Embbed support in all pages (partial)
   - [x] Galatea CDN
   - [x] Reverse Proxy (might not be necessary)
-  - [ ] auth.ane.jp.net
+  - [x] auth.ane.jp.net
 - [x] Fix Responsiveness issue in Reverse Proxy error pages (done in a previous commit)
 - [x] Finish auth.ane.jp.net (Functional, but missing features)
   - [x] Embeds
