@@ -43,6 +43,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [x] A way to create third party sessions yourself
   - [x] Ensure it wont be possible to duplicate requests on all pages
   - [x] When redirecting on the registration pathway, remove the leftover ?redir or any other search paths.
+  - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints)
   - [ ] Profile Picture support (this can wait)
 - [x] Auth Daemon (Possible Security Concerns)
   - [x] Limit Secret size (minimum should be 16 characters and maximum should be 256)
