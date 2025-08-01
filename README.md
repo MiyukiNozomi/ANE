@@ -35,6 +35,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [x] Galatea CDN
   - [x] Reverse Proxy (might not be necessary)
   - [x] auth.ane.jp.net
+  - [ ] git.ane.jp.net
 - [x] Fix Responsiveness issue in Reverse Proxy error pages (done in a previous commit)
 - [x] Finish auth.ane.jp.net (Functional, but missing features)
   - [x] Embeds
@@ -47,4 +48,16 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [x] Limit Secret size (minimum should be 16 characters and maximum should be 256)
   - [x] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)
 - [ ] Finish git.ane.jp.net
+  - [ ] ANE Authorizations
+  - [ ] Repositories
+  - [ ] Git
+    - [ ] Git Push
+    - [ ] Git Pull
+  - [ ] Contributor Support
+  - [ ] File Explorer
+    - [ ] Code Reader
+    - [ ] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
+    - [ ] Explore by commit history
+    - [ ] Branch support
+    - [ ] Visible README.mds on active directory
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)
