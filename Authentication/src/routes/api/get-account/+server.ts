@@ -19,8 +19,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     }
 
     const { username, accountId } = obj.data;
-    if ((!username && !accountId) || (username && !isUsernameValid(username)))
+    if ((!username && accountId == undefined) || (username && !isUsernameValid(username))) {
+        console.log("Bad params: ", obj.data);
         return error(400);
+    }
 
     const backendResponse = await Backend.getAccount(username ?? undefined, accountId ?? undefined);
     if (!backendResponse)
