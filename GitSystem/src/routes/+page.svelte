@@ -51,7 +51,7 @@
     background.width = background.parentElement!.clientWidth;
     background.height = background.parentElement!.clientHeight;
 
-    const starCount = Math.floor(Math.random() * 256) + 128;
+    const starCount = Math.floor(Math.random() * 128) + 100;
 
     for (let i = 0; i < starCount; i++) {
       stars.push(genStar());
