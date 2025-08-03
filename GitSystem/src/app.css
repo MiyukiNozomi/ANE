@@ -23,6 +23,18 @@
 
 @theme {
     --default-font-family: "Kumbh", var(--font-sans);
+    
+    --color-suisei-50: #F3F4F9;
+    --color-suisei-100: #E1E3ED;
+    --color-suisei-200: #C1C5D8;
+    --color-suisei-300: #9FA4C0;
+    --color-suisei-400: #7B82A7;
+    --color-suisei-500: #56608E;
+    --color-suisei-600: #3F4A76;
+    --color-suisei-700: #2E385C;
+    --color-suisei-800: #1F2741;
+    --color-suisei-900: #1A2238;
+    --color-suisei-950: #1A2238AA;
 
     --font-kumbh: "Kumbh", "sans-serif";
     --font-mplus2: "MPLUS2", "sans-serif";
