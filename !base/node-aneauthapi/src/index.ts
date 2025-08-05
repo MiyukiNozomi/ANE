@@ -5,7 +5,7 @@ import * as https from "https";
  *
  *
  */
-export namespace AuthAPI {
+namespace AuthAPI {
   export type DataOrErrorResponse<T> = {
     error?: string;
     data?: T;
@@ -190,4 +190,4 @@ export namespace AuthAPI {
   }
 }
 
-export default AuthAPI;
+export = AuthAPI;
