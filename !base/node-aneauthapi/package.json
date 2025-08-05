@@ -1,16 +1,30 @@
 {
-  "name": "node-aneauthapi",
+  "name": "ane-authapi",
   "version": "1.0.0",
-  "description": "ANE Authentication API.",
-  "main": "index.js",
+  "description": "ANE Authorization API for NodeJS",
+  "main": "./lib/index.js",
+  "module": "./lib/index.d.ts",
+  "files": [
+    "lib/"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tsc": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "prepublishOnly": "npm run tsc"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://git.ane.jp.net/u/miyuki/git/ANEAuthAPI.git"
+  },
+  "author": "Miyuki",
   "license": "Apache-2.0",
-  "packageManager": "pnpm@10.13.1",
+  "bugs": {
+    "url": "https://git.ane.jp.net/u/miyuki/projects/ANEAuthAPI"
+  },
+  "homepage": "https://auth.ane.jp.net",
+  "dependencies": {},
   "devDependencies": {
-    "@types/node": "^24.1.0"
+    "@types/node": "^22.5.5",
+    "typescript": "^5.6.2"
   }
 }

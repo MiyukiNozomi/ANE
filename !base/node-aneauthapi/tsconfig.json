@@ -1,24 +1,17 @@
 {
-  "compilerOptions": {
-    "allowArbitraryExtensions": true,
-    "declaration": true,
-    "declarationMap": true,
-    "lib": [
-      "es2023"
+    "compilerOptions": {
+        "target": "es2023",
+        "module": "commonjs",
+        "strict": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true,
+        "outDir": "./lib"
+    },
+    "include": [
+        "./src"
     ],
-    "module": "NodeNext",
-    "outDir": "./",
-    "resolveJsonModule": true,
-    "rewriteRelativeImportExtensions": true,
-    "target": "es2022",
-    "allowJs": true
-  },
-  // These may be different for your repo:
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "**/*/*.test.*",
-    "**/*.fixture.*"
-  ]
+    "exclude": [
+        "./node_modules"
+    ]
 }
