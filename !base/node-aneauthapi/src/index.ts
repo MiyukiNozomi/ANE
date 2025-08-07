@@ -188,6 +188,14 @@ namespace AuthAPI {
 
     return res.data!;
   }
+
+  /**
+   * @params requestCode The request code.
+   * @returns A formatted authorization request URL.
+   */
+  export function formatURL(requestCode: string) {
+    return `https://auth.ane.jp.net/sign/authorize/${requestCode}`;
+  }
 }
 
 export = AuthAPI;
