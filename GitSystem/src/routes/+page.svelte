@@ -16,7 +16,15 @@
     const x = Math.random() * background!.width;
     const y = Math.random() * background!.height;
 
-    const color = `${Math.random() * 55 + 200}, ${Math.random() * 55 + 200}, ${Math.random() * 55 + 200}`;
+    const color =
+      "#" +
+      [
+        Math.floor(Math.random() * 55) + 200,
+        Math.floor(Math.random() * 55) + 200,
+        Math.floor(Math.random() * 55) + 200,
+      ]
+        .map((value) => value.toString(16).padStart(2, "0"))
+        .join("");
 
     return {
       x,
@@ -51,7 +59,7 @@
     background.width = background.parentElement!.clientWidth;
     background.height = background.parentElement!.clientHeight;
 
-    const starCount = Math.floor(Math.random() * 128) + 100;
+    const starCount = Math.floor(Math.random() * 512) + 100;
 
     for (let i = 0; i < starCount; i++) {
       stars.push(genStar());
@@ -74,13 +82,7 @@
       for (let j = 0; j < starCount; j++) {
         let star = stars[j];
 
-        ctx.fillStyle = `rgb(${star.color}, 1)`;
-        ctx.fillRect(
-          star.x - star.scale / 2,
-          star.y - star.scale / 2,
-          star.scale,
-          star.scale
-        );
+        ctx.fillStyle = `${star.color}FF`;
 
         ctx.beginPath();
         ctx.arc(
@@ -92,6 +94,7 @@
         );
         ctx.fill();
 
+        star.speed = Math.max(star.speed, 1);
         star.x += star.movementVectorX * star.speed;
         star.y += star.movementVectorY * star.speed;
 
@@ -132,10 +135,10 @@
               Math.pow(other.x - star.x, 2) + Math.pow(other.y - star.y, 2)
             );
 
-            if (distance > 40) {
+            if (distance > 60) {
               continue;
             }
-            if (distance < 10) {
+            if (distance < 5) {
               other.movementVectorX *= -1;
               other.movementVectorY *= -1;
               other.speed++;
@@ -147,7 +150,9 @@
             other.movementVectorX = star.movementVectorX;
             other.movementVectorY = star.movementVectorY;
 
-            ctx.strokeStyle = `rgba(${other.color}, ${distance / 40.0})`;
+            ctx.strokeStyle =
+              other.color +
+              (Math.floor(distance / 50.0) * 255).toString(16).padStart(2, "0");
 
             ctx.beginPath();
             ctx.lineWidth = 1;
@@ -174,6 +179,15 @@
     mouseY = e.pageY;
   }}
 />
+
+<svelte:head>
+  <title>Projects</title>
+  <meta name="title" content="Projects" />
+  <meta
+    name="description"
+    content="The location of every public project I (miyuki) worked on :)"
+  />
+</svelte:head>
 
 <div class="font-mplus2 min-h-screen bg-slate-900 text-white flex flex-col">
   <div class="absolute w-full h-full z-10">

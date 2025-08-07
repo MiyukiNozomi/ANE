@@ -24,7 +24,12 @@
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
+			"@tailwindcss/oxide",
 			"esbuild"
 		]
+	},
+	"dependencies": {
+		"zod": "^4.0.14",
+		"node-aneauthapi": "file:./base/node-aneauthapi"
 	}
 }
