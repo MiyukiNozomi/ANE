@@ -16,6 +16,18 @@
     "type": "git",
     "url": "git+https://git.ane.jp.net/u/miyuki/git/ANEAuthAPI.git"
   },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      },
+      "require": {
+        "types": "./lib/index.d.ts",
+        "default": "./lib/index.js"
+      }
+    }
+  },
   "author": "Miyuki",
   "license": "Apache-2.0",
   "bugs": {
