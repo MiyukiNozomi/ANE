@@ -20,6 +20,8 @@ namespace AuthAPI {
     reqCode: string;
     realm: string;
     createdAt: number;
+    /*** This will be an empty string if sessionStatus == AWAITING_AUTHORIZATION */
+    session: string;
     sessionStatus: "AUTHORIZED" | "AWAITING_AUTHORIZATION";
   };
 
