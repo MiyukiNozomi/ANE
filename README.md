@@ -29,26 +29,15 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 # TODO
 
+- [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Add a README on all microservices
-- [x] Say the servicename on setup.sh scripts
 - [ ] Add Embbed support in all pages (partial)
-  - [x] Galatea CDN
-  - [x] Reverse Proxy (might not be necessary)
-  - [x] auth.ane.jp.net
   - [ ] git.ane.jp.net
-- [x] Fix Responsiveness issue in Reverse Proxy error pages (done in a previous commit)
-- [x] Finish auth.ane.jp.net (Functional, but missing features)
-  - [x] Embeds
-  - [x] Session Manager
-  - [x] A way to create third party sessions yourself
-  - [x] Ensure it wont be possible to duplicate requests on all pages
-  - [x] When redirecting on the registration pathway, remove the leftover ?redir or any other search paths.
+- [ ] Finish auth.ane.jp.net (Functional, but missing features)
   - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints)
   - [ ] Profile Picture support (this can wait)
-- [x] Auth Daemon (Possible Security Concerns)
-  - [x] Limit Secret size (minimum should be 16 characters and maximum should be 256)
-  - [x] Limit the name of the Realm (minimum should be 3 characters and maximum should be 128)
 - [ ] Finish git.ane.jp.net
+  - [ ] Optimize landing page background code
   - [ ] ANE Authorizations
   - [ ] Repositories
   - [ ] Git
