@@ -1,4 +1,6 @@
-# MayhtraORM
+# MayhtraORM (..subsided)
+
+## I'm going to work this on another time, and move this to another repository in the future.
 
 A SQLite3 abstraction layer for Node JS
 

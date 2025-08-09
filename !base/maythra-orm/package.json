@@ -7,10 +7,14 @@
   "files": [
     "lib/"
   ],
+  "bin": {
+    "maythra": "./lib/maythra-cli.js"
+  },
   "scripts": {
     "tsc": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
-    "prepublishOnly": "npm run tsc"
+    "prepublishOnly": "npm run tsc",
+    "maythra": "node ./lib/maythra-cli.js"
   },
   "repository": {
     "type": "git",
