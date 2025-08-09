@@ -1,4 +1,4 @@
-import { IS_MAYTHRA_DEBUG } from "../constants";
+import { IS_MAYTHRA_DEBUG } from "../registry";
 import { InternalOperationResult, SchemaManagerImpl } from "../drivers/idriver";
 import { Column, MaythraException, Table } from "../instrumentation";
 

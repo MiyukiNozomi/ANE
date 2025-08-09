@@ -38,7 +38,7 @@ export type ${tableName[0].toUpperCase() + tableName.substring(1)} = {
     ${tableSchema.columns
       .map(
         (v) =>
-          `${v.name}${v.notNull ? "?" : ""}: ${maythraTypeToTypeScript(
+          `${v.name}${v.nullable ? "?" : ""}: ${maythraTypeToTypeScript(
             v.type
           )},`
       )

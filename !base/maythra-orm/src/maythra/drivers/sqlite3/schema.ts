@@ -1,5 +1,5 @@
 import { SQLite3Database } from ".";
-import { IS_MAYTHRA_DEBUG } from "../../constants";
+import { IS_MAYTHRA_DEBUG } from "../../registry";
 import { Column, ColumnType } from "../../instrumentation";
 import * as IDriver from "../idriver";
 
@@ -40,7 +40,7 @@ export class SQLite3SchemaManager extends IDriver.SchemaManagerImpl<SQLite3Datab
       stmt += ` PRIMARY KEY`;
     }
 
-    if (column.flags.notNull) {
+    if (!column.flags.nullable) {
       stmt += ` NOT NULL`;
     }
 
@@ -133,7 +133,7 @@ export class SQLite3SchemaManager extends IDriver.SchemaManagerImpl<SQLite3Datab
             row.pk == 1
               ? "PRIMARY_KEY"
               : undefined /** ForeignKeyOptions here is a TODO */,
-          notNull: row.notnull == 1 ? true : false,
+          nullable: row.notnull == 0 ? true : false,
         })
       );
     }

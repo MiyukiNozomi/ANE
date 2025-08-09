@@ -1,4 +1,4 @@
-import { IS_MAYTHRA_DEBUG } from "./constants";
+import { IS_MAYTHRA_DEBUG } from "./registry";
 
 export type ForeignKeyOptions = {
   tableName: string;
@@ -9,7 +9,7 @@ export type ForeignKeyOptions = {
 export type ColumnFlags = {
   keyType?: "PRIMARY_KEY" | ForeignKeyOptions;
   defaultValue?: string;
-  notNull?: boolean;
+  nullable?: boolean;
 };
 
 /**
@@ -53,7 +53,7 @@ export class Column {
     this.flags = {
       defaultValue: undefined,
       keyType: undefined,
-      notNull: false,
+      nullable: false,
     };
 
     optionalFlags = optionalFlags ?? {};

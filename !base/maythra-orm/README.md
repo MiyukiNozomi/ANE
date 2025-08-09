@@ -1,6 +1,10 @@
-# MayhtraORM (..subsided)
+# MayhtraORM
 
-## I'm going to work this on another time, and move this to another repository in the future.
+## -- this is going to take a while to be usable!!!! --
+
+## I'm serious, this project is much more work than i had originally anticipated, but that doesn't means i wont code it.
+
+## Currently, i'm going to focus on other microservices before finishing this.
 
 A SQLite3 abstraction layer for Node JS
 

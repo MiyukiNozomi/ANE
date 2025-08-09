@@ -14,7 +14,7 @@
     "tsc": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch",
     "prepublishOnly": "npm run tsc",
-    "maythra": "node ./lib/maythra-cli.js"
+    "test": "maythra"
   },
   "repository": {
     "type": "git",
