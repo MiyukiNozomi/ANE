@@ -25,11 +25,12 @@
 	"pnpm": {
 		"onlyBuiltDependencies": [
 			"@tailwindcss/oxide",
-			"esbuild"
+			"esbuild",
+			"sqlite3"
 		]
 	},
 	"dependencies": {
-		"zod": "^4.0.14",
-		"node-aneauthapi": "file:./base/node-aneauthapi"
+		"node-aneauthapi": "file:./base/node-aneauthapi",
+		"zod": "^4.0.14"
 	}
 }
