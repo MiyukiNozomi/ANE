@@ -179,7 +179,7 @@ namespace AuthAPI {
    * @returns The account holder of said username.
    */
   export async function getAccountByName(
-    username: number
+    username: string
   ): Promise<AccountInfo | null> {
     const res = await invokeAuthAPI<DataOrErrorResponse<AccountInfo>>(
       "get-account",
