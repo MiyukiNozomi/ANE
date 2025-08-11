@@ -17,7 +17,7 @@
     <Header />
     <div class="h-fullflex flex-col text-center md:text-start relative">
       <p class="text-4xl font-mplus2 p-16 md:p-24">
-        Constructing crazy ideas into projects since 2017!
+        Work In Progress microservice
       </p>
     </div>
   </div>

@@ -23,6 +23,7 @@ setInterval(() => {
         " ",
         dev ? info["sharedSecret"] : "<truncated (production build>"
       );
+      delete AuthorizationList[key];
     }
   }
 }, 400);

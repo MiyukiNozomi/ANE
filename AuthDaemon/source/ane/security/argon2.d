@@ -6,8 +6,6 @@ import std.random : uniform;
 
 import core.stdc.string : strlen;
 
-pragma(lib, "argon2");
-
 private alias uint32_t = uint;
 
 const SALT_SIZE = 16;

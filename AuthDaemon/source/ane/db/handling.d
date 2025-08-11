@@ -12,13 +12,6 @@ import core.stdc.string : strlen;
 import etc.c.sqlite3;
 import ane.db.statements;
 
-pragma(lib, "sqlite3");
-
-version (Windows)
-{
-    pragma(error, "Fuck off!");
-}
-
 class SQLite3Handler
 {
     package sqlite3* sqliteDb;

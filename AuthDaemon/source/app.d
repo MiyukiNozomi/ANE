@@ -3,6 +3,16 @@ import std.stdio;
 import ane.db;
 import ane.http.server;
 
+pragma(lib, "sqlite3");
+pragma(lib, "argon2");
+
+pragma(lib, "idiotic-foo-i-hate-this-system");
+
+version (Windows)
+{
+    pragma(error, "Fuck off!");
+}
+
 void main(string[] args)
 {
     auto db = new Database();
