@@ -16,17 +16,20 @@ void requestAuthorizationEndpoint(Database db, HttpServerResponse response, Http
 
     string sharedSecret;
     string realm;
+    string redirectURL;
 
     validateParameters(message, (json) {
         sharedSecret = json.getSharedSecretSafe();
         realm = json.getRealmSafe();
+
+        redirectURL = json.getStringSafe("redirect-url", false);
     });
 
     auto rq = getAuthorizationRequest(db, sharedSecret);
     if (rq !is null)
         throw new HttpException(400, "重複申請 「Duplicate Requisition」");
 
-    string id = createAuthorizationRequest(db, sharedSecret, realm);
+    string id = createAuthorizationRequest(db, sharedSecret, realm, redirectURL);
 
     response.jsonMessage([
         "request-code": id
@@ -64,6 +67,12 @@ void getAuthorizationStatusEndpoint(Database db, HttpServerResponse response, Ht
         "reqCode": requesition.authorizationRequestCode,
         "realm": requesition.realm
     ];
+
+    if (requesition.redirectURLOrNull != null &&
+        requesition.redirectURLOrNull.length > 0)
+        resJson[
+        "redirectURL"
+    ] = requesition.redirectURLOrNull;
 
     resJson["createdAt"] = requesition.createdAt;
 

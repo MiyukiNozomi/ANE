@@ -1,0 +1,1 @@
+ALTER TABLE thirdPartySessionRequest ADD COLUMN redirectURL TEXT DEFAULT NULL;

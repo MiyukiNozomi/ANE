@@ -44,13 +44,15 @@ export namespace Backend {
 
   export async function newAuthorizationRequest(
     sharedSecret: string,
-    realm: string
+    realm: string,
+    redirectURL?: string
   ) {
     return await doAPIEndpoint<{ "request-code": string }>(
       "/authorizations/new",
       {
         "shared-secret": sharedSecret,
         realm,
+        "redirect-url": redirectURL,
       }
     );
   }

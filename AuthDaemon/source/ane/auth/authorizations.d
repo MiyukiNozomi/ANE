@@ -26,12 +26,15 @@ class ThirdPartySessionRequest
 
     const int createdAt;
 
+    const string redirectURLOrNull;
+
     this(
         string id,
         string authReqCode,
         string realm,
         string sessionOrNull,
-        int createdAt
+        int createdAt,
+        string redirectURLOrNull
     )
     {
         this.id = id;
@@ -39,6 +42,7 @@ class ThirdPartySessionRequest
         this.realm = realm;
         this.sessionIDorNull = sessionOrNull;
         this.createdAt = createdAt;
+        this.redirectURLOrNull = redirectURLOrNull;
     }
 
     JSONValue toJSON()
@@ -53,6 +57,9 @@ class ThirdPartySessionRequest
 
         v["sessionId"] = this.sessionIDorNull == null || this.sessionIDorNull.length == 0 ?
             null : this.sessionIDorNull;
+
+        v["redirectURL"] = this.redirectURLOrNull == null || this.redirectURLOrNull.length == 0 ?
+            null : this.redirectURLOrNull;
 
         return v;
     }
@@ -90,7 +97,8 @@ ThirdPartySessionRequest getAuthorizationRequest(Database db, string secret)
             authorizationRequestCode,
             realm,
             session_id,
-            created_at
+            created_at,
+            redirectURL
           FROM thirdPartySessionRequest WHERE id = ?");
 
     stmt.bindText(1, secret);
@@ -102,6 +110,7 @@ ThirdPartySessionRequest getAuthorizationRequest(Database db, string secret)
     const realm = stmt.columnString(1);
     const sessionId = stmt.columnString(2);
     const createdAt = stmt.columnInt(3);
+    const redirectURL = stmt.columnString(4);
     SysTime currentTime = Clock.currTime();
 
     if (createdAt - currentTime.toUnixTime() > MaxRequestLifespan)
@@ -116,7 +125,8 @@ ThirdPartySessionRequest getAuthorizationRequest(Database db, string secret)
         authorizationRequestCode,
         realm,
         sessionId,
-        createdAt
+        createdAt,
+        redirectURL
     );
 }
 
@@ -129,7 +139,8 @@ ThirdPartySessionRequest getAuthorizationRequestByCode(Database db, string autho
             id,
             realm,
             session_id,
-            created_at
+            created_at,
+            redirectURL
           FROM thirdPartySessionRequest WHERE authorizationRequestCode = ?");
 
     stmt.bindText(1, authorizationRequestCode);
@@ -141,6 +152,7 @@ ThirdPartySessionRequest getAuthorizationRequestByCode(Database db, string autho
     const realm = stmt.columnString(1);
     const sessionId = stmt.columnString(2);
     const createdAt = stmt.columnInt(3);
+    const redirectURL = stmt.columnString(4);
     SysTime currentTime = Clock.currTime();
 
     if (createdAt - currentTime.toUnixTime() > MaxRequestLifespan)
@@ -155,11 +167,12 @@ ThirdPartySessionRequest getAuthorizationRequestByCode(Database db, string autho
         authorizationRequestCode,
         realm,
         sessionId,
-        createdAt
+        createdAt,
+        redirectURL
     );
 }
 
-string createAuthorizationRequest(Database db, string secret, string realm)
+string createAuthorizationRequest(Database db, string secret, string realm, string redirectURL)
 {
     clearExpiredAuthorizationRequests(db);
     const requestCode = genAuthorizationRequestCode;
@@ -178,12 +191,14 @@ string createAuthorizationRequest(Database db, string secret, string realm)
         "INSERT INTO thirdPartySessionRequest (
             id,
             authorizationRequestCode,
-            realm
-        ) VALUES (?, ?, ?)");
+            realm,
+            redirectURL
+        ) VALUES (?, ?, ?, ?)");
 
     stmt.bindText(1, secret);
     stmt.bindText(2, requestCode);
     stmt.bindText(3, realm);
+    stmt.bindTextOrNull(4, redirectURL);
 
     stmt.stepAndExpect();
 

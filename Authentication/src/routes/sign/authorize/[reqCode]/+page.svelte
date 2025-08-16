@@ -138,7 +138,13 @@
           {:else if currentStep == Steps.GRANTED}
             <div transition:slide class="flex flex-col gap-2">
               <h1>Permission granted, {accountInfo?.displayName}!</h1>
-              <p>You may now close this tab, have a nice day!</p>
+              {#if data.reqInfo?.redirectURL}
+                <p>
+                  You may now return to '{data.reqInfo.realm}'. Have a nice day, {accountInfo?.displayName}!
+                </p>
+              {:else}
+                <p>You may now close this tab, have a nice day!</p>
+              {/if}
               <p>
                 On a side note, This authorization will last for around a day.
                 If you want to remove it do it from your <a
@@ -176,6 +182,14 @@
               <button
                 class="bg-red-600 px-8 py-2 text-lg ml-auto"
                 onclick={onAuthorize}>Authorize</button
+              >
+            {/if}
+            {#if currentStep == Steps.GRANTED && data.reqInfo?.redirectURL}
+              <button
+                class="bg-red-600 px-8 py-2 text-lg ml-auto"
+                onclick={() =>
+                  (window.location.href = data.reqInfo.redirectURL!)}
+                >Return to Service</button
               >
             {/if}
           </div>
