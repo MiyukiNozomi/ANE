@@ -1,6 +1,6 @@
 {
   "name": "ane-authapi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ANE Authorization API for NodeJS",
   "main": "./lib/index.js",
   "module": "./lib/index.d.ts",

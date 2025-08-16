@@ -14,6 +14,7 @@ namespace AuthAPI {
     sharedSecret: string;
     realm: string;
     "request-code": string;
+    redirectURL?: string;
   };
 
   export type AuthorizationRequestStatus = {
@@ -23,6 +24,7 @@ namespace AuthAPI {
     /*** This will be an empty string if sessionStatus == AWAITING_AUTHORIZATION */
     session: string;
     sessionStatus: "AUTHORIZED" | "AWAITING_AUTHORIZATION";
+    redirectURL?: string;
   };
 
   export type AccountInfo = {
@@ -89,7 +91,10 @@ namespace AuthAPI {
    * @param realm the name of the application
    * @returns the authorization token used by the user
    */
-  export async function createAuthorizationRequest(realm: string) {
+  export async function createAuthorizationRequest(
+    realm: string,
+    redirectURL?: string
+  ) {
     const sharedSecret = crypto.randomUUID();
 
     const res = await invokeAuthAPI<{ "request-code": string }>(
@@ -97,6 +102,7 @@ namespace AuthAPI {
       {
         sharedSecret,
         realm,
+        redirectURL,
       }
     );
 
@@ -106,6 +112,7 @@ namespace AuthAPI {
       sharedSecret,
       realm,
       "request-code": res["request-code"],
+      redirectURL,
     } satisfies AuthorizationRequest;
   }
 
