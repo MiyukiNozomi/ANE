@@ -6,7 +6,7 @@
     {
       pathname: "/api/authorizations/new",
       description: `Creates a new Authorization Request and returns the authorization token used by the user. The realm is the name of the application.
-It can also optionally include a URL to redirect the user back to if needed.`,
+It can also optionally include a URL to redirect the user back to if needed (if you would like to include your request-code in the redirectURL, use [reqCode] as a placeholder.).`,
       inputParams: {
         sharedSecret: "String(min 16, max 256)",
         realm: "String(min 3, max 128)",

@@ -20,6 +20,7 @@ const requestData = z.object({
 export const POST: RequestHandler = async ({ request }) => {
   const obj = await requestData.safeParse(await request.json());
   if (!obj.success) {
+    console.log(obj.error.message);
     return error(400);
   }
 

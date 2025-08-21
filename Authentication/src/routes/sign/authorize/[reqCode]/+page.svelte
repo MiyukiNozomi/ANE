@@ -188,8 +188,10 @@
               <button
                 class="bg-red-600 px-8 py-2 text-lg ml-auto"
                 onclick={() =>
-                  (window.location.href = data.reqInfo.redirectURL!)}
-                >Return to Service</button
+                  (window.location.href = data.reqInfo.redirectURL!.replace(
+                    "[reqCode]",
+                    data.reqInfo.reqCode!
+                  ))}>Return to Service</button
               >
             {/if}
           </div>
