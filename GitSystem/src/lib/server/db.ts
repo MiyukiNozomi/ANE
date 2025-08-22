@@ -1,7 +1,10 @@
-import { PrismaBetterSQLite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "@prisma/client/extension";
+import { dev } from "$app/environment";
+import Database from "better-sqlite3";
+import { mkdirSync } from "fs";
+import path from "path";
 
-const adapter = new PrismaBetterSQLite3({
-  url: process.env["DB_FILE_NAME"],
-});
-export const db = new PrismaClient({ adapter });
+export const DOMAIN = dev ? "http://localhost:5173" : "https://git.ane.jp.net";
+export const ACTIVE_FOLDER = dev ? "./debug-data" : "/home/AZKi/gitSystem";
+
+mkdirSync(ACTIVE_FOLDER, { recursive: true });
+export const db = new Database(path.join(ACTIVE_FOLDER, "database.db"));

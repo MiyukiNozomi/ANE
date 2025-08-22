@@ -33,6 +33,9 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [ ] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
   - [ ] git.ane.jp.net
+- [ ] Galatea Tweaks
+  - [ ] Ability to get images but in a resized mode.
+  - [ ] Consider rewrite to not rely in NodeJS.
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
   - [ ] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
   - [ ] Bug in registration page (incorrect passwords.. matched? retest this later)
@@ -40,6 +43,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Profile Picture support (this can wait)
 - [ ] Finish git.ane.jp.net
   - [ ] Optimize landing page background code
+  - [ ] Move compass images to galatea (first, do the task in galatea)
   - [ ] ANE Authorizations
   - [ ] Repositories
   - [ ] Git

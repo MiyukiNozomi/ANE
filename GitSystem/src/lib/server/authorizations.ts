@@ -5,6 +5,7 @@ export let AuthorizationList: Record<
   string,
   AuthAPI.AuthorizationRequest & {
     creationDate: number;
+    urlToReturnTo: string;
   }
 > = {};
 

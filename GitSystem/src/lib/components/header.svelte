@@ -1,45 +1,80 @@
 <script lang="ts">
   import { getAccountInfo } from "$lib/client-account";
-  import { onMount } from "svelte";
-  import AuthorizationPopup from "./authorizationPopup.svelte";
 
-  let authorizationPopup: AuthorizationPopup;
   const accountInfo = getAccountInfo();
 </script>
 
-<AuthorizationPopup bind:this={authorizationPopup} />
-
 <div
-  class="relative flex flex-row items-center font-kumbh pl-8 bg-sky-950 text-center md:text-start z-40"
+  class="relative z-50 w-full top-[-0.85rem] flex font-baskervville overflow-hidden"
 >
-<div class="">
-  <a href="/">
-    <img
-      class="w-36"
-      src="https://galatea.ane.jp.net/dl/images/logos/ane-git-logo.webp"
-      alt="Logo"
-    />
-  </a>
-  </div>
+  <div
+    class="absolute top-0 left-0 bg-black w-full h-2/4
+    flex flex-row border-orange-200 border-b-1 border-t-1 border-solid"
+  >
+    <div
+      class="hidden md:flex absolute mr-auto w-18 h-18 left-[-2.25rem] border-orange-200 -rotate-36 border-r-black border-1 bg-black rounded-full"
+    ></div>
+    <div
+      class="hidden md:flex absolute mr-auto w-18 h-18 right-[-2.25rem] border-orange-200 rotate-36 border-l-black border-1 bg-black rounded-full"
+    ></div>
 
-  <div class="ml-auto bg-linear-to-bl from-suisei-900 via-suisei-900 to-[#00000000] to-50% h-full w-24">
-
-  </div>
-
-  <div class="flex flex-row font-ibmplex items-center p-8 py-6 bg-suisei-900">
-    {#if accountInfo}
-      <a class="text-xl hover:underline" href="/u/{accountInfo.name}"
-        >{accountInfo.displayName}
-      </a>
-    {:else}
-      <button
-        class="text-xl hover:underline"
-        onclick={() => {
-          authorizationPopup.showPanel();
-        }}
+    <div
+      class="w-full h-2/4 mt-[1.1rem] flex flex-row items-start text-orange-200"
+    >
+      <!-- left side of header-->
+      <div
+        class="relative z-20 flex flex-row justify-start md:justify-center w-2/4 items-center px-4 text-xs"
       >
-        Sign In
-      </button>
-    {/if}
+        {#if accountInfo}
+          <a class="hover:underline" href="/u/{accountInfo.name}"
+            >{accountInfo.displayName}
+          </a>
+        {:else}
+          <a class="hover:underline" href="/sign/redirect"> Sign In </a>
+        {/if}
+      </div>
+      <!-- right side of header-->
+      <div
+        class="flex flex-row justify-end md:justify-center w-2/4 items-center px-4 text-xs"
+      >
+        <a class="hover:underline m" href="/search">Search </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="flex mx-auto flex-row items-center p-[1px] py-2 bg-orange-200 clip-banner"
+  >
+    <div
+      class="relative flex mx-auto z-40 flex-row items-center p-3 px-4 bg-zinc-900 clip-banner"
+    >
+      <div
+        class="absolute top-1/2 left-0 w-full h-px bg-orange-200 z-50 transform -translate-y-1/2"
+      ></div>
+      <div
+        class="relative z-50 flex mx-auto flex-row items-center p-[1px] bg-orange-200 clip-banner"
+      >
+        <a
+          href="/"
+          class="bg-suisei-700 hover:bg-suisei-900 transition-colors text-orange-200
+          text-xl text-center py-2 px-8 clip-banner"
+        >
+          <img class="h-11" alt="logo" src="/golden-favicon.png" />
+        </a>
+      </div>
+    </div>
   </div>
 </div>
+
+<!--
+
+    <div class="flex flex-row font-mplus2 items-center p-10 py-6 bg-suisei-950">
+      {#if accountInfo}
+        <a class="text-xl hover:underline" href="/u/{accountInfo.name}"
+          >{accountInfo.displayName}
+        </a>
+      {:else}
+        <a class="text-xl hover:underline" href="/sign/redirect"> Sign In </a>
+      {/if}
+    </div>
+-->

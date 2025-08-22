@@ -1,10 +1,10 @@
 <div
-  class="flex items-center flex-col md:flex-row gap-4 font-kumbh p-8 mt-auto bg-zinc-950 text-center md:text-start"
+  class="flex items-center flex-col md:flex-row gap-4 font-kumbh p-8 mt-auto bg-indigo-950 text-center md:text-start"
 >
   <a href="https://ane.jp.net">
     <img
       class="w-44"
-      src="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
+      src="https://galatea.ane.jp.net/dl/images/logos/miyuki-studio.webp"
       alt="ANE logo"
     /></a
   >
