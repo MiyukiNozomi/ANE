@@ -34,6 +34,8 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [ ] Add Embbed support in all pages (partial)
   - [ ] git.ane.jp.net
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
+  - [ ] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
+  - [ ] Bug in registration page (incorrect passwords.. matched? retest this later)
   - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints)
   - [ ] Profile Picture support (this can wait)
 - [ ] Finish git.ane.jp.net

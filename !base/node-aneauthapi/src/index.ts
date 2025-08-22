@@ -89,6 +89,7 @@ namespace AuthAPI {
    * https://auth.ane.jp.net/sign/authorize/<insert request-code here>
    *
    * @param realm the name of the application
+   * @param redirectURL The URL to redirect the user back to.
    * @returns the authorization token used by the user
    */
   export async function createAuthorizationRequest(
