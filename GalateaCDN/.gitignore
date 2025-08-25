@@ -1,3 +1,4 @@
 *.js
 pnpm-lock.yml
 pnpm-workspace.yaml
+bin/
