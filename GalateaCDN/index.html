@@ -26,13 +26,15 @@
 
     header {
       background-color: #d7514d;
-      border-bottom: 1em solid #a43f3b;
+      border-top: 4px solid #a43f3b;
+      border-bottom: 4px solid #a43f3b;
       color: white;
       font-weight: bold;
 
       display: flex;
       align-items: center;
       gap: 1em;
+      font-size: 0.8em;
     }
 
     header h1,
@@ -42,7 +44,8 @@
     }
 
     header .logo {
-      padding: 1em 1em;
+      display: flex;
+      align-items: center;
       background-color: white;
     }
 
@@ -57,11 +60,48 @@
       color: #ff2200;
     }
 
+    .btn {
+      border-radius: 0.5em;
+      border: 2px solid #ff2200;
+      background-color: #010101;
+      padding: 0.5em 1em;
+      color: white;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background-color: #a43f3b;
+    }
+
     body,
     html {
-      background-color: rgb(6, 6, 6);
+      background: linear-gradient(45deg, #04030c, #252b9e);
       font-family: Kumbh;
       margin: 0;
+    }
+
+    body{
+       display: flex;
+       flex-direction: column;
+       min-height: 100vh;
+    }
+
+    .footer {
+      margin-top: auto; 
+
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      
+      padding: 4em 2em;
+      border-top: 4px solid #a43f3b;
+      background: linear-gradient(180deg, #010101, #2e0404, #010101);
+    }
+
+    @media screen and (orientation: portrait) {
+      .footer {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -69,28 +109,23 @@
 <body>
   <header>
     <div class="logo">
-      <img src="/favicon.ico" style="width: 4em; height: 4em" alt="" />
+      <img src="/favicon.ico" style="padding: 0.5rem; width: 4em; height: 4em" alt="" />
     </div>
     <div class="">
       <h1>Galatea Storage</h1>
-      <p>Where public files are stored</p>
+      <p>The storage area of ANE.</p>
     </div>
   </header>
   <p class="content">
-    No file list? yeah, i would rather not waste brandwith with this for a
-    silly file list. if you do end up needing something from here that you
-    couldn't find before, send me an email at
-    <a href="email:miyuki@ane.jp.net">miyuki@ane.jp.net</a>
+    A special place where all public files in my system are kept. send me an email at
+    <a href="email:miyuki@ane.jp.net">miyuki@ane.jp.net</a> if you were looking for something I've might have removed.
   </p>
   <p class="content">
-    <strong>Sike!</strong>
-    <a href="/dl/" style="
-          background-color: #a43f3b;
-          padding: 0.5em 1em;
-          color: white;
-          text-decoration: none;
-        ">Open file list</a>
+    <a href="/dl/" class="btn">See file list</a>
   </p>
+  <div class="footer">
+    <a href="https://ane.jp.net"><img src="/dl/images/logos/ane-logo-final.webp" alt="ANE logo" style="height: 4.5em"></a>
+  </div>
 </body>
 
 </html>
