@@ -22,6 +22,11 @@ async function replyImageResized(
   width: number,
   height: number
 ) {
+  if (width > 6090 || height > 6090 || width < 0 || height < 0) {
+    res.writeHead(400);
+    return res.end();
+  }
+
   const finalImage = await sharp(image)
     .webp({
       quality: 50,
