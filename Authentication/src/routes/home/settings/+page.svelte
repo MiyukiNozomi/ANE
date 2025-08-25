@@ -5,6 +5,7 @@
     invalidateSession,
     MAX_USERNAME_LENGTH,
     MIN_USERNAME_LENGTH,
+    setAccountInfo,
   } from "$lib/client-api";
   import Input from "$lib/components/input.svelte";
   import { error } from "@sveltejs/kit";
@@ -63,6 +64,8 @@
       );
     }
     setSuccessful("Successfully updated your display name!");
+    accountInfo!.displayName = newDisplayName;
+    setAccountInfo(accountInfo!);
   }
 </script>
 

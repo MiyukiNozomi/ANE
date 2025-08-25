@@ -10,6 +10,7 @@
     MAX_USERNAME_LENGTH,
     MIN_PASSWORD_LENGTH,
     MIN_USERNAME_LENGTH,
+    setAccountInfo,
   } from "$lib/client-api";
   import type { UserSessionInfo, AccountInfo } from "$lib/server/backend-types";
   import { slide } from "svelte/transition";
@@ -109,6 +110,9 @@
       }
       case Steps.ACCOUNT_DOES_NOT_EXIST: {
         if (isPasswordInvalid()) return;
+        if (repeatPassword != password)
+          return (errorMessage = "Passwords don't match!");
+
         const accountSession =
           await progressAPI?.invokeAPIWithStatus<UserSessionInfo>(
             "Creating account...",
@@ -198,7 +202,7 @@
       );
 
     document.cookie = `AuthToken=${authSession.sessionToken}; SameSite=Lax; Path=/`;
-    document.cookie = `AccountInfo=${btoa(JSON.stringify(authSession.accountInfo))}; SameSite=Lax; Path=/`;
+    setAccountInfo(authSession.accountInfo);
   }
 
   if (data.isUserSessionValid && accountInfo != null) {

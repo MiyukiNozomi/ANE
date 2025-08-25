@@ -37,10 +37,15 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Ability to get images but in a resized mode.
   - [ ] Consider rewrite to not rely in NodeJS.
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
-  - [ ] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
-  - [ ] Bug in registration page (incorrect passwords.. matched? retest this later)
-  - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints)
+
+  - [x] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
+
+  - [x] Bug in registration page (incorrect passwords.. matched? retest this later) Yes, this is a real bug, idiot!
+
+  - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints) (better to do this at reverse proxy level, honestly.)
+
   - [ ] Profile Picture support (this can wait)
+
 - [ ] Finish git.ane.jp.net
   - [ ] Optimize landing page background code
   - [ ] Move compass images to galatea (first, do the task in galatea)
