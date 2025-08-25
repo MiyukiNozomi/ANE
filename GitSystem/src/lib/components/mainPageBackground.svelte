@@ -16,7 +16,7 @@
   function startBg() {
     if (bgStarted) return;
     bgStarted = true;
-    if (!canvas) return console.error("Missing canvas!");
+    if (!canvas) return;
     let ctx = canvas.getContext("2d");
 
     // background
@@ -157,9 +157,9 @@
         class="flex gap-8 justify-center items-center font-baskervville text-orange-300"
       >
         <h2 class="font-semibold flex items-center gap-4 text-xs md:text-xl">
-          <span style="animation: pulse 1s ease-in-out infinite;">✧</span>
-          <span style="animation: pulse 1s linear infinite;">✧</span>
-          <span style="animation: pulse 1s linear infinite;">✧</span>
+          <span style="animation: pulse 2s linear infinite;">✧</span>
+          <span style="animation: pulse 2s linear infinite;">✧</span>
+          <span style="animation: pulse 2s linear infinite;">✧</span>
         </h2>
         <h1 class="text-sm md:text-3xl flex gap-2 justify-center">
           {#each "NOW  LOADING".split("") as ch, i}
@@ -170,9 +170,9 @@
           {/each}
         </h1>
         <h2 class="font-semibold flex items-center gap-4 text-xs md:text-xl">
-          <span style="animation: pulse 1s ease-in-out infinite;">✧</span>
-          <span style="animation: pulse 1s linear infinite;">✧</span>
-          <span style="animation: pulse 1s linear infinite;">✧</span>
+          <span style="animation: pulse 2s linear infinite;">✧</span>
+          <span style="animation: pulse 2s linear infinite;">✧</span>
+          <span style="animation: pulse 2s linear infinite;">✧</span>
         </h2>
       </div>
     </div>
