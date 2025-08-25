@@ -4,47 +4,9 @@ import http from "http";
 import https from "https";
 import { DomainName, SSLConfig } from "./constants";
 import { redirectTraffic } from "./redirect";
-import { CORSCheck, gatewayError } from "./responses";
+import { CORSCheck, gatewayError, writeGatewayError } from "./responses";
 import { log } from "./logging";
-
-let mappings = new Map<string, number>();
-export let NoCORSCheckList = new Array<string>();
-
-{
-  const confLines = readFileSync("./rules.conf")
-    .toString()
-    .split("\n")
-    .filter((v) => v.trim().length > 0 && !v.trim().startsWith("#"));
-  for (let line of confLines) {
-    console.log(line);
-    let ii = line.indexOf("=");
-    let domain = line.substring(0, ii);
-    let values = line.substring(ii + 1);
-    let valuesArray = values.split(",");
-
-    let port = parseInt(valuesArray[0]);
-
-    if (isNaN(port))
-      throw (
-        "You moron! port was NOT a number for '" +
-        domain +
-        "': " +
-        line.substring(ii + 1) +
-        "recheck configuration!"
-      );
-
-    if (values.includes("no-cors-check")) {
-      log(
-        "Mapping for " +
-          domain +
-          " has CORS protection disabled, this isn't critical, but take note."
-      );
-      NoCORSCheckList.push(domain);
-    }
-    mappings.set(domain, port);
-  }
-  log("Loaded mappings: " + confLines);
-}
+import { MaintenanceMode, mappings } from "./config";
 
 export const HOUR_IN_MILLISECONDS = 3600000;
 export const MAX_REQUISITIONS = 200;
@@ -112,6 +74,18 @@ const handleFunc = async function (
       res.writeHead(429);
       return res.end();
     }
+  }
+
+  // extra feature...
+  if (MaintenanceMode) {
+    if (req.method?.toLowerCase() != "get") {
+      res.writeHead(503, { "content-type": "application/json" });
+      res.write(JSON.stringify({ message: "Maintenance mode." }));
+    } else {
+      res.writeHead(503, { "content-type": "text/html" });
+      res.write(readFileSync("./maintenance.html"));
+    }
+    return res.end();
   }
 
   let targetHost = req.headers.host;

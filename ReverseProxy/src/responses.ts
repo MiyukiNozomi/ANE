@@ -2,8 +2,8 @@ import { randomUUID } from "crypto";
 import { readFileSync } from "fs";
 import http from "http";
 import { DomainName } from "./constants";
-import { NoCORSCheckList } from ".";
 import { error } from "./logging";
+import { NoCORSCheckList } from "./config";
 
 export function CORSCheck(
   res: http.ServerResponse,
@@ -45,13 +45,19 @@ export function writeGatewayError(
   code: number,
   message: string,
   req: http.IncomingMessage,
-  res: http.ServerResponse
+  res: http.ServerResponse,
+
+  containRayId = true
 ) {
   const isAPIEndpoint = (req.method ?? "post").toLowerCase() != "get";
 
-  const rayid = replaceAll(randomUUID(), "-", "");
-  error("[response-error] RayID for error is " + rayid);
-  error("[response-error] Message is " + message);
+  let rayid = "<not allowed for response>";
+  if (containRayId) {
+    rayid = replaceAll(randomUUID(), "-", "");
+    error(
+      "[response-error] RayID for error is " + rayid + " message is " + message
+    );
+  }
 
   if (isAPIEndpoint) {
     res.write(
