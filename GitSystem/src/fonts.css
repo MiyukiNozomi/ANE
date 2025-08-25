@@ -1,0 +1,30 @@
+@font-face {
+  font-family: "Kumbh";
+  font-style: normal;
+  font-weight: normal;
+  src: url(https://galatea.ane.jp.net/dl/fonts/kumbh_sans.ttf)
+    format("truetype");
+}
+
+@font-face {
+  font-family: "MPLUS2";
+  font-style: normal;
+  font-weight: normal;
+  src: url(https://galatea.ane.jp.net/dl/fonts/MPLUS2.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: "IBMPlex";
+  font-style: normal;
+  font-weight: normal;
+  src: url(https://galatea.ane.jp.net/dl/fonts/IBMPlexMono.ttf)
+    format("truetype");
+}
+
+@font-face {
+  font-family: "baskervville";
+  font-style: normal;
+  font-weight: normal;
+  src: url(https://galatea.ane.jp.net/dl/fonts/baskervville.ttf)
+    format("truetype");
+}

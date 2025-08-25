@@ -59,7 +59,11 @@
           class="bg-suisei-700 hover:bg-suisei-900 transition-colors text-orange-200
           text-xl text-center py-2 px-8 clip-banner"
         >
-          <img class="h-11" alt="logo" src="/golden-favicon.png" />
+          <img
+            class="h-11 animate-header-logo-spin [animation-play-state:paused] hover:[animation-play-state:running] duration-1000 transition-all ease-out"
+            alt="logo"
+            src="/golden-favicon.png"
+          />
         </a>
       </div>
     </div>

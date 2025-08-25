@@ -1,5 +1,5 @@
 <div
-  class="flex items-center flex-col md:flex-row gap-4 font-kumbh p-8 mt-auto bg-indigo-950 text-center md:text-start"
+  class="flex items-center flex-col md:flex-row gap-4 font-kumbh p-8 mt-auto bg-zinc-950 border-t-orange-200 border-t-1 text-center md:text-start"
 >
   <a href="https://ane.jp.net">
     <img
