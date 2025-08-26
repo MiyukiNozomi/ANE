@@ -1,36 +1,27 @@
-import {
-  appendFileSync,
-  existsSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "fs";
-import { ErrorsFile, LogFile } from "./constants";
+import { appendFileSync } from "fs";
+import { ERRORS_FILE } from "./constants";
 
-if (existsSync(LogFile)) {
-  const f = readFileSync(LogFile).toString().split("\n");
-  log("[WARN] Cleanup process initiated.");
+/*** straight from haxe, lmao */
+const println = info;
 
-  let final = "";
-  for (let line of f) {
-    const lowercased = line.toLowerCase();
-    if (!lowercased.includes("warn") && !lowercased.includes("error")) continue;
-    final += line + "\n";
-  }
-
-  writeFileSync(ErrorsFile, final);
-  rmSync(LogFile);
-}
-
-export function log(...b: any[]) {
+function info(...b: any[]) {
   let t = b.map((t) => t + "").join(" ");
   let msg = new Date().toISOString() + ": " + t;
   console.log(msg);
 }
-
-export function error(...b: any[]) {
+function fatal(...b: any[]) {
   let t = b.map((t) => t + "").join(" ");
-  let msg = new Date().toISOString() + ": " + t;
-  appendFileSync(LogFile, msg + "\n");
+  let msg = "[FATAL ERROR] " + new Date().toISOString() + ": " + t;
+  appendFileSync(ERRORS_FILE, msg + "\n");
   console.log(msg);
 }
+
+function error(...b: any[]) {
+  let t = b.map((t) => t + "").join(" ");
+  let msg = new Date().toISOString() + ": " + t;
+  appendFileSync(ERRORS_FILE, msg + "\n");
+  console.log(msg);
+}
+
+const Sys = { info, println, fatal, error };
+export default Sys;

@@ -1,0 +1,92 @@
+import { IncomingMessage } from "http";
+import Sys from "../logging";
+import { IS_DEV_MODE } from "../constants";
+import { getASNInfoByIp } from "./asn";
+
+const MAX_REQUEST_COUNT_PER_ASN = 400;
+const MAX_REQUEST_COUNT_UNBOUND = MAX_REQUEST_COUNT_PER_ASN / 4;
+
+const WINDOW_DURATION = 60 * 1000; // 1 minute (in millis)
+
+class WindowRateLimiter {
+  private timestamp: number;
+  private count: number;
+
+  private limit: number;
+
+  public constructor(limit: number) {
+    this.limit = limit;
+    this.timestamp = Date.now();
+    this.count = 0;
+  }
+
+  public allowed(): boolean {
+    let now = Date.now();
+    if (IS_DEV_MODE)
+      Sys.println(
+        "Window time: " +
+          (now - this.timestamp) +
+          " (duration of window in millis: " +
+          WINDOW_DURATION +
+          ");"
+      );
+
+    // reinitialize window if window is no longer valid.
+    if (this.timestamp + WINDOW_DURATION < this.timestamp) {
+      this.timestamp = now;
+      this.count = 0;
+      return true;
+    }
+
+    if (this.count >= this.limit) {
+      if (IS_DEV_MODE)
+        Sys.println(
+          "Window has had it's maximum request count exceeded: " + this.count
+        );
+      return false; // exceed count = out.
+    }
+
+    this.count++;
+    return true;
+  }
+}
+
+const unboundRateLimiter = new WindowRateLimiter(MAX_REQUEST_COUNT_UNBOUND);
+let rateLimiters: Record<string, WindowRateLimiter> = {};
+
+export function shouldNotRateLimit(req: IncomingMessage) {
+  if (!req.socket.remoteAddress) {
+    Sys.println(
+      "[ratelimit] No remote address! defaulting to the unbound rate limiter."
+    );
+    return unboundRateLimiter.allowed();
+  }
+
+  const asnRegion = getASNInfoByIp(req.socket.remoteAddress);
+
+  if (!asnRegion) {
+    Sys.println(
+      "[ratelimit] ASN Region not found for " +
+        req.socket.remoteAddress +
+        "! defaulting to the unbound rate limiter."
+    );
+    return unboundRateLimiter.allowed();
+  }
+  Sys.println(
+    "[ratelimit] ASN Region found! ",
+    asnRegion.asn,
+    asnRegion.cidr,
+    asnRegion.countryCode
+  );
+
+  let ratelimiter = rateLimiters[asnRegion.asn];
+
+  if (!ratelimiter) {
+    Sys.println("[ratelimit] New window created for ASN: " + asnRegion.asn);
+    ratelimiter = new WindowRateLimiter(MAX_REQUEST_COUNT_PER_ASN);
+  }
+
+  rateLimiters[asnRegion.asn] = ratelimiter;
+
+  return ratelimiter.allowed();
+}

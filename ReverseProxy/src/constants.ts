@@ -1,18 +1,27 @@
-import { exists, mkdirSync, readFileSync } from "fs";
-import { join } from "path";
+import { mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";
+import path, { join } from "path";
 
-export const LogFolder = process.argv.includes("--dev") ? "./logs" : join(homedir(), "proxy-logs");
+export const IS_DEV_MODE = process.argv.includes("--dev");
 
-mkdirSync(LogFolder, {
-    recursive: true
+export const LOG_FOLDER = IS_DEV_MODE
+  ? "./logs"
+  : join(homedir(), "proxy-logs");
+
+mkdirSync(LOG_FOLDER, {
+  recursive: true,
 });
 
-export const ErrorsFile = LogFolder + "/errors.txt";
-export const LogFile = LogFolder + "/log.txt";
-export const DomainName = "ane.jp.net";
+export const ERRORS_FILE = path.join(LOG_FOLDER, "/errors.txt");
+export const DATABASE_FILE = IS_DEV_MODE
+  ? "./proxyASN.db"
+  : path.join(homedir(), "proxyASN.db");
 
-export const SSLConfig = process.argv.includes("--dev") ? null : {
-    cert: readFileSync("./ssl/fullchain.pem"),
-    key: readFileSync("./ssl/privkey.pem")
-};
+export const DOMAIN_NAME = "ane.jp.net";
+
+export const SSLConfig = IS_DEV_MODE
+  ? null
+  : {
+      cert: readFileSync("./ssl/fullchain.pem"),
+      key: readFileSync("./ssl/privkey.pem"),
+    };

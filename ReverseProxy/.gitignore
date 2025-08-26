@@ -1,3 +1,5 @@
 node_modules
 bin
 logs
+proxyASN.*
+pnpm-lock.yaml

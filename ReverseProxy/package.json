@@ -1,6 +1,10 @@
 {
-	"main": "bin/index.js",
-	"dependencies": {
-		"@types/node": "^24.0.12"
-	}
+  "main": "bin/index.js",
+  "dependencies": {
+    "@types/node": "^24.0.12",
+    "better-sqlite3": "^12.2.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13"
+  }
 }

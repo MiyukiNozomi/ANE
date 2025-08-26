@@ -1,5 +1,5 @@
-import { error } from "./logging";
-import { gatewayError, writeGatewayError } from "./responses";
+import Sys from "../logging";
+import { writeGatewayError, writeGatewayErrorNoClose } from "./responses";
 import http from "http";
 
 export async function redirectTraffic(
@@ -21,7 +21,7 @@ export async function redirectTraffic(
         headers: req.headers,
       },
       (proxyRes) => {
-        error(
+        Sys.error(
           "[response] [" +
             host +
             "] Reply for " +
@@ -39,8 +39,8 @@ export async function redirectTraffic(
       }
     );
     proxyReq.on("error", (err) => {
-      error("[response-error] Got an error! " + err);
-      gatewayError(
+      Sys.error("[response-error] Got an error! " + err);
+      writeGatewayError(
         502,
         "Local server (at host '" +
           host +
@@ -60,8 +60,8 @@ export async function redirectTraffic(
   try {
     return await promise;
   } catch (err) {
-    error("[response-error] Got an exception! " + err);
-    return writeGatewayError(
+    Sys.error("[response-error] Got an exception! " + err);
+    return writeGatewayErrorNoClose(
       500,
       "Internal error when contacting host '" + host + "' (exception thrown).",
       req,

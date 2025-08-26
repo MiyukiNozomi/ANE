@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { log } from "./logging";
+import Sys from "./logging";
 
 export let mappings = new Map<string, number>();
 export let NoCORSCheckList = new Array<string>();
@@ -35,7 +35,7 @@ export let MaintenanceMode = false;
       );
 
     if (values.includes("no-cors-check")) {
-      log(
+      Sys.println(
         "Mapping for " +
           domain +
           " has CORS protection disabled, this isn't critical, but take note."
@@ -44,9 +44,9 @@ export let MaintenanceMode = false;
     }
     mappings.set(domain, port);
   }
-  log("Loaded mappings: " + confLines);
+  Sys.println("Loaded mappings: " + confLines);
 
   if (MaintenanceMode) {
-    log("WARN // Proxy is in maintenance mode!");
+    Sys.println("WARN // Proxy is in maintenance mode!");
   }
 }

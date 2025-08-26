@@ -1,149 +1,58 @@
-import { readFileSync } from "fs";
-
-import http from "http";
+import http, { IncomingMessage, ServerResponse } from "http";
 import https from "https";
-import { DomainName, SSLConfig } from "./constants";
-import { redirectTraffic } from "./redirect";
-import { CORSCheck, gatewayError, writeGatewayError } from "./responses";
-import { log } from "./logging";
-import { MaintenanceMode, mappings } from "./config";
+import { SSLConfig } from "./constants";
+import { finalHandling } from "./handling";
+import { maintenanceMiddleware } from "./maintenance";
+import { securityMiddleware } from "./security";
+import Sys from "./logging";
+import { initASN } from "./security/asn";
 
-export const HOUR_IN_MILLISECONDS = 3600000;
-export const MAX_REQUISITIONS = 200;
-export const REQUISITIONS_FOR_BANNING = 250;
+export type HandleFunc = (
+  req: IncomingMessage,
+  res: ServerResponse
+) => Promise<any>;
 
-let requestCounter: Record<
-  string,
-  {
-    count: number;
-    startTime: number;
-  }
-> = {};
-let bannedIPs = new Array<string>();
+export type MiddlewareFunction = (
+  req: IncomingMessage,
+  res: ServerResponse,
+  func: HandleFunc
+) => Promise<any>;
 
-setInterval(() => {
-  const keys = Object.keys(requestCounter);
+const middlewares = [securityMiddleware, maintenanceMiddleware];
 
-  for (const key of keys) {
-    delete requestCounter[key];
-  }
-}, HOUR_IN_MILLISECONDS);
-
-const handleFunc = async function (
+async function runMiddlewares(
   req: http.IncomingMessage,
-  res: http.ServerResponse
+  res: http.ServerResponse,
+  finalHandler: HandleFunc
 ) {
-  if (bannedIPs.includes(req.socket.remoteAddress ?? "")) {
-    return req.socket.destroy();
-  }
+  let ii = 0;
 
-  let requestCount = -1;
-  if (req.socket.remoteAddress) {
-    let counterInfo = requestCounter[req.socket.remoteAddress];
-
-    if (
-      !counterInfo ||
-      Date.now() - counterInfo.startTime > HOUR_IN_MILLISECONDS
-    ) {
-      counterInfo = requestCounter[req.socket.remoteAddress] = {
-        count: 0,
-        startTime: Date.now(),
-      };
-    }
-
-    requestCount = counterInfo.count++;
-
-    if (requestCount > REQUISITIONS_FOR_BANNING) {
-      bannedIPs.push(req.socket.remoteAddress);
-      delete requestCounter[req.socket.remoteAddress];
-      log("[ratelimit] IP has been banned: " + req.socket.remoteAddress);
-      return res.end();
-    }
-
-    if (requestCount > MAX_REQUISITIONS) {
-      log(
-        "[request]",
-        "[Counter " +
-          requestCount +
-          "] " +
-          req.method +
-          " " +
-          req.url +
-          " -- rate limited (not processing it)"
-      );
-      res.writeHead(429);
-      return res.end();
-    }
-  }
-
-  // extra feature...
-  if (MaintenanceMode) {
-    if (req.method?.toLowerCase() != "get") {
-      res.writeHead(503, { "content-type": "application/json" });
-      res.write(JSON.stringify({ message: "Maintenance mode." }));
-    } else {
-      res.writeHead(503, { "content-type": "text/html" });
-      res.write(readFileSync("./maintenance.html"));
-    }
-    return res.end();
-  }
-
-  let targetHost = req.headers.host;
-
-  if (req.url?.startsWith("/@")) {
-    let hostnamePath = req.url.substring(2);
-    targetHost = hostnamePath.includes("/")
-      ? hostnamePath.substring(0, hostnamePath.indexOf("/"))
-      : hostnamePath;
-    req.url = req.url.substring(targetHost.length + 2);
-  } else if (targetHost && targetHost.includes(`.${DomainName}`)) {
-    targetHost = targetHost.substring(0, targetHost.indexOf(`.${DomainName}`));
-  }
-  targetHost = targetHost ?? "<root>";
-
-  log(
-    "[request]",
-    "[" + targetHost + "] [Counter " + requestCount + "]",
-    req.method,
-    req.url
+  Sys.println(
+    "[" + req.socket.remoteAddress + "] " + req.method + " " + req.url
   );
 
-  if (
-    req.headers["origin"] &&
-    CORSCheck(res, targetHost, req.headers["origin"])
-  ) {
-    // CORSCheck already handles errors like this anyway
-    return;
-  }
+  const next = async () => {
+    const mw = middlewares[ii++];
 
-  let localPort = mappings.get(targetHost);
-  if (!localPort) {
-    return gatewayError(
-      504,
-      "Unregistered gateway host: '" +
-        targetHost +
-        "' (not found in mappings).",
-      req,
-      res
-    );
-  }
+    if (mw) {
+      await mw(req, res, next);
+    } else {
+      await finalHandler(req, res);
+    }
+  };
 
-  let statusCode = await redirectTraffic(targetHost, localPort, req, res);
-  if (statusCode == 429 && req.socket.remoteAddress) {
-    // That's bad, and we're immediately placing a hard limit on the individual:
-    requestCounter[req.socket.remoteAddress].count = MAX_REQUISITIONS + 1;
-    log(
-      "[ratelimit] IP " +
-        req.socket.remoteAddress +
-        " has been ordered by microservice '" +
-        targetHost +
-        "' to be ratelimited."
-    );
-  }
-};
+  await next();
+}
+
+initASN();
+
+const handleFunc: HandleFunc = async (req, res) =>
+  await runMiddlewares(req, res, finalHandling);
 
 const httpServer = http.createServer(handleFunc);
-httpServer.on("listening", () => log("[HTTP] Router has been launched."));
+httpServer.on("listening", () =>
+  Sys.println("[HTTP] Router has been launched.")
+);
 
 // SSLConfig == null means development mode
 // if SSLConfig cannot the certificate, the program will crash way before this if-statement.
@@ -153,7 +62,9 @@ if (!SSLConfig) {
 } else {
   const httpsServer = https.createServer(SSLConfig, handleFunc);
 
-  httpsServer.on("listening", () => log("[HTTPS] Router has been launched."));
+  httpsServer.on("listening", () =>
+    Sys.println("[HTTPS] Router has been launched.")
+  );
 
   httpServer.listen(80);
   httpsServer.listen(443);
