@@ -20,6 +20,13 @@
   export function isActive() {
     return requestProgressLabel != undefined;
   }
+
+  export function forceActive(message: string) {
+    requestProgressLabel = message;
+  }
+  export function forceDeactivate() {
+    requestProgressLabel = undefined;
+  }
 </script>
 
 {#if isActive()}

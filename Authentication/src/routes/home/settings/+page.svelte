@@ -12,6 +12,7 @@
   import type { PageData } from "./$types";
   import ProgressApi from "$lib/components/progressAPI.svelte";
   import { slide } from "svelte/transition";
+  import ImagePicker from "$lib/components/imagePicker.svelte";
 
   let { data }: { data: PageData } = $props();
 
@@ -23,6 +24,8 @@
   let newDisplayName = $state(accountInfo?.displayName ?? "");
   let errorMessage = $state("");
   let successMessage = $state("");
+
+  let profilePictureToCrop: HTMLImageElement | undefined = $state(undefined);
 
   function clearMessages() {
     errorMessage = "";
@@ -38,6 +41,7 @@
     successMessage = msg;
     document.querySelector("#success-msg")?.scrollIntoView();
   }
+
   async function updateDisplayName() {
     if (progressAPI?.isActive()) return;
 
@@ -67,6 +71,8 @@
     accountInfo!.displayName = newDisplayName;
     setAccountInfo(accountInfo!);
   }
+
+  async function openImagePicker() {}
 </script>
 
 <svelte:head>
@@ -74,6 +80,10 @@
   <meta name="title" content="Account Settings" />
   <meta name="description" content="Protected Resource." />
 </svelte:head>
+
+{#if profilePictureToCrop}
+  <ImagePicker image={profilePictureToCrop}></ImagePicker>
+{/if}
 
 <div class="min-h-screen bg-zinc-900 font-kumbh">
   <div class="w-full flex flex-row gap-4 items-center bg-sky-700 px-8 py-2">
@@ -115,6 +125,11 @@
           ? 'bg-blue-950'
           : 'bg-blue-500'} w-fit rounded-md px-4 py-2"
         onclick={updateDisplayName}>Save</button
+      >
+
+      <a
+        class="bg-blue-500 w-fit rounded-md px-4 py-2"
+        href="/home/settings/profile-picture">Set Profile Picture</a
       >
     </div>
     <!-- Behond, security settings-->
