@@ -4,9 +4,11 @@ cd /SERVICE
 
 npm i
 tsc
+
 cd ssl
 ./copy-certs.sh
-node bin/prebuild.js
 cd ..
+
+node bin/prebuild.js
 
 echo "No errors above? good, all done!"
