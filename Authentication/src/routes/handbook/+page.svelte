@@ -120,17 +120,18 @@ It can also optionally include a URL to redirect the user back to if needed (if 
       Rate limiting
     </h2>
     <p>
-      You may not perform more than 500 requests a minute.
+      You may not perform more than 400 requests a minute. period. This
+      ratelimiting system is defined by entire ASN prefixes, your actual
+      available request count per minute could be much smaller than this.
       <br />
-      Side note, the Anemachi (yes, that's what ANE stands for, really I have a lack
-      of creativity.) reverse proxy keeps track of IPs in a blacklist, if you do
-      end up doing more than 500 requests (no matter the realm, if it's galatea.ane.jp.net
+      My tip? recheck every 5 seconds instead of 1 second.
+      <br />
+      The Anemachi (yes, that's what ANE stands for, really I have a lack of creativity.)
+      reverse proxy keeps track the number of requested resources, if you do end
+      up doing more than 400 requests (no matter the realm, if it's galatea.ane.jp.net
       or even ane.jp.net itself) it will refuse any future requests with a
       <span class="italic">payload-less</span>
       429 HTTP(s) response.
-      <br />
-      The same applies for multiple request failures, if you get more than 20 4xx
-      response codes it will also blacklist your IP address.
     </p>
     <h2 class="font-semibold text-2xl text-gray-100" id="ip-blacklist">
       What does it mean to have my IP be blacklisted?
