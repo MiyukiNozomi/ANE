@@ -1,4 +1,4 @@
-#!bin/sh
+#!/bin/sh
 echo "Setting up Reverse Proxy"
 cd /SERVICE
 

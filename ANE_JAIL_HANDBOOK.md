@@ -32,6 +32,7 @@ Write files into AZKI's home folder
 Don't code it to modify the SERVICE files, or you risk an evil RCE.
 
 # Example RC service, for daemonized processes on /SERVICE
+
 You don't have to modify it, just copy and paste and enable it through `sysrc jailservice_enable=YES`
 
 ```sh
@@ -58,7 +59,7 @@ jailservice_start()
     ${command} ${command_args}
 }
 
-jailservice_stop() 
+jailservice_stop()
 {
     echo "Stopping ${name}..."
     if [ -f "${pidfile}" ]; then
@@ -95,7 +96,7 @@ Note: it will not create the jail, create it beforehand, Miyuki.
 Use this template for setup.sh (it will be called by the production update script)
 
 ```sh
-#!bin/sh
+#!/bin/sh
 echo "Setting up..."
 cd /SERVICE
 

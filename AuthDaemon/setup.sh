@@ -1,4 +1,4 @@
-#!bin/sh
+#!/bin/sh
 echo "Setting up Ane-AuthD..."
 cd /SERVICE
 
