@@ -1,34 +1,34 @@
 #!/bin/sh
 
+set -e
+trap 'echo "❌ Error occurred. Aborting deployment."; exit 1' ERR
+
 echo "Stopping all microservices (aka:"
 echo "Forbiding jails from running previous services)..."
 
-jexec -u root galatea       service jailservice stop 
-jexec -u root reverse-proxy service jailservice stop 
-jexec -u root auth-daemon   service jailservice stop
-jexec -u root authentication   service jailservice stop
+updateService() {
+    NAME=$1
+    OUTPATH=/jails/containers/$2
+    JAILNAME=$3
 
-echo "Removing previous services..."
+    echo "Setting up $NAME at $OUTPATH (jail name $JAILNAME)"
 
-rm -rf /jails/containers/Galatea/SERVICE
-rm -rf /jails/containers/ReverseProxy/SERVICE
-rm -rf /jails/containers/AuthDaemon/SERVICE
-rm -rf /jails/containers/Authentication/SERVICE
+    jexec -u root $JAILNAME service jailservice stop
 
-echo "Updating SERVICES.."
+    echo "Removing $OUTPATH/SERVICE"
+    rm -rf $OUTPATH/SERVICE
 
-cp -r /root/ANE/GalateaCDN     /jails/containers/Galatea/SERVICE
-cp -r /root/ANE/ReverseProxy   /jails/containers/ReverseProxy/SERVICE
-cp -r /root/ANE/AuthDaemon     /jails/containers/AuthDaemon/SERVICE
-cp -r /root/ANE/Authentication /jails/containers/Authentication/SERVICE
+    echo "Updating SERVICE NAME"
+    cp -r /root/ANE/$NAME $OUTPATH/SERVICE    
 
-# echo "Restarting jails and running setup scripts..."
-# service jail start galatea reverse-proxy
+    echo "Running setup script.."
+    jexec -u root $JAILNAME /SERVICE/setup.sh
+}
 
-jexec -u root galatea          /SERVICE/setup.sh
-jexec -u root reverse-proxy    /SERVICE/setup.sh
-jexec -u root auth-daemon      /SERVICE/setup.sh
-jexec -u root authentication   /SERVICE/setup.sh
+updateService "Galatea" "GalateaCDN" "galatea"
+updateService "ReverseProxy" "ReverseProxy" "reverse-proxy"
+updateService "AuthDaemon" "AuthDaemon" "auth-daemon"
+updateService "Authentication" "Authentication" "authentication"
 
 echo "Production is ready!"
 echo "Do manual configuration now before restarting those services."
