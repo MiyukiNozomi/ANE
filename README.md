@@ -29,13 +29,17 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 # TODO
 
+- [ ] Validate octets of IPv4 addresses in ratelimit code of the reverse proxy, right now if the IP is:
+      ::ffff:269.491.24.567.1561 it will still go through anyway as a normal IP, this should NOT be allowed, even if theoretically impossible..
 - [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
   - [ ] git.ane.jp.net
-- [ ] Galatea Tweaks
-  - [ ] Ability to get images but in a resized mode.
-  - [ ] Consider rewrite to not rely in NodeJS.
+- [x] Galatea Tweaks
+
+  - [x] Ability to get images but in a resized mode.
+        --- [ ] Consider rewrite to not rely in NodeJS.--- (waste of time, unnecessary.)
+
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
 
   - [x] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
@@ -47,9 +51,9 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Profile Picture support (this can wait)
 
 - [ ] Finish git.ane.jp.net
-  - [ ] Optimize landing page background code
-  - [ ] Move compass images to galatea (first, do the task in galatea)
-  - [ ] ANE Authorizations
+  - [x] Optimize landing page background code
+  - [x] Move compass images to galatea (first, do the task in galatea)
+  - [x] ANE Authorizations
   - [ ] Repositories
   - [ ] Git
     - [ ] Git Push
