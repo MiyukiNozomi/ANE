@@ -1,7 +1,8 @@
 import { readFileSync } from "fs";
 import Sys from "./logging";
 
-export const IS_PREBUILD_SCRIPT = process.argv.includes("prebuild");
+export const IS_PREBUILD_SCRIPT =
+  process.argv.find((v) => v.includes("prebuild")) !== undefined;
 export const IS_DEV_MODE = process.argv.includes("--dev");
 
 export const DATABASE_FILE = IS_DEV_MODE
