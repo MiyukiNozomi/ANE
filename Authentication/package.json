@@ -32,6 +32,8 @@
   },
   "dependencies": {
     "@img/sharp-wasm32": "^0.34.3",
+    "node-addon-api": "^8.5.0",
+    "node-gyp": "^11.4.1",
     "sharp": "^0.34.3",
     "zod": "^4.0.5"
   }
