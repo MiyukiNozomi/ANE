@@ -62,18 +62,22 @@ export function shouldNotRateLimit(req: IncomingMessage) {
     return unboundRateLimiter.allowed();
   }
 
-  const asnRegion = getASNInfoByIp(req.socket.remoteAddress);
+  let remoteAddress = req.socket.remoteAddress;
+  if (remoteAddress.startsWith("::ffff:") && remoteAddress.includes("."))
+    remoteAddress = remoteAddress.substring(remoteAddress.lastIndexOf(":") + 1);
+
+  const asnRegion = getASNInfoByIp(remoteAddress);
 
   if (!asnRegion) {
     Sys.println(
       "[ratelimit] ASN Region not found for " +
-        req.socket.remoteAddress +
+        remoteAddress +
         "! defaulting to the unbound rate limiter."
     );
     return unboundRateLimiter.allowed();
   }
   Sys.println(
-    "[ratelimit] ASN Region found! ",
+    "[ratelimit] ASN Region found for " + remoteAddress + "! ",
     asnRegion.asn,
     asnRegion.cidr,
     asnRegion.countryCode

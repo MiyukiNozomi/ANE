@@ -1,5 +1,6 @@
 import Database from "better-sqlite3";
 import { DATABASE_FILE } from "../constants";
+import Sys from "../logging";
 
 export type ASNInfo = {
   cidr: string;
@@ -27,6 +28,11 @@ export function getASNInfoByIp(ipAddr: string): ASNInfo | null {
   if (!asnQueryStatement) throw "Database not open!";
 
   const ipAddrInfo = IPvNtoBlob(ipAddr);
+
+  // TODO: remove later
+  Sys.println(
+    "Formatted " + ipAddr + " into " + ipAddrInfo.buffer.toString("hex")
+  );
 
   return asnQueryStatement.all(
     ipAddrInfo.addressType,

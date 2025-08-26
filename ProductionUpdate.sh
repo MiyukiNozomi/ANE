@@ -10,7 +10,9 @@ updateService() {
     OUTPATH=/jails/containers/$2
     JAILNAME=$3
 
-    echo "Setting up $NAME at $OUTPATH (jail name $JAILNAME)"
+    echo "/==================================================================\\"
+    echo "    Setting up $NAME at $OUTPATH (jail name $JAILNAME)"
+    echo "===================================================================="
 
     jexec -u root $JAILNAME service jailservice stop
 
@@ -22,6 +24,8 @@ updateService() {
 
     echo "Running setup script.."
     jexec -u root $JAILNAME /SERVICE/setup.sh
+
+    echo "\\====================================================================/"
 }
 
 updateService "GalateaCDN" "Galatea" "galatea"
