@@ -6,6 +6,9 @@ import { maintenanceMiddleware } from "./maintenance";
 import { securityMiddleware } from "./security";
 import Sys from "./logging";
 import { initASN } from "./security/asn";
+import { execSync } from "child_process";
+
+if (!process.setuid) throw "Wrong platform buddy!";
 
 export type HandleFunc = (
   req: IncomingMessage,
@@ -44,8 +47,6 @@ async function runMiddlewares(
   await next();
 }
 
-initASN();
-
 const handleFunc: HandleFunc = async (req, res) =>
   await runMiddlewares(req, res, finalHandling);
 
@@ -59,6 +60,7 @@ httpServer.on("listening", () =>
 if (!SSLConfig) {
   httpServer.listen(6060);
   console.log("NOTE! router is at 6060 (DEVELOPMENT MODE)");
+  initASN();
 } else {
   const httpsServer = https.createServer(SSLConfig, handleFunc);
 
@@ -68,4 +70,10 @@ if (!SSLConfig) {
 
   httpServer.listen(80);
   httpsServer.listen(443);
+
+  Sys.println("Servers listening! downgrading permissions to AZKi.");
+  process.setuid("AZKi");
+  Sys.println("Whoami? " + execSync("whoami") + "!");
+
+  initASN();
 }

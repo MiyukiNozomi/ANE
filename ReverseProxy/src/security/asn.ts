@@ -18,6 +18,7 @@ let db: Database.Database | null = null;
 let asnQueryStatement: Database.Statement | null = null;
 
 export function initASN() {
+  Sys.println("Opening database at " + DATABASE_FILE);
   db = new Database(DATABASE_FILE);
   asnQueryStatement = db.prepare(
     "SELECT cidr, asn, countryCode FROM asnMap WHERE addressType = ? AND fromIp <= ? AND ? <= toIp LIMIT 1"

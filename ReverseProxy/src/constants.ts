@@ -1,21 +1,10 @@
-import { mkdirSync, readFileSync } from "fs";
-import { homedir } from "os";
-import path, { join } from "path";
+import { readFileSync } from "fs";
 
 export const IS_DEV_MODE = process.argv.includes("--dev");
 
-export const LOG_FOLDER = IS_DEV_MODE
-  ? "./logs"
-  : join(homedir(), "proxy-logs");
-
-mkdirSync(LOG_FOLDER, {
-  recursive: true,
-});
-
-export const ERRORS_FILE = path.join(LOG_FOLDER, "/errors.txt");
 export const DATABASE_FILE = IS_DEV_MODE
   ? "./proxyASN.db"
-  : path.join(homedir(), "proxyASN.db");
+  : "/home/AZKi/proxyASN.db";
 
 export const DOMAIN_NAME = "ane.jp.net";
 

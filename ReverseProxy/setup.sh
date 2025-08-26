@@ -9,6 +9,6 @@ cd ssl
 ./copy-certs.sh
 cd ..
 
-node bin/prebuild.js
+su - AZKi -c 'cd /SERVICE && node bin/prebuild.js'
 
 echo "No errors above? good, all done!"
