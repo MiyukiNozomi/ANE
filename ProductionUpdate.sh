@@ -1,7 +1,6 @@
 #!/bin/sh
 
-set -e
-trap 'echo "❌ Error occurred. Aborting deployment."; exit 1' ERR
+set -e trap 'echo "❌ Error occurred. Aborting deployment."; exit 1' ERR
 
 echo "Stopping all microservices (aka:"
 echo "Forbiding jails from running previous services)..."
@@ -25,7 +24,7 @@ updateService() {
     jexec -u root $JAILNAME /SERVICE/setup.sh
 }
 
-updateService "Galatea" "GalateaCDN" "galatea"
+updateService "GalateaCDN" "Galatea" "galatea"
 updateService "ReverseProxy" "ReverseProxy" "reverse-proxy"
 updateService "AuthDaemon" "AuthDaemon" "auth-daemon"
 updateService "Authentication" "Authentication" "authentication"
