@@ -1,4 +1,3 @@
-import path from "path";
 import {
   cpSync,
   existsSync,
@@ -8,12 +7,14 @@ import {
   rmSync,
   writeFileSync,
 } from "fs";
+import path from "path";
 import sharp from "sharp";
 import {
   CURRENT_STORAGE_FOLDER,
   DEFAULT_CDN_FOLDER,
   ImageScales,
   IS_DEV_MODE,
+  MIPMAP_JSON_PATH,
 } from "./constants";
 
 console.log("copying default folder.");
@@ -160,9 +161,6 @@ async function convertPngToWebpRecursively(dir: string) {
 convertPngToWebpRecursively(CURRENT_STORAGE_FOLDER)
   .catch((err) => console.error(`❌ Error converting:`, err))
   .then((_) => {
-    writeFileSync(
-      path.join(__dirname, "mipmaps.info.json"),
-      JSON.stringify(mipmapInfo)
-    );
+    writeFileSync(MIPMAP_JSON_PATH, JSON.stringify(mipmapInfo));
     console.log("ℹ️  Mipmap information file stored.");
   });

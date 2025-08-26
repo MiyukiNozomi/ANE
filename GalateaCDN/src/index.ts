@@ -1,16 +1,16 @@
-import { cpSync, existsSync, readdirSync, readFileSync, statSync } from "fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import mime from "mime-types";
 import path from "path";
 
+import { createServer, ServerResponse } from "http";
 import {
   CURRENT_STORAGE_FOLDER,
   ImageScales,
   IS_DEV_MODE,
   MAX_AGE,
+  MIPMAP_JSON_PATH,
   PORT,
 } from "./constants";
-import { createServer, ServerResponse } from "http";
-import sharp from "sharp";
 
 if (!existsSync(CURRENT_STORAGE_FOLDER)) {
   console.error(
@@ -23,7 +23,7 @@ const homepage = readFileSync("./index.html").toString();
 const directoryPage = readFileSync("./directory.html").toString();
 
 const imageMipmaps: Record<string, ImageScales[]> = JSON.parse(
-  readFileSync(path.join(__dirname, "mipmaps.info.json")).toString()
+  readFileSync(MIPMAP_JSON_PATH).toString()
 );
 
 async function replyImageResized(
