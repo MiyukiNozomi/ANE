@@ -42,6 +42,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
 
+  - [ ] Weird svelte bug? clicking the login screen redirects to.. /home/settings/\_\_data.json??x-sveltekit-invalidated=01?
   - [x] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
 
   - [x] Bug in registration page (incorrect passwords.. matched? retest this later) Yes, this is a real bug, idiot!
