@@ -1,6 +1,9 @@
 import os from "os";
 import path from "path";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 export const IS_DEV_MODE = process.argv.includes("--dev");
 export const DEFAULT_CDN_FOLDER = "./default";
 export const CURRENT_STORAGE_FOLDER = IS_DEV_MODE
