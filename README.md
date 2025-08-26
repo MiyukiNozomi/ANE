@@ -31,6 +31,8 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 - [ ] Validate octets of IPv4 addresses in ratelimit code of the reverse proxy, right now if the IP is:
       ::ffff:269.491.24.567.1561 it will still go through anyway as a normal IP, this should NOT be allowed, even if theoretically impossible..
+- [ ] Maybe add a metrics page on the reverse proxy? just to see how server load is doing publically.
+
 - [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
