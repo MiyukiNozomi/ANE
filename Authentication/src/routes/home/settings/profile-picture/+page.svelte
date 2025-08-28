@@ -5,11 +5,7 @@
   import ProgressApi from "$lib/components/progressAPI.svelte";
   import { slide } from "svelte/transition";
   import { onMount } from "svelte";
-  import {
-    drawCropper,
-    type CropperProperties,
-  } from "$lib/imageCropper/rendering";
-  import { registerEvents } from "$lib/imageCropper/events";
+  import { ImageCropper } from "$lib/imageCropper/index.svelte";
 
   let { data }: { data: PageData } = $props();
 
@@ -19,20 +15,9 @@
   let progressAPI: ProgressApi | undefined = $state(undefined);
 
   let cropperCanvas: HTMLCanvasElement;
-  let cropperProperties: CropperProperties = {
-    posX: 0,
-    posY: 0,
-    scale: 0,
-
-    iw: 0,
-    ih: 0,
-
-    buttonSize: 0,
-  };
+  let imageCropper: ImageCropper | undefined = $state();
 
   let files: FileList | null | undefined = $state();
-
-  let decodedImage: HTMLImageElement | undefined = $state();
 
   let errorMessage = $state("");
   let successMessage = $state("");
@@ -48,44 +33,38 @@
   }
 
   $effect(() => {
-    if (files) {
+    if (files && imageCropper) {
       const file = files.item(0);
 
       if (file) {
         let reader = new FileReader();
         reader.onload = (v) => {
-          decodedImage = new Image();
+          let decodedImage = new Image();
           decodedImage.src = v.target!.result as string;
+          imageCropper?.setImage(decodedImage);
         };
         reader.readAsDataURL(file);
       } else {
-        decodedImage = undefined;
+        imageCropper.setImage(undefined);
       }
     }
   });
 
-  function initCropper() {
-    const ctx = cropperCanvas.getContext("2d");
+  async function updateProfilePicture() {
+    if (!imageCropper) return setError("The cropper is null! this is a bug!");
+    const imageData = imageCropper.getTranscodedImage();
 
-    if (!ctx)
-      return setError(
-        "Your browser does not support an HTML canvas 2D context, you will not be able to set your profile picture."
-      );
-
-    registerEvents(cropperProperties, cropperCanvas);
-
-    const gameLoop = () => {
-      drawCropper(cropperProperties, decodedImage, cropperCanvas, ctx);
-      setTimeout(() => window.requestAnimationFrame(gameLoop), 20);
-    };
-
-    gameLoop();
+    const link = document.createElement("a"); // Create a temporary <a> element
+    link.href = imageData; // Set the href to the data URL
+    link.download = "test.png"; // Set the desired filename
+    document.body.appendChild(link); // Append the link to the document
+    link.click(); // Trigger the download
+    document.body.removeChild(link); // Clean up by removing the link
   }
 
-  async function updateProfilePicture() {}
-
   onMount(() => {
-    initCropper();
+    imageCropper = new ImageCropper(cropperCanvas);
+    imageCropper.createRenderer();
   });
 </script>
 
@@ -114,7 +93,7 @@
       </div>
 
       <p class="text-gray-200">
-        {decodedImage
+        {imageCropper?.hasImage()
           ? "Now, select a region of the image, and upload it."
           : "Choose an image, and the cropper will become visible."}
       </p>
@@ -123,14 +102,19 @@
         <canvas bind:this={cropperCanvas}></canvas>
       </div>
 
-      <div class="flex flex-row">
-        {#if decodedImage}
+      <div class="flex flex-row gap-4">
+        {#if imageCropper?.hasImage()}
           <button
             class="bg-red-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
             onclick={() => {
-              decodedImage = undefined;
+              imageCropper?.setImage(undefined);
               files = undefined;
-            }}>Cancel</button
+            }}
+            >Cancel
+          </button>
+          <button
+            class="bg-blue-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
+            onclick={updateProfilePicture}>Upload</button
           >
         {:else}
           <input

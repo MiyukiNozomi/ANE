@@ -1,12 +1,4 @@
-export type CropperProperties = {
-  posX: number;
-  posY: number;
-  scale: number;
-  iw: number;
-  ih: number;
-
-  buttonSize: number;
-};
+import type { CropperProperties } from "./index.svelte";
 
 export function drawCropper(
   cropperProperties: CropperProperties,
@@ -52,22 +44,29 @@ export function drawCropper(
         cropperProperties.iw,
         cropperProperties.ih
       );
-      cropperProperties.buttonSize = cropperProperties.scale / 8;
+
+      // If we're on a phone, the resize button should be larger.
+      cropperProperties.buttonSize =
+        cropperProperties.scale /
+        (window.screen.height > window.screen.width ? 6 : 10);
     }
+
+    const cropperRadii = cropperProperties.scale / 2;
 
     ctx.save();
     ctx.beginPath();
-    ctx.clearRect(
+    /*ctx.clearRect(
       cropperProperties.posX,
       cropperProperties.posY,
       cropperProperties.scale,
       cropperProperties.scale
-    );
-    ctx.rect(
-      cropperProperties.posX,
-      cropperProperties.posY,
-      cropperProperties.scale,
-      cropperProperties.scale
+    );*/
+    ctx.arc(
+      cropperProperties.posX + cropperRadii,
+      cropperProperties.posY + cropperRadii,
+      cropperRadii,
+      0,
+      Math.PI * 2
     );
     ctx.clip();
     ctx.drawImage(
@@ -84,24 +83,28 @@ export function drawCropper(
     const lineWidth = 1;
     ctx.lineWidth = lineWidth * 2;
 
-    ctx.strokeRect(
-      cropperProperties.posX + lineWidth,
-      cropperProperties.posY + lineWidth,
-      cropperProperties.scale - ctx.lineWidth,
-      cropperProperties.scale - ctx.lineWidth
+    ctx.beginPath();
+    ctx.arc(
+      cropperProperties.posX + cropperRadii,
+      cropperProperties.posY + cropperRadii,
+      cropperRadii,
+      0,
+      Math.PI * 2
     );
+    ctx.stroke();
 
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(
-      cropperProperties.posX +
-        cropperProperties.scale -
-        cropperProperties.buttonSize,
-      cropperProperties.posY +
-        cropperProperties.scale -
-        cropperProperties.buttonSize,
-      cropperProperties.buttonSize,
-      cropperProperties.buttonSize
+    const buttonRadii = cropperProperties.buttonSize / 2;
+
+    ctx.beginPath();
+    ctx.arc(
+      cropperProperties.posX + cropperProperties.scale - buttonRadii,
+      cropperProperties.posY + cropperProperties.scale - buttonRadii,
+      buttonRadii,
+      0,
+      Math.PI * 2
     );
+    ctx.fill();
   } else {
     cropperCanvas.width = 1;
     cropperCanvas.height = 1;

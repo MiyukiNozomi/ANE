@@ -1,4 +1,13 @@
-import type { CropperProperties } from "./rendering";
+import type { CropperProperties } from "./index.svelte";
+
+function touchObjectAsMousePos(cropperCanvas: HTMLCanvasElement, touch: Touch) {
+  const canvasRect = cropperCanvas.getBoundingClientRect();
+
+  const offsetX = touch.pageX - canvasRect.left;
+  const offsetY = touch.pageY - canvasRect.top;
+
+  return { offsetX, offsetY };
+}
 
 export function registerEvents(
   cropperProperties: CropperProperties,
@@ -40,7 +49,7 @@ export function registerEvents(
     mouseDragStartOffsetY = mouseY - cropperProperties.posY;
   };
 
-  const onDragMove = (e: MouseEvent) => {
+  const onDragMove = (e: { offsetX: number; offsetY: number }) => {
     mouseX = e.offsetX;
     mouseY = e.offsetY;
 
@@ -92,4 +101,22 @@ export function registerEvents(
   cropperCanvas.addEventListener("mousedown", onDragStart);
   cropperCanvas.addEventListener("mouseup", onDragEnd);
   cropperCanvas.addEventListener("mouseleave", onDragEnd);
+
+  cropperCanvas.addEventListener("touchstart", (e) => {
+    const touch = e.touches.item(0);
+    if (!touch) return;
+
+    onDragMove(touchObjectAsMousePos(cropperCanvas, touch));
+    onDragStart();
+  });
+
+  cropperCanvas.addEventListener("touchmove", (e) => {
+    const touch = e.touches.item(0);
+    if (!touch) return;
+
+    onDragMove(touchObjectAsMousePos(cropperCanvas, touch));
+  });
+
+  cropperCanvas.addEventListener("touchcancel", onDragEnd);
+  cropperCanvas.addEventListener("touchend", onDragEnd);
 }
