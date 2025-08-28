@@ -24,6 +24,11 @@
     "vite": "^7.0.4"
   },
   "pnpm": {
+    "supportedArchitectures": {
+      "cpu": [
+        "x64"
+      ]
+    },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
       "esbuild",

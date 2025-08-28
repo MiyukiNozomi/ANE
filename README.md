@@ -31,32 +31,30 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 - [ ] Validate octets of IPv4 addresses in ratelimit code of the reverse proxy, right now if the IP is:
       ::ffff:269.491.24.567.1561 it will still go through anyway as a normal IP, this should NOT be allowed, even if theoretically impossible..
+- [ ] Immediately block ALL requests that do not contain ANE's domain in production version of reverse proxy
 - [ ] Maybe add a metrics page on the reverse proxy? just to see how server load is doing publically.
+- [ ] Change the rule configuration format of the reverse proxy to allow for things such as:
+
+  - [ ] Rate limit some regions differently
 
 - [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
-  - [ ] git.ane.jp.net
-- [x] Galatea Tweaks
 
-  - [x] Ability to get images but in a resized mode.
-        --- [ ] Consider rewrite to not rely in NodeJS.--- (waste of time, unnecessary.)
+  - [ ] git.ane.jp.net
 
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
 
-  - [ ] Weird svelte bug? clicking the login screen redirects to.. /home/settings/\_\_data.json??x-sveltekit-invalidated=01?
-  - [x] Data not updating cookies when properties are changed (When the display name is updated, change is only seen after signing in again, this is bad.)
+  - [ ] Modernize the Database of AuthDaemon
 
-  - [x] Bug in registration page (incorrect passwords.. matched? retest this later) Yes, this is a real bug, idiot!
+  - [-] Weird svelte bug? clicking the login screen redirects to.. /home/settings/\_\_data.json??x-sveltekit-invalidated=01?
+    WARN: (could not replicate in dev, consider refactoring the front end)
 
   - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints) (better to do this at reverse proxy level, honestly.)
 
   - [ ] Profile Picture support (this can wait)
 
 - [ ] Finish git.ane.jp.net
-  - [x] Optimize landing page background code
-  - [x] Move compass images to galatea (first, do the task in galatea)
-  - [x] ANE Authorizations
   - [ ] Repositories
   - [ ] Git
     - [ ] Git Push

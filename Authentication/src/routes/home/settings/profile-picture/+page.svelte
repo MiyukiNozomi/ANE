@@ -4,7 +4,12 @@
 
   import ProgressApi from "$lib/components/progressAPI.svelte";
   import { slide } from "svelte/transition";
-  import { file } from "zod";
+  import { onMount } from "svelte";
+  import {
+    drawCropper,
+    type CropperProperties,
+  } from "$lib/imageCropper/rendering";
+  import { registerEvents } from "$lib/imageCropper/events";
 
   let { data }: { data: PageData } = $props();
 
@@ -13,7 +18,21 @@
 
   let progressAPI: ProgressApi | undefined = $state(undefined);
 
+  let cropperCanvas: HTMLCanvasElement;
+  let cropperProperties: CropperProperties = {
+    posX: 0,
+    posY: 0,
+    scale: 0,
+
+    iw: 0,
+    ih: 0,
+
+    buttonSize: 0,
+  };
+
   let files: FileList | null | undefined = $state();
+
+  let decodedImage: HTMLImageElement | undefined = $state();
 
   let errorMessage = $state("");
   let successMessage = $state("");
@@ -33,17 +52,46 @@
       const file = files.item(0);
 
       if (file) {
-
+        let reader = new FileReader();
+        reader.onload = (v) => {
+          decodedImage = new Image();
+          decodedImage.src = v.target!.result as string;
+        };
+        reader.readAsDataURL(file);
       } else {
-        
+        decodedImage = undefined;
       }
     }
+  });
+
+  function initCropper() {
+    const ctx = cropperCanvas.getContext("2d");
+
+    if (!ctx)
+      return setError(
+        "Your browser does not support an HTML canvas 2D context, you will not be able to set your profile picture."
+      );
+
+    registerEvents(cropperProperties, cropperCanvas);
+
+    const gameLoop = () => {
+      drawCropper(cropperProperties, decodedImage, cropperCanvas, ctx);
+      setTimeout(() => window.requestAnimationFrame(gameLoop), 20);
+    };
+
+    gameLoop();
+  }
+
+  async function updateProfilePicture() {}
+
+  onMount(() => {
+    initCropper();
   });
 </script>
 
 <svelte:head>
-  <title>Account 2FA Setup</title>
-  <meta name="title" content="Account 2FA Setup" />
+  <title>Profile Picture Setup</title>
+  <meta name="title" content="Profile Picture Setup" />
   <meta name="description" content="Protected Resource." />
 </svelte:head>
 
@@ -64,18 +112,37 @@
       <div class="" transition:slide>
         <ProgressApi bind:this={progressAPI} />
       </div>
+
       <p class="text-gray-200">
-        Choose an image, and the cropper will become visible.
+        {decodedImage
+          ? "Now, select a region of the image, and upload it."
+          : "Choose an image, and the cropper will become visible."}
       </p>
 
-      <label for="avatar">Upload a picture:</label>
-      <input
-        accept="image/*"
-        bind:files
-        id="avatar"
-        name="avatar"
-        type="file"
-      />
+      <div class="block w-full lg:max-w-2/4">
+        <canvas bind:this={cropperCanvas}></canvas>
+      </div>
+
+      <div class="flex flex-row">
+        {#if decodedImage}
+          <button
+            class="bg-red-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
+            onclick={() => {
+              decodedImage = undefined;
+              files = undefined;
+            }}>Cancel</button
+          >
+        {:else}
+          <input
+            accept="image/*"
+            bind:files
+            id="avatar"
+            name="avatar"
+            type="file"
+            class=" mx-auto md:m-0 file:bg-blue-500 file:rounded-md file:px-4 file:py-2 file:mr-4"
+          />
+        {/if}
+      </div>
     </div>
   </div>
 </div>
