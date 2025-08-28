@@ -22,6 +22,8 @@ export function registerEvents(
   let scaling = false;
 
   const onDragStart = () => {
+    if (cropperProperties.disabled) return;
+
     let right = cropperProperties.posX + cropperProperties.scale;
     let bottom = cropperProperties.posY + cropperProperties.scale;
 
@@ -50,6 +52,8 @@ export function registerEvents(
   };
 
   const onDragMove = (e: { offsetX: number; offsetY: number }) => {
+    if (cropperProperties.disabled) return;
+
     mouseX = e.offsetX;
     mouseY = e.offsetY;
 
@@ -93,6 +97,8 @@ export function registerEvents(
   };
 
   const onDragEnd = () => {
+    if (cropperProperties.disabled) return;
+
     scaling = false;
     dragging = false;
   };

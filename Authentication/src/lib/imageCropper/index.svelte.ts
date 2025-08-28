@@ -8,6 +8,8 @@ export type CropperProperties = {
   ih: number;
 
   buttonSize: number;
+
+  disabled: boolean;
 };
 export class ImageCropper {
   private canvas: HTMLCanvasElement;
@@ -29,6 +31,8 @@ export class ImageCropper {
       ih: 0,
 
       buttonSize: 0,
+
+      disabled: false,
     };
 
     const ctx = canvas.getContext("2d");
@@ -57,9 +61,10 @@ export class ImageCropper {
 
   public setImage(img: HTMLImageElement | undefined) {
     this.decodedImage = img;
+    this.properties.disabled = false;
   }
 
-  public getTranscodedImage() {
+  public async getTranscodedImage() {
     if (!this.decodedImage)
       throw "Found a bug: decodedImage == null in getTranscodedImage function";
 
@@ -68,6 +73,8 @@ export class ImageCropper {
 
     if (!ctx)
       throw "Browser not supported: HTMLCanvasElemented#getContext returned NULL.";
+
+    this.properties.disabled = true;
 
     const physicalProperties = {
       posX:
@@ -91,6 +98,8 @@ export class ImageCropper {
       -physicalProperties.posY
     );
 
-    return tmpCanvas.toDataURL();
+    return new Promise<Blob | null>((resolve) => {
+      tmpCanvas.toBlob(resolve);
+    });
   }
 }

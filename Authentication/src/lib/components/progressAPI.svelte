@@ -7,11 +7,12 @@
   export async function invokeAPIWithStatus<T>(
     label: string,
     endpointString: string,
-    payload: any
+    payload: any,
+    method: "POST" | "PUT" = "POST"
   ) {
     requestProgressLabel = label;
     await tick();
-    const res = await invokeAPI<T>(endpointString, payload);
+    const res = await invokeAPI<T>(endpointString, payload, method);
     requestProgressLabel = undefined;
 
     return res;

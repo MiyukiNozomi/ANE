@@ -52,14 +52,32 @@
 
   async function updateProfilePicture() {
     if (!imageCropper) return setError("The cropper is null! this is a bug!");
-    const imageData = imageCropper.getTranscodedImage();
+    const imageData = await imageCropper.getTranscodedImage();
+    if (!imageData) return setError("Cropped image is null!");
 
-    const link = document.createElement("a"); // Create a temporary <a> element
-    link.href = imageData; // Set the href to the data URL
-    link.download = "test.png"; // Set the desired filename
-    document.body.appendChild(link); // Append the link to the document
-    link.click(); // Trigger the download
-    document.body.removeChild(link); // Clean up by removing the link
+    const formData = new FormData();
+    formData.append("inputImage", imageData, "myself.bin");
+
+    const res = await progressAPI?.invokeAPIWithStatus(
+      "Sending your cute image..",
+      "signed/update-picture",
+      formData,
+      "PUT"
+    );
+
+    if (!res || res.error) {
+      return setError(
+        `Something bad has occurred, this could either be from a bug, or you've been rate limited.
+Try again later, should the error persist contact miyuki@ane.jp.net as this is a bug.`
+      );
+    }
+
+    imageCropper.setImage(undefined);
+    files = undefined;
+
+    setSuccessful(
+      "Successfully defined your new profile picture! you should see it update accross ANE."
+    );
   }
 
   onMount(() => {
@@ -102,31 +120,33 @@
         <canvas bind:this={cropperCanvas}></canvas>
       </div>
 
-      <div class="flex flex-row gap-4">
-        {#if imageCropper?.hasImage()}
-          <button
-            class="bg-red-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
-            onclick={() => {
-              imageCropper?.setImage(undefined);
-              files = undefined;
-            }}
-            >Cancel
-          </button>
-          <button
-            class="bg-blue-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
-            onclick={updateProfilePicture}>Upload</button
-          >
-        {:else}
-          <input
-            accept="image/*"
-            bind:files
-            id="avatar"
-            name="avatar"
-            type="file"
-            class=" mx-auto md:m-0 file:bg-blue-500 file:rounded-md file:px-4 file:py-2 file:mr-4"
-          />
-        {/if}
-      </div>
+      {#if progressAPI && !progressAPI.isActive()}
+        <div class="flex flex-row gap-4">
+          {#if imageCropper?.hasImage()}
+            <button
+              class="bg-red-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
+              onclick={() => {
+                imageCropper?.setImage(undefined);
+                files = undefined;
+              }}
+              >Cancel
+            </button>
+            <button
+              class="bg-blue-500 rounded-md px-4 py-2 w-fit mx-auto md:m-0"
+              onclick={updateProfilePicture}>Upload</button
+            >
+          {:else}
+            <input
+              accept="image/*"
+              bind:files
+              id="avatar"
+              name="avatar"
+              type="file"
+              class=" mx-auto md:m-0 file:bg-blue-500 file:rounded-md file:px-4 file:py-2 file:mr-4"
+            />
+          {/if}
+        </div>
+      {/if}
     </div>
   </div>
 </div>

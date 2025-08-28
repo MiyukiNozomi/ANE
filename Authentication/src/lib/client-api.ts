@@ -21,12 +21,13 @@ export function isUsernameValidClientCheck(username: string): boolean {
 
 export async function invokeAPI<T>(
   endpoint: string,
-  payload: any
+  payload: any | FormData,
+  requestMethod: "POST" | "PUT" = "POST"
 ): Promise<LocalResponse<T> | null> {
   try {
     const res = await fetch("/api/" + endpoint, {
-      method: "POST",
-      body: JSON.stringify(payload),
+      method: requestMethod,
+      body: payload instanceof FormData ? payload : JSON.stringify(payload),
     });
     if (res.status != 200) return null;
     return (await res.json()) as LocalResponse<T>;

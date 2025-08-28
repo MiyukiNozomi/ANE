@@ -35,7 +35,8 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [ ] Maybe add a metrics page on the reverse proxy? just to see how server load is doing publically.
 - [ ] Change the rule configuration format of the reverse proxy to allow for things such as:
 
-  - [ ] Rate limit some regions differently
+  - [ ] Rate limit some regions differently (for example, limit to 2r/s in countries like China due to bots)
+  - [ ] Rate limit pathnames differently, like Auth's /api/signed/update-picture
 
 - [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Add a README on all microservices
@@ -49,10 +50,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
   - [-] Weird svelte bug? clicking the login screen redirects to.. /home/settings/\_\_data.json??x-sveltekit-invalidated=01?
     WARN: (could not replicate in dev, consider refactoring the front end)
-
-  - [ ] Descriptive errors in API endpoints (give real error messages on the public endpoints) (better to do this at reverse proxy level, honestly.)
-
-  - [ ] Profile Picture support (this can wait)
+  - [x] Profile Picture support
 
 - [ ] Finish git.ane.jp.net
   - [ ] Repositories
