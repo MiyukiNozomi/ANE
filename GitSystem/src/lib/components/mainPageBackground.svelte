@@ -69,7 +69,16 @@
       // rendering the background
       ctx.globalAlpha = Math.min(1.0, bgFadeProgress);
 
-      drawRotatedImage(backgroundImage, centerX, centerY, bgRotation);
+      const bgSize = Math.max(canvas!.width, canvas!.height);
+
+      drawRotatedImage(
+        backgroundImage,
+        centerX,
+        centerY,
+        bgRotation,
+        bgSize,
+        bgSize
+      );
       bgRotation += bgRotationSpeed;
 
       if (bgFadeProgress < 1.0) {
@@ -113,7 +122,7 @@
     const backgroundSize =
       screenHeight > screenWidth
         ? "?height=" + screenHeight
-        : "?width=" + screenWidth;
+        : "?width=" + 1.2 * screenWidth;
     const compassSize =
       screenHeight > screenWidth
         ? "?height=" + 4 * screenHeight

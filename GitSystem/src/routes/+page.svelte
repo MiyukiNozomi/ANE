@@ -2,7 +2,7 @@
   import Footer from "$lib/components/footer.svelte";
   import Header from "$lib/components/header.svelte";
   import MainPageBackground from "$lib/components/mainPageBackground.svelte";
-  import SplitPanel from "$lib/components/splitPanel.svelte";
+  import SplitPanel from "$lib/components/stellar/splitPanel.svelte";
   import { onMount } from "svelte";
 
   let backgroundImage: HTMLImageElement;
@@ -45,6 +45,9 @@
       <p class="font-kumbh text-sm">
         Welcome to Miyuki's online git repository, a compass into the crazy
         ideas I've written and maintain.
+        <br />
+        I no longer sees my projects as just software, I see them as an artistic
+        mean.
       </p>
     </SplitPanel>
     <SplitPanel label="PROJECTS">

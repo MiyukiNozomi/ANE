@@ -1,7 +1,7 @@
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({locals}) => {
-  if (!locals.session)
-    
+export const load = (async ({ locals }) => {
+  if (!locals.session) return {};
+
   return {};
 }) satisfies PageServerLoad;
