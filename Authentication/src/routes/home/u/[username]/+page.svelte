@@ -24,7 +24,6 @@
     List of TODOs:
 
     [ ] About Me
-    [ ] Badges?
 -->
 <div class="bg-zinc-900 h-screen w-screen text-white flex flex-col font-kumbh">
   <div
