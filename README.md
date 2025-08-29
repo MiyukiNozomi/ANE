@@ -61,7 +61,6 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
     - [ ] Visible README.mds on active directory
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)
 
-- [ ] Document all microservices (the readme.md on all of them)
 - [x] Stop using wasm32 sharp in microservices (it does support FreeBSD natively, i should NOT be using the wasm module anymore.)
 
 # Future things for next code review...
