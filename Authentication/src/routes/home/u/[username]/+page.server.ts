@@ -6,5 +6,7 @@ export const load = (async ({ locals, request, params }) => {
   const account = await Backend.getAccount(params.username);
   if (!account || account.error) return error(404);
 
+  console.log(account);
+
   return { homeAccountInfo: account.data! };
 }) satisfies PageServerLoad;

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { getAccountInfo } from "$lib/client-api";
-  import type { PageData } from "../../uid/[id]/$types";
+  import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
   const { homeAccountInfo } = data;
@@ -41,6 +41,23 @@
         <p class="text-gray-300 text-md m-0">
           /home/u/{homeAccountInfo.name}
         </p>
+        <!-- badges-->
+        <div class="flex flex-row mt-4">
+          {#if homeAccountInfo.isAdmin}
+            <img
+              class="h-16"
+              src="https://galatea.ane.jp.net/dl/images/badges/admin-badge.webp"
+              alt="{homeAccountInfo.displayName} is an Admin."
+            />
+          {/if}
+          {#if homeAccountInfo.isDonator}
+            <img
+              class="h-16"
+              src="https://galatea.ane.jp.net/dl/images/badges/donator-badge.webp"
+              alt="{homeAccountInfo.displayName} is an Donator!."
+            />
+          {/if}
+        </div>
       </div>
     </div>
     <p class="mt-4 text-gray-400 italic">

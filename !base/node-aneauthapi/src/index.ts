@@ -32,6 +32,9 @@ namespace AuthAPI {
     displayName: string;
     name: string;
     createdAt: number;
+
+    isAdmin: boolean;
+    isDonator: boolean;
   };
 
   function invokeAuthAPI<T>(

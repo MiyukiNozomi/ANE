@@ -18,6 +18,9 @@ export type AccountInfo = {
   displayName: string;
   name: string;
   createdAt: number;
+
+  isAdmin: boolean;
+  isDonator: boolean;
 };
 
 export type AccountSecurityInfo = {
