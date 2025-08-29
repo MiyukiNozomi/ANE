@@ -290,5 +290,21 @@ It can also optionally include a URL to redirect the user back to if needed (if 
       You can now either use the ID field or the Name field as those are
       immutable when linking data together.
     </p>
+    <h2 class="font-semibold text-2xl text-gray-100" id="profile-picture">
+      Extra: Profile Pictures
+    </h2>
+    <p>
+      A recent addition to ANE is the Profile Picture support for accounts,
+      these are handled by this microservice on the following path:
+    </p>
+    <div class="p-4 py-2 bg-slate-900 text-center rounded-lg">
+      <p>https://auth.ane.jp.net/home/u/[username]/picture</p>
+    </div>
+    <p>
+      Please note ALL profile pictures are in the <a
+        href="https://developers.google.com/speed/webp"
+        >WebP &UpperRightArrow;</a
+      > format.
+    </p>
   </div>
 </div>

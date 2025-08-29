@@ -6,11 +6,7 @@ import { existsSync, readFileSync } from "fs";
 import { error, redirect } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ params }) => {
-  let id = 0;
-  id = parseInt(params.id);
-  if (isNaN(id)) error(400);
-
-  const account = await Backend.getAccount(undefined, id);
+  const account = await Backend.getAccount(params.username);
   if (!account || account.error) return error(404);
 
   const outPath = path.join(AUTH_DATA_FOLDER, account.data!.name + ".webp");

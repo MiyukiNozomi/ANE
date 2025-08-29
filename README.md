@@ -29,8 +29,6 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 # TODO
 
-- [ ] Validate octets of IPv4 addresses in ratelimit code of the reverse proxy, right now if the IP is:
-      ::ffff:269.491.24.567.1561 it will still go through anyway as a normal IP, this should NOT be allowed, even if theoretically impossible..
 - [ ] Immediately block ALL requests that do not contain ANE's domain in production version of reverse proxy
 - [ ] Maybe add a metrics page on the reverse proxy? just to see how server load is doing publically.
 - [ ] Change the rule configuration format of the reverse proxy to allow for things such as:
@@ -38,15 +36,12 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Rate limit some regions differently (for example, limit to 2r/s in countries like China due to bots)
   - [ ] Rate limit pathnames differently, like Auth's /api/signed/update-picture
 
-- [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
 
   - [ ] git.ane.jp.net
 
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
-
-  - [ ] Modernize the Database of AuthDaemon
 
   - [-] Weird svelte bug? clicking the login screen redirects to.. /home/settings/\_\_data.json??x-sveltekit-invalidated=01?
     WARN: (could not replicate in dev, consider refactoring the front end)
@@ -67,4 +62,12 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)
 
 - [ ] Document all microservices (the readme.md on all of them)
-- [ ] Stop using wasm32 sharp in microservices (it does support FreeBSD natively, i should NOT be using the wasm module anymore.)
+- [x] Stop using wasm32 sharp in microservices (it does support FreeBSD natively, i should NOT be using the wasm module anymore.)
+
+# Future things for next code review...
+
+- [ ] Modernize the Database of AuthDaemon
+- [ ] Modernize the Database of the Git Service.
+- [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
+- [ ] Validate octets of IPv4 addresses in ratelimit code of the reverse proxy, right now if the IP is:
+      ::ffff:269.491.24.567.1561 it will still go through anyway as a normal IP, this should NOT be allowed, even if theoretically impossible..
