@@ -26,6 +26,9 @@ class Account
 
     private int createdAt;
 
+    private bool isDonator;
+    private bool isAdmin;
+
     /**
         Use this to ensure the account cannot be modified if the token is from a third party authorization.
     */
@@ -34,7 +37,8 @@ class Account
     Database db;
 
     public this(Database db, int id, string displayName, string name, string passwordHash,
-        string totpSecretOrNull, string recoveryEmailOrNull, string totpBackupCode, int createdAt)
+        string totpSecretOrNull, string recoveryEmailOrNull, string totpBackupCode, int createdAt,
+        bool isAdmin, bool isDonator)
     {
         this.db = db;
 
@@ -51,6 +55,9 @@ class Account
         this.createdAt = createdAt;
 
         this.sessionInfo = null;
+
+        this.isAdmin = isAdmin;
+        this.isDonator = isDonator;
     }
 
     // For later account settings 
@@ -218,21 +225,35 @@ class Account
         value["id"] = this.id;
         value["createdAt"] = this.createdAt;
 
+        value["isAdmin"] = this.isAdmin;
+        value["isDonator"] = this.isDonator;
+
         debug
         {
             writeln("Encoded: ", value);
         }
+
         return value;
     }
 
     override string toString() const
     {
+        debug
+        {
+            const hash = passwordHash;
+        }
+        else
+        {
+            const hash = "<truncated  (本番ビルド)>";
+        }
         return format("%d: [
     name: %s
     passwordHash: %s
     totpSecretOrNull: %s
     recoveryEmailOrNull: %s
-]", id, name, passwordHash, totpSecretOrNull, recoveryEmailOrNull);
+    isAdmin: %s
+    isDonator: %s
+]", id, name, hash, totpSecretOrNull, recoveryEmailOrNull, isAdmin, isDonator);
     }
 
     // built in utilities

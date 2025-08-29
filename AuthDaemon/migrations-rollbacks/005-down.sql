@@ -1,0 +1,3 @@
+
+ALTER TABLE users DROP COLUMN isAdmin;
+ALTER TABLE users DROP COLUMN isDonator;

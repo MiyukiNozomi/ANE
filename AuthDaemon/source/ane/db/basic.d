@@ -60,7 +60,8 @@ class Database : SQLite3Handler
         auto stmt = newPreparedStatement(
             "SELECT
                 id, displayName, name, passwordHash, totpSecret,
-                recoveryEmail, totpBackupCode, created_at
+                recoveryEmail, totpBackupCode, created_at,
+                isAdmin, isDonator
                 FROM users WHERE id = ?");
 
         stmt.bindInt(1, id);
@@ -82,7 +83,8 @@ class Database : SQLite3Handler
         auto stmt = newPreparedStatement(
             "SELECT
                 id, displayName, name, passwordHash, totpSecret,
-                recoveryEmail, totpBackupCode, created_at
+                recoveryEmail, totpBackupCode, created_at,
+                isAdmin, isDonator
                 FROM users WHERE name = ?");
 
         stmt.bindText(1, username);
@@ -110,6 +112,11 @@ package:
 
         const createdAt = stmt.columnInt(7);
 
+        const isAdmin = stmt.columnInt(8);
+        const isDonator = stmt.columnInt(9);
+
+        writeln(isAdmin, " ", isDonator);
+
         return new Account(this,
             id,
             displayNameOrNull,
@@ -119,7 +126,10 @@ package:
             recoveryEmailOrNull,
             totpBackupCodeOrNull,
 
-            createdAt
+            createdAt,
+
+            isAdmin != 0,
+            isDonator != 0
         );
     }
 }
