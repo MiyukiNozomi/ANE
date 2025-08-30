@@ -1,0 +1,4 @@
+export const REPOSITORY_NAME_MIN = 3;
+export const REPOSITORY_NAME_MAX = 64;
+
+export const REPOSITORY_DESCRIPTION_MAX = 64;

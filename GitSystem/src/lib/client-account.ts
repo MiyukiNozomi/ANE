@@ -1,6 +1,32 @@
 import { browser } from "$app/environment";
 import type { AccountInfo } from "node-aneauthapi";
 
+export async function invalidateSession() {
+  await fetch("https://auth.ane.jp.net/api/signed/session/delete-self", {
+    method: "POST",
+  });
+  document.cookie = `AuthToken=CLEARLY_INVALID; SameSite=Lax; Path=/`;
+  document.cookie = `AccountInfo=CLEARLY_INVALID; SameSite=Lax; Path=/`;
+  window.location.reload();
+}
+
+export async function invokeAPI<T>(
+  endpoint: string,
+  payload: any | FormData,
+  requestMethod: "POST" | "PUT" = "POST"
+): Promise<T | null> {
+  try {
+    const res = await fetch("/api/" + endpoint, {
+      method: requestMethod,
+      body: payload instanceof FormData ? payload : JSON.stringify(payload),
+    });
+    if (res.status != 200) return null;
+    return (await res.json()) as T;
+  } catch (err) {
+    return null;
+  }
+}
+
 export function getCookie(name: string) {
   if (!browser) return null;
   const cookies = document.cookie.split("; ");
