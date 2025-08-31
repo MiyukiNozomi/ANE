@@ -44,7 +44,7 @@ class GitBridge {
       recursive: true,
     });
 
-    this.runGit(outputPath, "init", "--bare");
+    this.runGit(outputPath, "init", "--bare", "--initial-branch=master");
   }
 
   private async runGit(

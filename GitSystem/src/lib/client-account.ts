@@ -1,6 +1,12 @@
 import { browser } from "$app/environment";
 import type { AccountInfo } from "node-aneauthapi";
 
+export type APIResponseOrError<T = undefined> = {
+  ok: boolean;
+  message: string;
+  data?: T;
+};
+
 export async function invalidateSession() {
   await fetch("https://auth.ane.jp.net/api/signed/session/delete-self", {
     method: "POST",
@@ -14,14 +20,14 @@ export async function invokeAPI<T>(
   endpoint: string,
   payload: any | FormData,
   requestMethod: "POST" | "PUT" = "POST"
-): Promise<T | null> {
+): Promise<APIResponseOrError<T> | null> {
   try {
     const res = await fetch("/api/" + endpoint, {
       method: requestMethod,
       body: payload instanceof FormData ? payload : JSON.stringify(payload),
     });
     if (res.status != 200) return null;
-    return (await res.json()) as T;
+    return (await res.json()) as APIResponseOrError<T>;
   } catch (err) {
     return null;
   }

@@ -7,6 +7,7 @@ import {
 } from "$lib/shared/constants";
 import { error, json } from "@sveltejs/kit";
 import git from "$lib/server/git";
+import { registerRepository } from "$lib/server/db";
 
 const requestData = z.object({
   name: z.string().min(REPOSITORY_NAME_MIN).max(REPOSITORY_NAME_MAX),
@@ -35,6 +36,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       ok: false,
       message: gitError,
     });
+
+  await registerRepository(name, description, locals.session.accountInfo.name);
 
   return json({
     ok: true,

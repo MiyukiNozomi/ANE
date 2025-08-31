@@ -32,9 +32,6 @@
   <div class="relative flex flex-col h-[93vh] z-20">
     <Header />
     <MainPageBackground />
-    <div class="h-full flex flex-col text-center md:text-start relative">
-      <p class="text-4xl font-mplus2 p-16 md:p-24"></p>
-    </div>
   </div>
 
   <div class="flex flex-col gap-8 bg-black pb-8">
