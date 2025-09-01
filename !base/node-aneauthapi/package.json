@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://git.ane.jp.net/u/miyuki/git/ANEAuthAPI.git"
+    "url": "git+https://git.ane.jp.net/u/miyuki/projects/ANEAuthAPI.git"
   },
   "exports": {
     ".": {

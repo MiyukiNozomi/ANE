@@ -1,4 +1,7 @@
+import * as http from "http";
 import * as https from "https";
+
+let isProduction = false;
 
 /**
  * Namespace containing all the public features of the Anemachi Authorization API
@@ -37,6 +40,40 @@ namespace AuthAPI {
     isDonator: boolean;
   };
 
+  function newRawRequest(
+    endpoint: string,
+    authToken: string | undefined,
+    hasPayload: boolean,
+    clb: (res: http.IncomingMessage) => void
+  ): http.ClientRequest {
+    let headers: Record<string, string> = {};
+    if (hasPayload) headers["content-type"] = "application/json";
+    if (authToken) headers["authorization"] = "Bearer " + authToken;
+
+    if (isProduction) {
+      return http.request(
+        {
+          hostname: "127.0.0.1",
+          port: 4000,
+          path: `/api/${endpoint}`,
+          headers,
+          method: "POST",
+        },
+        clb
+      );
+    }
+
+    return https.request(
+      {
+        hostname: "auth.ane.jp.net",
+        path: `/api/${endpoint}`,
+        headers,
+        method: "POST",
+      },
+      clb
+    );
+  }
+
   function invokeAuthAPI<T>(
     endpoint: string,
     payload: any,
@@ -47,13 +84,10 @@ namespace AuthAPI {
       if (payload) headers["content-type"] = "application/json";
       if (authtoken) headers["authorization"] = "Bearer " + authtoken;
 
-      const req = https.request(
-        {
-          hostname: "auth.ane.jp.net",
-          path: `/api/${endpoint}`,
-          headers,
-          method: "POST",
-        },
+      const req = newRawRequest(
+        endpoint,
+        authtoken,
+        typeof payload == "object" && payload != null,
         (res) => {
           let data = new Array<Buffer>();
 
@@ -83,6 +117,16 @@ namespace AuthAPI {
 
       req.end();
     });
+  }
+
+  /**
+   * Switches AuthAPI to production mode.
+   * Instead of contacting the rate-limited public version of "auth.ane.jp.net",
+   * it will use the local instance of the auth microservice at 127.0.0.1:4000.
+   * ... which is only accessible within the server's LAN.
+   * */
+  export function ANEInternal__productionMode() {
+    isProduction = true;
   }
 
   /**
