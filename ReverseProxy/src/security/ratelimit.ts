@@ -32,7 +32,8 @@ class WindowRateLimiter {
       );
 
     // reinitialize window if window is no longer valid.
-    if (this.timestamp + WINDOW_DURATION < this.timestamp) {
+    if (now - this.timestamp > WINDOW_DURATION) {
+      Sys.println("[ratelimit] Window has been reset.");
       this.timestamp = now;
       this.count = 0;
       return true;
@@ -48,6 +49,10 @@ class WindowRateLimiter {
 
     this.count++;
     return true;
+  }
+
+  public getCount() {
+    return this.count;
   }
 }
 
@@ -67,6 +72,7 @@ export function shouldNotRateLimit(req: IncomingMessage) {
     remoteAddress = remoteAddress.substring(remoteAddress.lastIndexOf(":") + 1);
 
   const asnRegion = getASNInfoByIp(remoteAddress);
+  let ratelimiter: WindowRateLimiter;
 
   if (!asnRegion) {
     Sys.println(
@@ -74,23 +80,31 @@ export function shouldNotRateLimit(req: IncomingMessage) {
         remoteAddress +
         "! defaulting to the unbound rate limiter."
     );
-    return unboundRateLimiter.allowed();
+    ratelimiter = unboundRateLimiter;
+  } else {
+    Sys.println(
+      "[ratelimit] ASN Region found for " + remoteAddress + "! ",
+      asnRegion.asn,
+      asnRegion.cidr,
+      asnRegion.countryCode
+    );
+
+    ratelimiter = rateLimiters[asnRegion.asn];
+
+    if (!ratelimiter) {
+      Sys.println("[ratelimit] New window created for ASN: " + asnRegion.asn);
+      ratelimiter = new WindowRateLimiter(MAX_REQUEST_COUNT_PER_ASN);
+    }
+
+    rateLimiters[asnRegion.asn] = ratelimiter;
   }
+
   Sys.println(
-    "[ratelimit] ASN Region found for " + remoteAddress + "! ",
-    asnRegion.asn,
-    asnRegion.cidr,
-    asnRegion.countryCode
+    "[ratelimit] Window#" +
+      (asnRegion?.asn ?? "<unbound>") +
+      " received " +
+      ratelimiter.getCount() +
+      " requests."
   );
-
-  let ratelimiter = rateLimiters[asnRegion.asn];
-
-  if (!ratelimiter) {
-    Sys.println("[ratelimit] New window created for ASN: " + asnRegion.asn);
-    ratelimiter = new WindowRateLimiter(MAX_REQUEST_COUNT_PER_ASN);
-  }
-
-  rateLimiters[asnRegion.asn] = ratelimiter;
-
   return ratelimiter.allowed();
 }
