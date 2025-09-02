@@ -5,6 +5,13 @@ import path from "path";
 import git from ".";
 import Git from ".";
 
+export function getPhysicalProjectLocation(project: {
+  name: string;
+  authorUsername: string;
+}) {
+  return path.join(GIT_USER_HOME_FOLDER, project.authorUsername, project.name);
+}
+
 export async function createNewRepository(
   author: AccountInfo,
   name: string,
@@ -17,7 +24,10 @@ export async function createNewRepository(
     return "Invalid repository name.";
   }
 
-  const outputPath = path.join(GIT_USER_HOME_FOLDER, author.name, name);
+  const outputPath = getPhysicalProjectLocation({
+    name: name,
+    authorUsername: author.name,
+  });
 
   if (existsSync(outputPath)) return "This repository already exists.";
 
