@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { invokeAPI } from "$lib/client-account";
+  import { getAccountInfo, invokeAPI } from "$lib/client-account";
   import {
     REPOSITORY_DESCRIPTION_MAX,
-    REPOSITORY_NAME_MAX,
-    REPOSITORY_NAME_MIN,
+    GIT_OBJECT_NAME_MAX,
+    GIT_OBJECT_NAME_MIN,
   } from "$lib/shared/constants";
   import { boolean } from "zod";
   import PopupBase from "../stellar/popupBase.svelte";
   import StellarButton from "../stellar/stellarButton.svelte";
   import StellarInput from "../stellar/stellarInput.svelte";
+
+  const accountInfo = getAccountInfo();
 
   let base: PopupBase;
 
@@ -31,6 +33,8 @@
         res?.message ?? "Failed to contact API, try again later."
       );
     }
+
+    window.location.href = `/u/${accountInfo!.name}/projects/${repoName}`;
   }
 </script>
 
@@ -46,7 +50,7 @@
     bind:text={repoName}
     type={"text"}
     placeholder={"Repository Name"}
-    maxlength={REPOSITORY_NAME_MAX}
+    maxlength={GIT_OBJECT_NAME_MAX}
     isMultiline={false}
   />
   <StellarInput

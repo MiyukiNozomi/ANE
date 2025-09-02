@@ -2,15 +2,15 @@ import z from "zod";
 import type { RequestHandler } from "./$types";
 import {
   REPOSITORY_DESCRIPTION_MAX,
-  REPOSITORY_NAME_MAX,
-  REPOSITORY_NAME_MIN,
+  GIT_OBJECT_NAME_MAX,
+  GIT_OBJECT_NAME_MIN,
 } from "$lib/shared/constants";
 import { error, json } from "@sveltejs/kit";
-import git from "$lib/server/git";
+import git from "$lib/server/git/bridge";
 import { registerRepository } from "$lib/server/db";
 
 const requestData = z.object({
-  name: z.string().min(REPOSITORY_NAME_MIN).max(REPOSITORY_NAME_MAX),
+  name: z.string().min(GIT_OBJECT_NAME_MIN).max(GIT_OBJECT_NAME_MAX),
   description: z.string().max(REPOSITORY_DESCRIPTION_MAX),
 });
 
@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const data = requestData.safeParse(await request.json());
   if (data.error) {
-    return error(400);
+    return json({ ok: false, message: data.error.message });
   }
 
   const { name, description } = data.data;

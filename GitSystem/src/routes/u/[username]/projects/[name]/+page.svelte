@@ -19,6 +19,12 @@
 
 <PageBody>
   <div class="flex flex-row">
-    <p class="mx-auto">{data.project.description}</p>
+    <p
+      class="mx-auto italic text-xl font-baskervville text-orange-300 flex flex-row items-center gap-2"
+    >
+      <span class="text-3xl">&quot;</span>
+      {data.project.description}
+      <span class="text-3xl transform rotate-180">&quot;</span>
+    </p>
   </div>
 </PageBody>

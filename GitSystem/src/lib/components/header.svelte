@@ -5,7 +5,7 @@
 </script>
 
 <div
-  class="relative flex flex-row z-50 w-full top-[-0.85rem] font-baskervville overflow-hidden"
+  class="relative flex flex-row z-40 w-full top-[-0.85rem] font-baskervville overflow-hidden"
 >
   <div
     class="absolute top-0 left-0 bg-black w-full h-2/4

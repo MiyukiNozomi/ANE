@@ -13,6 +13,9 @@ export type Repository = {
   description: string;
   authorUsername: string;
   created_at: number;
+
+  /** 0 means == not forked. */
+  parentRepositoryId: number;
 };
 
 export type Contributor = {
@@ -20,6 +23,8 @@ export type Contributor = {
   contributorUsername: string;
   repositoryId: number;
   created_at: number;
+
+  hasWriteAccess: boolean;
 };
 
 export type Project = Repository & { contributors: Contributor[] };
@@ -37,6 +42,11 @@ CREATE TABLE IF NOT EXISTS repositories (
     
     authorUsername TEXT NOT NULL,
 
+    /** is this repository a fork of another?
+     * repository ID if yes
+     */
+    parentRepositoryId INTEGER DEFAULT NULL,
+
     created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')) -- unix time (seconds)
 );
 
@@ -45,6 +55,8 @@ CREATE TABLE IF NOT EXISTS contributors (
     
     contributorUsername TEXT NOT NULL,
     repositoryId INTEGER NOT NULL,
+
+    hasWriteAccess BOOLEAN DEFAULT FALSE,
        
     created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')), -- unix time (seconds)
  
