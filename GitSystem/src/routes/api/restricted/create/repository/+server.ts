@@ -1,13 +1,13 @@
-import z from "zod";
-import type { RequestHandler } from "./$types";
+import { registerRepository } from "$lib/server/db";
 import {
-  REPOSITORY_DESCRIPTION_MAX,
   GIT_OBJECT_NAME_MAX,
   GIT_OBJECT_NAME_MIN,
+  REPOSITORY_DESCRIPTION_MAX,
 } from "$lib/shared/constants";
 import { error, json } from "@sveltejs/kit";
-import { registerRepository } from "$lib/server/db";
-import Git from "$lib/server/git";
+import z from "zod";
+import type { RequestHandler } from "./$types";
+import { createNewRepositoryService } from "./service";
 
 const requestData = z.object({
   name: z.string().min(GIT_OBJECT_NAME_MIN).max(GIT_OBJECT_NAME_MAX),
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const { name, description } = data.data;
 
-  const gitError = await Git.createNewRepository(
+  const gitError = await createNewRepositoryService(
     locals.session.accountInfo,
     name,
     description

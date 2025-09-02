@@ -1,10 +1,9 @@
 import bridge from "./bridge";
-import { createNewRepository, getPhysicalProjectLocation } from "./fs";
+import { getPhysicalProjectLocation } from "./fs";
 import { handleGitRequest } from "./gitHttp";
 
 const Git = {
   bridge,
-  createNewRepository,
   getPhysicalProjectLocation,
   handleGitRequest,
 };

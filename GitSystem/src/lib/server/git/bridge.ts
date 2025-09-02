@@ -28,18 +28,46 @@ class GitBridge {
     if (dev) console.log("Found Git Services: ", this.gitServices);
   }
 
-  /** Use this for generic git commands */
-  public async run(executionDirectory: string, ...params: Array<any>) {
-    return this.runWithPayload("git", executionDirectory, undefined, ...params);
+  /** Use this for generic git commands, like ls-tree */
+  public async runImmediate(
+    executionDirectory: string,
+    ...params: Array<string>
+  ) {
+    return new Promise<Buffer>((resolve, reject) => {
+      console.log("RUN_IMMEDIATE git ", params, " on ", executionDirectory);
+
+      const gitProcess = spawn(this.gitServices["git"], params, {
+        cwd: executionDirectory,
+        timeout: 5000,
+        shell: false,
+      });
+
+      let output = new Array<Buffer>();
+      let errors = "";
+
+      gitProcess.stdout.on("data", (d) => output.push(d));
+      gitProcess.stderr.on("data", (d) => (errors += d));
+
+      gitProcess.on("close", (code) => {
+        if (errors.length > 0)
+          reject(new Error(`Error! git has said on its stderr: ${errors}`));
+        if (code != 0) {
+          reject(new Error(`Error! git has returned exit code: ${code}`));
+        } else {
+          resolve(Buffer.concat(output));
+        }
+      });
+    });
   }
 
+  // use this for git-upload-pack or git-receive-pack
   public async runWithPayload(
     service: GitService,
     executionDirectory: string,
     //... why are undefined and null different things...?
     // undefined doesn't even mean not set, it just means "uninitialized", back in my day we called that a `null`.
     payloadStream?: ReadableStream | null,
-    ...params: Array<any>
+    ...params: Array<string>
   ): Promise<Readable> {
     return new Promise((resolve, reject) => {
       console.log(
@@ -62,11 +90,13 @@ class GitBridge {
 
       gitProcess.on("close", (code) => {
         if (errors.length > 0)
-          throw new Error(
-            `Error! ${service} has said on its stderr: ${errors}`
+          reject(
+            new Error(`Error! ${service} has said on its stderr: ${errors}`)
           );
         if (code != 0) {
-          throw new Error(`Error! ${service} has returned exit code: ${code}`);
+          reject(
+            new Error(`Error! ${service} has returned exit code: ${code}`)
+          );
         } else if (dev) {
           console.log("Exit-Code: 0!!!!");
         }

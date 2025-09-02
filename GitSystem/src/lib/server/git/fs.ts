@@ -1,8 +1,15 @@
 import { GIT_USER_HOME_FOLDER } from "$env/static/private";
-import { existsSync, mkdirSync } from "fs";
-import type { AccountInfo } from "node-aneauthapi";
 import path from "path";
+import type { Project } from "../db";
 import Git from ".";
+
+export type GitFSFile = {
+  mode: string;
+  isFile: boolean;
+  hash: string;
+  filename: string;
+  filepath: string;
+};
 
 export function getPhysicalProjectLocation(project: {
   name: string;
@@ -11,28 +18,85 @@ export function getPhysicalProjectLocation(project: {
   return path.join(GIT_USER_HOME_FOLDER, project.authorUsername, project.name);
 }
 
-export async function createNewRepository(
-  author: AccountInfo,
-  name: string,
-  description: string
-): Promise<string | undefined> {
-  if (!author.isAdmin)
-    throw new Error("Author is not an admin! this is a bug!");
+export async function getFileList(
+  userProject: Project,
+  branch: string,
+  parentPath: string
+): Promise<Array<GitFSFile>> {
+  let gitFileList = (
+    await Git.bridge.runImmediate(
+      getPhysicalProjectLocation(userProject),
+      "ls-tree",
+      "-r",
+      "-t",
+      branch
+    )
+  )
+    .toString()
+    .split("\n");
 
-  if (!Git.bridge.isNameValid(name)) {
-    return "Invalid repository name.";
-  }
+  return gitFileList
+    .map((v) => {
+      let optionsLength = v.indexOf("\t");
 
-  const outputPath = getPhysicalProjectLocation({
-    name: name,
-    authorUsername: author.name,
-  });
+      let options = v.substring(0, optionsLength).split(" ");
+      let mode = options[0];
+      let isFile = options[1] == "blob";
+      let hash = options[2];
 
-  if (existsSync(outputPath)) return "This repository already exists.";
+      let filepath = v.substring(optionsLength + 1);
 
-  mkdirSync(outputPath, {
-    recursive: true,
-  });
+      if (
+        filepath == parentPath ||
+        !filepath.startsWith(parentPath) ||
+        filepath.substring(parentPath.length + 1).includes("/")
+      )
+        return undefined;
 
-  Git.bridge.run(outputPath, "init", "--bare", "--initial-branch=master");
+      let lastSlash = filepath.lastIndexOf("/");
+      let filename =
+        lastSlash != -1 ? filepath.substring(lastSlash + 1) : filepath;
+
+      return {
+        filename,
+        filepath,
+        hash,
+        isFile,
+        mode,
+      };
+    })
+    .filter((v) => v != undefined)
+    .sort((a, b) => Number(a.isFile) - Number(b.isFile));
 }
+
+export async function getFileContent(
+  userProject: Project,
+  branch: string,
+  filepath: string
+) {
+  const gitFileList = (
+    await Git.bridge.runImmediate(
+      getPhysicalProjectLocation(userProject),
+      "ls-tree",
+      "-r",
+      "--name-only",
+      "-t",
+      branch
+    )
+  )
+    .toString()
+    .split("\n");
+
+  if (!gitFileList.includes(filepath)) return null;
+
+  return await Git.bridge.runImmediate(
+    getPhysicalProjectLocation(userProject),
+    "show",
+    "--no-notes",
+    "--encoding=UTF-8",
+    `${branch}:${filepath}`
+  );
+}
+
+const GitFS = { getPhysicalProjectLocation, getFileList, getFileContent };
+export default GitFS;

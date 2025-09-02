@@ -1,12 +1,8 @@
 <script lang="ts">
-  import { getAccountInfo, invalidateSession } from "$lib/client-account";
-  import Footer from "$lib/components/footer.svelte";
-  import Header from "$lib/components/header.svelte";
-  import NewRepository from "$lib/components/popups/newRepository.svelte";
-  import { onMount } from "svelte";
-  import type { PageProps } from "./$types";
-  import StellarButton from "$lib/components/stellar/stellarButton.svelte";
+  import { getAccountInfo } from "$lib/client-account";
   import PageBody from "$lib/components/pageBody.svelte";
+  import NewRepository from "$lib/components/popups/newRepository.svelte";
+  import type { PageProps } from "../$types";
 
   let { data }: PageProps = $props();
 
