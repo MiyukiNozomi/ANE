@@ -4,6 +4,8 @@ import { existsSync } from "fs";
 import Git from ".";
 import type { Project } from "../db";
 import { GitServiceNames, type GitService } from "./bridge";
+import { PassThrough, Readable } from "stream";
+import { pipe } from "zod";
 
 /***
  * This function provides an actual implementation of git-on-the-server through HTTP.
@@ -51,59 +53,48 @@ export async function handleGitRequest(
   // this parameter is pretty much mandatory, as we're doing git over HTTP(s).
   parameters.push("--stateless-rpc");
 
-  // TODO: Make this into a fucking stream!
-  /***
-   *  Note for anyone actually going through trying this:
-   * DON'T LOAD THE ENTIRE BLOB INTO MEMORY!
-   *  This is the most shittiest idea you could possibly do - because git packfiles
-   * can reach over megabytes in size, it will exhaust memory with a lot of traffic.
-   *
-   * And yes, i'm aware of this, but SvelteKit uses WebStreams instead of Node's Streams, and of course,
-   * the spawn function used inside of GitBridge#runWithPayload returns a NodeJS Writable instead of a WebStream WritableStream
-   * which is stupid! I absolutely, utterly, hate this language so much, but unfortunately, everything for the web is done for this
-   * broken language with 1024 different implemetations of the same thing!
-   *
-   * And yes, this is a rant. Currently it's 4 AM, I am drinking my second can of sugar-free redbull, haven't slept in 14 hours,
-   * and now, i have to argue with Grok on how to unfuck JavaScript.
-   */
-  let requestPayload =
-    method == "post"
-      ? Buffer.from(await (await request.blob()).arrayBuffer())
-      : undefined;
-
   // e.g, current directory
   parameters.push("./");
 
-  let responseBuffer = await Git.bridge.runWithPayload(
+  let gitResponseStream = await Git.bridge.runWithPayload(
     serviceName,
     projectPath,
-    requestPayload,
+    method == "post" ? request.body : undefined,
     ...parameters
   );
 
+  let responseWithHeader: PassThrough | undefined;
   if (pathname == "info/refs") {
     // This is so that git will understand that yes, this is in fact a 'smart' http server, aka a git-aware server.
     const headBuffer = Buffer.from("# service=" + serviceName + "\n");
     const head = (headBuffer.byteLength + 4).toString(16).padStart(4, "0");
 
-    responseBuffer = Buffer.concat([
-      Buffer.from(head, "utf-8"),
-      headBuffer,
-      Buffer.from("0000", "utf-8"),
-      responseBuffer,
+    const headerStream = Readable.from([
+      Buffer.concat([
+        Buffer.from(head, "utf-8"),
+        headBuffer,
+        Buffer.from("0000", "utf-8"),
+      ]),
     ]);
+    responseWithHeader = new PassThrough();
+    headerStream.pipe(responseWithHeader, { end: false });
+    headerStream.on("end", () =>
+      gitResponseStream.pipe(responseWithHeader as PassThrough)
+    );
   }
 
   // now we just inform what the content is and we're done!
-  return new Response(responseBuffer, {
-    status: 200,
-    headers: {
-      "Content-Length": responseBuffer.byteLength.toString(),
-      "Content-Type":
-        "application/x-" +
-        serviceName +
-        "-" +
-        (pathname == "info/refs" ? "advertisement" : "result"),
-    },
-  });
+  return new Response(
+    Readable.toWeb(responseWithHeader ?? gitResponseStream) as ReadableStream,
+    {
+      status: 200,
+      headers: {
+        "Content-Type":
+          "application/x-" +
+          serviceName +
+          "-" +
+          (pathname == "info/refs" ? "advertisement" : "result"),
+      },
+    }
+  );
 }

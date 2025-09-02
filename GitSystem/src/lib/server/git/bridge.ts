@@ -8,6 +8,8 @@ import {
   GIT_OBJECT_NAME_MAX,
   GIT_OBJECT_NAME_MIN,
 } from "$lib/shared/constants";
+import { Readable } from "stream";
+import { webStreamToNodeStream } from "./stream";
 
 export const GitServiceNames = [
   "git",
@@ -39,9 +41,11 @@ class GitBridge {
   public async runWithPayload(
     service: GitService,
     executionDirectory: string,
-    payload?: Buffer,
+    //... why are undefined and null different things...?
+    // undefined doesn't even mean not set, it just means "uninitialized", back in my day we called that a `null`.
+    payloadStream?: ReadableStream | null,
     ...params: Array<any>
-  ): Promise<Buffer> {
+  ): Promise<Readable> {
     return new Promise((resolve, reject) => {
       console.log(
         "RUN ",
@@ -55,37 +59,34 @@ class GitBridge {
         cwd: executionDirectory,
         timeout: 5000,
         shell: false,
+        stdio: ["pipe", "pipe", "pipe"],
       });
 
-      let buffers = new Array<Buffer>();
       let errors = "";
-
-      gitProcess.stdout.on("data", (data) => buffers.push(data));
       gitProcess.stderr.on("data", (d) => (errors += d));
 
       gitProcess.on("close", (code) => {
         if (errors.length > 0)
-          reject(
-            new Error(`Error! ${service} has said on its stderr: ${errors}`)
+          throw new Error(
+            `Error! ${service} has said on its stderr: ${errors}`
           );
-        if (code === 0) {
-          return resolve(Buffer.concat(buffers));
-        } else {
-          reject(
-            new Error(`Error! ${service} has returned exit code: ${code}`)
-          );
+        if (code != 0) {
+          throw new Error(`Error! ${service} has returned exit code: ${code}`);
+        } else if (dev) {
+          console.log("Exit-Code: 0!!!!");
         }
       });
 
-      if (payload) {
-        const chunkSize = 64 * 1024;
-        let offset = 0;
-        while (offset < payload.length) {
-          const chunk = payload.subarray(offset, offset + chunkSize);
-          gitProcess.stdin.write(chunk);
-          offset += chunkSize;
-        }
-        gitProcess.stdin.end();
+      // okay.. this is.. better i think?
+      if (payloadStream) {
+        const nodeReadable = Readable.fromWeb(payloadStream as any);
+        nodeReadable.pipe(gitProcess.stdin);
+
+        nodeReadable.on("end", () => {
+          resolve(gitProcess.stdout);
+        });
+      } else {
+        resolve(gitProcess.stdout);
       }
     });
   }

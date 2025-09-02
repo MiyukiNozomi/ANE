@@ -1,24 +1,15 @@
 import { getUserProject } from "$lib/server/db";
 import Git from "$lib/server/git";
-import { error } from "@sveltejs/kit";
+import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ params, request, url }) => {
-  const project = await getUserProject(params.username, params.projectName);
+const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
+  // Prevent web browsers from... web browsing.
+  if (!request.headers.get("user-agent")?.includes("git")) {
+    return redirect(302, "/");
+  }
 
-  if (!project) return error(404);
-
-  // TODO.. private repositories?
-
-  return await Git.handleGitRequest("get", project, request, url, params.path);
-};
-
-export const POST: RequestHandler = async ({
-  locals,
-  params,
-  request,
-  url,
-}) => {
+  // Ensure we're actually signed in.
   if (!locals.session)
     // Nope.
     return new Response(null, {
@@ -45,5 +36,15 @@ export const POST: RequestHandler = async ({
     return error(403, "You do not have write-access to this repository."); // Also nope!
 
   console.log("Got pushes into " + project.authorUsername + "#" + project.name);
-  return await Git.handleGitRequest("post", project, request, url, params.path);
+  return await Git.handleGitRequest(
+    // just to ensure this will always be either a post or get
+    request.method == "POST" ? "post" : "get",
+    project,
+    request,
+    url,
+    params.path
+  );
 };
+
+export const GET = GitHandler;
+export const POST = GitHandler;
