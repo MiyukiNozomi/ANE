@@ -2,7 +2,6 @@ import { GIT_USER_HOME_FOLDER } from "$env/static/private";
 import { existsSync, mkdirSync } from "fs";
 import type { AccountInfo } from "node-aneauthapi";
 import path from "path";
-import git from ".";
 import Git from ".";
 
 export function getPhysicalProjectLocation(project: {

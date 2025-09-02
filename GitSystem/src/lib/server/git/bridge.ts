@@ -1,15 +1,10 @@
-import type { AccountInfo } from "node-aneauthapi";
-import path from "path";
-import { GIT_USER_HOME_FOLDER } from "$env/static/private";
-import { existsSync, mkdirSync } from "fs";
-import { execFile, execFileSync, execSync, spawn } from "child_process";
 import { dev } from "$app/environment";
 import {
   GIT_OBJECT_NAME_MAX,
   GIT_OBJECT_NAME_MIN,
 } from "$lib/shared/constants";
+import { execSync, spawn } from "child_process";
 import { Readable } from "stream";
-import { webStreamToNodeStream } from "./stream";
 
 export const GitServiceNames = [
   "git",
