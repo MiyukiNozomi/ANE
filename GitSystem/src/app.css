@@ -28,5 +28,7 @@
   --animate-spin-fast: imageSpin 32s linear infinite;
   --animate-spin-slow: imageSpin 360s linear infinite;
 
+  --animate-pulsing: pulse 2s linear infinite;
+
   --animate-header-logo-spin: imageSpin 10s linear infinite;
 }

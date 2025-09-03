@@ -6,7 +6,7 @@ import type { RequestHandler } from "./$types";
 const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
   // Prevent web browsers from... web browsing.
   if (!request.headers.get("user-agent")?.includes("git")) {
-    return redirect(302, "/");
+    return redirect(302, url.pathname.replace(".git", ""));
   }
 
   // Ensure we're actually signed in.
