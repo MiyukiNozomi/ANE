@@ -2,6 +2,7 @@ import { GIT_USER_HOME_FOLDER } from "$env/static/private";
 import path from "path";
 import type { Project } from "../db";
 import Git from ".";
+import type { AccountInfo } from "node-aneauthapi";
 
 export type GitFSFile = {
   mode: string;
@@ -9,6 +10,16 @@ export type GitFSFile = {
   hash: string;
   filename: string;
   filepath: string;
+};
+
+export type Commit = {
+  hash: string;
+  author: AccountInfo | null;
+  date: string;
+  email: string;
+  message: string;
+  commitDate: string;
+  age: string;
 };
 
 export function getPhysicalProjectLocation(project: {
@@ -98,5 +109,21 @@ export async function getFileContent(
   );
 }
 
-const GitFS = { getPhysicalProjectLocation, getFileList, getFileContent };
+export async function getCommits(project: Project, branch: string) {
+  const gitCommitList = await Git.bridge.runImmediate(
+    getPhysicalProjectLocation(project),
+    "log",
+    `--pretty=format:"Commit: %h%nAuthor: %an <%ae>%nDate: %ad%nMessage: %s%n\t\r\n"`
+  );
+
+  console.log(gitCommitList);
+  return [];
+}
+
+const GitFS = {
+  getPhysicalProjectLocation,
+  getFileList,
+  getFileContent,
+  getCommits,
+};
 export default GitFS;
