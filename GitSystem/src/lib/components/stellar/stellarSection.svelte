@@ -138,7 +138,9 @@
         <p class=" text-orange-200 bg-black p-1 text-4xl rounded-full">✴</p>
         <div class="bg-orange-200 w-full h-[2px]"></div>
       </div>
-      <div class="flex flex-col pt-0 p-4 border-1 border-t-0 border-orange-200">
+      <div
+        class="flex flex-col gap-3 pt-0 p-4 border-1 border-t-0 border-orange-200"
+      >
         {@render children()}
       </div>
     </div>

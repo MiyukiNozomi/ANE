@@ -1,8 +1,8 @@
 import { GIT_USER_HOME_FOLDER } from "$env/static/private";
+import type { Project } from "$lib/server/db";
 import path from "path";
-import type { Project } from "../db";
-import Git from ".";
-import type { AccountInfo } from "node-aneauthapi";
+import Git from "..";
+import { existsSync, statSync } from "fs";
 
 export type GitFSFile = {
   mode: string;
@@ -14,22 +14,13 @@ export type GitFSFile = {
 
 export type Commit = {
   hash: string;
-  author: AccountInfo | null;
+  author: string;
   date: string;
-  email: string;
   message: string;
-  commitDate: string;
   age: string;
 };
 
-export function getPhysicalProjectLocation(project: {
-  name: string;
-  authorUsername: string;
-}) {
-  return path.join(GIT_USER_HOME_FOLDER, project.authorUsername, project.name);
-}
-
-export async function getFileList(
+async function getProjectFileList(
   userProject: Project,
   branch: string,
   parentPath: string
@@ -80,7 +71,7 @@ export async function getFileList(
     .sort((a, b) => Number(a.isFile) - Number(b.isFile));
 }
 
-export async function getFileContent(
+async function getProjectFileContent(
   userProject: Project,
   branch: string,
   filepath: string
@@ -109,21 +100,40 @@ export async function getFileContent(
   );
 }
 
-export async function getCommits(project: Project, branch: string) {
+async function getBranches(project: Project) {
   const gitCommitList = await Git.bridge.runImmediate(
     getPhysicalProjectLocation(project),
-    "log",
-    `--pretty=format:"Commit: %h%nAuthor: %an <%ae>%nDate: %ad%nMessage: %s%n\t\r\n"`
+    `--no-pager`,
+    `branch`,
+    `--format=%(refname:short)`
   );
 
-  console.log(gitCommitList);
-  return [];
+  return gitCommitList
+    .toString()
+    .split("\n")
+    .map((v) => v.trim())
+    .filter((v) => v.length > 0);
 }
 
-const GitFS = {
+function getPhysicalProjectLocation(project: {
+  name: string;
+  authorUsername: string;
+}) {
+  const pth = path.join(
+    GIT_USER_HOME_FOLDER,
+    project.authorUsername,
+    project.name
+  );
+
+  if (!existsSync(pth) || !statSync(pth).isDirectory())
+    throw new Error("Repository " + pth + " does not exist.");
+
+  return pth;
+}
+
+export {
+  getProjectFileContent,
+  getBranches,
+  getProjectFileList,
   getPhysicalProjectLocation,
-  getFileList,
-  getFileContent,
-  getCommits,
 };
-export default GitFS;
