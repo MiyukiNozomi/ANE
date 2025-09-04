@@ -3,6 +3,7 @@ import path from "path";
 import { type Project } from "../../db";
 import { BranchFS } from "./branch";
 import { getBranches, getPhysicalProjectLocation } from "./inspection";
+import { dev } from "$app/environment";
 
 class RepositoryInfo {
   public repository: Project;
@@ -29,10 +30,21 @@ class RepositoryInfo {
   }
 
   /**
-   * Holds a global cache of repository information;
-   * Delete an entry (by the project ID) to make it "dirty"
+   * Holds a global cache of repository information.
    */
   public static infoCache: Record<number, RepositoryInfo>;
+
+  public static async invalidateCache(project: Project) {
+    delete this.infoCache[project.id];
+    if (dev)
+      console.log(
+        "Project " +
+          project.authorUsername +
+          "#" +
+          project.name +
+          " has had it's cache invalidated."
+      );
+  }
 
   public static async of(project: Project) {
     if (this.infoCache == undefined) this.infoCache = {};

@@ -2,6 +2,7 @@ import { getUserProject } from "$lib/server/db";
 import Git from "$lib/server/git";
 import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
+import GitFS from "$lib/server/git/fs";
 
 const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
   // Prevent web browsers from... web browsing.
@@ -36,6 +37,12 @@ const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
     return error(403, "You do not have write-access to this repository."); // Also nope!
 
   console.log("Got pushes into " + project.authorUsername + "#" + project.name);
+
+  if (request.method == "POST" && request.body) {
+    // invalidate possible cache
+    GitFS.RepositoryInfo.invalidateCache(project);
+  }
+
   return await Git.handleGitRequest(
     // just to ensure this will always be either a post or get
     request.method == "POST" ? "post" : "get",
