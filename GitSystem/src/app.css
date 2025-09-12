@@ -2,6 +2,7 @@
 
 @import "./fonts.css";
 @import "./custom.css";
+@import "./markdown.css";
 
 @theme {
   --default-font-family: "Kumbh", var(--font-sans);

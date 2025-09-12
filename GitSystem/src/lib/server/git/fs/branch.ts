@@ -1,9 +1,12 @@
 import { dev } from "$app/environment";
 import type { Project, Repository } from "$lib/server/db";
+import path from "path";
 import Git from "..";
 import {
   getPhysicalProjectLocation,
+  getProjectFileContent,
   getProjectFileList,
+  getProjectFileReadStream,
   type Commit,
   type GitFSFile,
 } from "./inspection";
@@ -60,8 +63,9 @@ export class BranchFS {
   }
 
   public async getFileList(pathname: string) {
-    if (!this.pathnames.includes(pathname) && pathname != "/") return null;
-    else if (pathname == "/") pathname = "";
+    if (pathname.endsWith("/"))
+      pathname = pathname.substring(0, pathname.length - 1);
+    if (!this.pathnames.includes(pathname) && pathname.length > 0) return null;
 
     if (dev) console.log("Pathname exists: " + pathname);
 
@@ -92,6 +96,38 @@ export class BranchFS {
     }
 
     return cache;
+  }
+
+  public async getFile(pathname: string) {
+    if (!this.pathnames.includes(pathname)) {
+      return null;
+    }
+
+    const filename = path.basename(pathname);
+    const parentDir = path.dirname(pathname);
+
+    const directoryListing = await this.getFileList(
+      parentDir == "." ? "" : parentDir
+    );
+    const thisFileInstance = directoryListing?.find(
+      (v) => v.filename == filename
+    );
+
+    if (!thisFileInstance) return null; // This is HIGHLY Unlikely to happen, considering we should only fall into this function if getFileList has
+    // previously returned a non-null array of 0 elements.
+    //Still, there could be the possibility of this occuring somehow, and we don't want to take any chances
+
+    return thisFileInstance;
+  }
+
+  public async createReadStream(file: GitFSFile) {
+    if (!this.pathnames.includes(file.filepath)) return null; // unlikely but could happen if it's from another branch and doesn't exists here
+
+    return await getProjectFileReadStream(
+      this.repository,
+      this.branchName,
+      file.filepath
+    );
   }
 
   /***

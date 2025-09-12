@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getAccountInfo } from "$lib/client-account";
+  import { getAccountInfo } from "$lib/client/client-account";
 
   const accountInfo = getAccountInfo();
 </script>

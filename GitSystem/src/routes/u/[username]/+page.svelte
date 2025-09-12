@@ -1,5 +1,8 @@
 <script lang="ts">
-  import { getAccountInfo, invalidateSession } from "$lib/client-account";
+  import {
+    getAccountInfo,
+    invalidateSession,
+  } from "$lib/client/client-account";
   import PageBody from "$lib/components/pageBody.svelte";
   import NewRepository from "$lib/components/popups/newRepository.svelte";
   import StellarButton from "$lib/components/stellar/stellarButton.svelte";

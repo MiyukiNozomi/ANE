@@ -63,6 +63,9 @@
       canvas!.width = window.screen.width;
       canvas!.height = window.screen.height;
 
+      ctx.fillStyle = "#1A1F21";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
       const centerX = canvas!.width / 2;
       const centerY = canvas!.height / 2;
 
@@ -110,7 +113,7 @@
         compassRotationSpeed += 0.0015;
       }
 
-      setTimeout(() => window.requestAnimationFrame(bgFunc), 1000 / 60);
+      setTimeout(() => window.requestAnimationFrame(bgFunc), 5);
     };
 
     bgFunc();

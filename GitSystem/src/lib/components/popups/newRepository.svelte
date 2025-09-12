@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getAccountInfo, invokeAPI } from "$lib/client-account";
+  import { getAccountInfo, invokeAPI } from "$lib/client/client-account";
   import {
     REPOSITORY_DESCRIPTION_MAX,
     GIT_OBJECT_NAME_MAX,

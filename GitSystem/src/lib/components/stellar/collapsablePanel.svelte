@@ -6,14 +6,18 @@
     closeLabel,
     className = "",
     children,
+
+    initialToggleState = false,
   }: {
     openLabel: string;
     className?: string;
     closeLabel: string;
     children: Function;
+
+    initialToggleState?: boolean;
   } = $props();
 
-  let visible = $state(false);
+  let visible = $state(initialToggleState);
 </script>
 
 <div

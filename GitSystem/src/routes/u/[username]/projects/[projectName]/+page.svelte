@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { getAccountInfo } from "$lib/client-account";
+  import { getAccountInfo } from "$lib/client/client-account";
+  import FileList from "$lib/components/gitviewer/fileList.svelte";
+  import MarkdownViewer from "$lib/components/gitviewer/markdownViewer.svelte";
   import PageBody from "$lib/components/pageBody.svelte";
   import NewRepository from "$lib/components/popups/newRepository.svelte";
   import CollapsablePanel from "$lib/components/stellar/collapsablePanel.svelte";
@@ -27,35 +29,30 @@
   </div>
 
   <div class="flex flex-col gap-4 mb-8">
+    <!-- Upper Half of Page -->
     <div class="flex flex-col md:grid md:grid-cols-9 gap-8 px-8">
-      <div class="col-span-6 md:col-span-7">
+      <div class="flex flex-col col-span-6 md:col-span-7 gap-8">
         {#if data.filelist}
           <CollapsablePanel
             openLabel="Reveal File List"
             closeLabel="Hide File List"
             className="w-full"
           >
-            <a
-              class="transition-colors duration-300 ease-in-out text-gray-200 hover:text-orange-300 hover:underline"
-              href={`../`}
-              >..
-            </a>
-            {#each data.filelist as fileEntry}
-              <a
-                class="transition-colors duration-300 ease-in-out text-gray-200 hover:text-orange-300 hover:underline"
-                href={`/u/${data.project.authorUsername}/projects/${data.project.name}/${fileEntry.filepath}`}
-              >
-                {#if fileEntry.isFile}
-                  &#128196;
-                {:else}
-                  &#128194;
-                {/if}
-                {fileEntry.filename}</a
-              >
-            {/each}
+            <FileList
+              isRoot={true}
+              project={data.project}
+              filelist={data.filelist}
+            />
           </CollapsablePanel>
         {:else}
           <h2 class="w-full">Apologies! this repository is empty!</h2>
+        {/if}
+
+        <!-- README -->
+        {#if data.hasMarkdownFile}
+          <MarkdownViewer
+            sourceURL={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/README.md`}
+          />
         {/if}
       </div>
       <StellarSection

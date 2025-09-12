@@ -10,6 +10,8 @@ export type GitFSFile = {
   hash: string;
   filename: string;
   filepath: string;
+
+  size: number;
 };
 
 export type Commit = {
@@ -29,6 +31,7 @@ async function getProjectFileList(
     await Git.bridge.runImmediate(
       getPhysicalProjectLocation(userProject),
       "ls-tree",
+      "-l",
       "-r",
       "-t",
       branch
@@ -41,10 +44,16 @@ async function getProjectFileList(
     .map((v) => {
       let optionsLength = v.indexOf("\t");
 
-      let options = v.substring(0, optionsLength).split(" ");
+      let options = v
+        .substring(0, optionsLength)
+        .split(" ")
+        .map((v) => v.trim())
+        .filter((v) => v.length > 0);
       let mode = options[0];
       let isFile = options[1] == "blob";
       let hash = options[2];
+      let size = parseInt(options[3]);
+      size = isNaN(size) ? 0 : size;
 
       let filepath = v.substring(optionsLength + 1);
 
@@ -65,34 +74,23 @@ async function getProjectFileList(
         hash,
         isFile,
         mode,
+        size,
       };
     })
     .filter((v) => v != undefined)
     .sort((a, b) => Number(a.isFile) - Number(b.isFile));
 }
 
-async function getProjectFileContent(
+async function getProjectFileReadStream(
   userProject: Project,
   branch: string,
   filepath: string
 ) {
-  const gitFileList = (
-    await Git.bridge.runImmediate(
-      getPhysicalProjectLocation(userProject),
-      "ls-tree",
-      "-r",
-      "--name-only",
-      "-t",
-      branch
-    )
-  )
-    .toString()
-    .split("\n");
-
-  if (!gitFileList.includes(filepath)) return null;
-
-  return await Git.bridge.runImmediate(
+  return await Git.bridge.runWithPayload(
+    "git",
     getPhysicalProjectLocation(userProject),
+    null,
+    "--no-pager",
     "show",
     "--no-notes",
     "--encoding=UTF-8",
@@ -134,6 +132,7 @@ function getPhysicalProjectLocation(project: {
 export {
   getProjectFileContent,
   getBranches,
+  getProjectFileReadStream,
   getProjectFileList,
   getPhysicalProjectLocation,
 };

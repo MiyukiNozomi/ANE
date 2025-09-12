@@ -1,11 +1,10 @@
+import { getUserProject } from "$lib/server/db";
+import GitFS from "$lib/server/git/fs";
+import { error } from "@sveltejs/kit";
 import AuthAPI from "node-aneauthapi";
 import type { PageServerLoad } from "./$types";
-import { error } from "@sveltejs/kit";
-import { getUserProject } from "$lib/server/db";
-import { redirect } from "@sveltejs/kit";
-import GitFS from "$lib/server/git/fs";
 
-export const load = (async ({ params, request, url }) => {
+export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
 
   const profile = await AuthAPI.getAccountByName(params.username);
@@ -27,7 +26,9 @@ export const load = (async ({ params, request, url }) => {
   return {
     profile,
     project,
-    filelist: await branchInfo.getFileList("/"),
+    filelist: await branchInfo.getFileList(""),
     commitCount: await branchInfo.getCommitCount(),
+
+    hasMarkdownFile: (await branchInfo.getFile("README.md")) != null,
   };
 }) satisfies PageServerLoad;
