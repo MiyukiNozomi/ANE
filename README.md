@@ -35,7 +35,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Rate limit some regions differently (for example, limit to 2r/s in countries like China due to bots)
   - [ ] Rate limit pathnames differently, like Auth's /api/signed/update-picture
 
-- [ ] Do URL encoding in the reverse proxy so that certain observed contained individuals whose reality doesn't windows newlines into the zsh
+- [X] Do URL encoding in the reverse proxy so that certain observed contained individuals whose reality doesn't windows newlines into the zsh
 
 - [x] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
@@ -52,12 +52,15 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
     - [x] Git Push
     - [x] Git Pull
   - [ ] Contributor Support
-  - [ ] File Explorer
-    - [ ] Code Reader
+  - [X] File Explorer
+    - [-] Code Reader
+      - [ ] Support Ashen
+      - [ ] Support SQL
+      - [ ] Support C and others....
     - [ ] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
     - [ ] Explore by commit history
     - [ ] Branch support
-    - [ ] Visible README.mds on active directory
+    - [X] Visible README.mds on active directory
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)
 
 # Future things for next code review...

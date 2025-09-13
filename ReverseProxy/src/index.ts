@@ -31,7 +31,7 @@ async function runMiddlewares(
   let ii = 0;
 
   Sys.println(
-    "[" + req.socket.remoteAddress + "] " + req.method + " " + req.url
+    "[" + req.socket.remoteAddress + "] " + encodeURI(req.method ?? "GET") + " " + encodeURI(req.url ?? '/')
   );
 
   const next = async () => {
