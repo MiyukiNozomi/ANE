@@ -18,7 +18,8 @@
       ext
     ];
 
-    if (lang) return galateaExplorerURL + "file-" + lang + ".webp";
+    if (lang && lang != "text/plain")
+      return galateaExplorerURL + "file-" + lang + ".webp";
     return galateaExplorerURL + "file-unknown.webp";
   }
 </script>

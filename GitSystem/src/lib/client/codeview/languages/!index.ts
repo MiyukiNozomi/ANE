@@ -7,7 +7,9 @@ import { JSONLanguage } from "./json";
 // it lets me map the same language mappings from the file viewer into a record without
 // loosing type safety inside of the constant, while also being able to look through it with any string.
 export const Languages: Partial<Record<string, LanguageSupport>> = {
+  // the language that gives me so much headaches for not letting me copy types into runtime...
   ts: TypeScriptLanguage,
+  // Json-like files
   json: JSONLanguage,
   tsconfig: JSONLanguage,
 } satisfies Partial<
