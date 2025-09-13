@@ -39,6 +39,7 @@ class WindowRateLimiter {
       return true;
     }
 
+    this.count++;
     if (this.count >= this.limit) {
       if (IS_DEV_MODE)
         Sys.println(
@@ -46,8 +47,6 @@ class WindowRateLimiter {
         );
       return false; // exceed count = out.
     }
-
-    this.count++;
     return true;
   }
 

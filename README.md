@@ -29,7 +29,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 # TODO
 
-- [ ] Immediately block ALL requests that do not contain ANE's domain in production version of reverse proxy
+- [X] Immediately block ALL requests that do not contain ANE's domain in production version of reverse proxy
 - [ ] Change the rule configuration format of the reverse proxy to allow for things such as:
 
   - [ ] Rate limit some regions differently (for example, limit to 2r/s in countries like China due to bots)
