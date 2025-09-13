@@ -29,15 +29,11 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 # TODO
 
-- [X] Immediately block ALL requests that do not contain ANE's domain in production version of reverse proxy
 - [ ] Change the rule configuration format of the reverse proxy to allow for things such as:
 
   - [ ] Rate limit some regions differently (for example, limit to 2r/s in countries like China due to bots)
   - [ ] Rate limit pathnames differently, like Auth's /api/signed/update-picture
 
-- [X] Do URL encoding in the reverse proxy so that certain observed contained individuals whose reality doesn't windows newlines into the zsh
-
-- [x] Add a README on all microservices
 - [ ] Add Embbed support in all pages (partial)
 
   - [ ] git.ane.jp.net
@@ -47,10 +43,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Restyle Auth
 
 - [ ] Finish git.ane.jp.net
-  - [x] Repositories
-  - [x] Git
-    - [x] Git Push
-    - [x] Git Pull
+  - [ ] Use Git's C api instead of the CLI
   - [ ] Contributor Support
   - [X] File Explorer
     - [-] Code Reader
