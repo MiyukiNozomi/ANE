@@ -63,6 +63,21 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 # Future things for next code review...
 
 - [ ] Modernize the Database of AuthDaemon. (Stop using SQLite)
+- [ ] Recode AuthDaemon to no longer use D.....
+  For context, this decision is one that... I did not want to do.
+  Mostly due to the fact that D is a language I love, but recently there's been a lot of 
+  trouble with basic libraries and even a.. divide in the comunity? now OpenD also exists..
+  which makes the environment overrall harder to be understood and divided.
+
+  ARSD, one of the most popular libraries for D which is a port of many libraries has recently
+  adopted OpenD instead of Walter Bright's D, they're syntatically simillar but OpenD has a few
+  more "javascripty" features.
+
+  I really like D, I've met many people through the D community, but now.. i find it hard to 
+  see a real future with me coding in the D programming language.
+
+  I'll re-code the authdaemon using my own programming language.
+
 - [ ] Modernize the Database of the Git Service. (Stop using SQLite)
 - [ ] Consider moving shared logic into AuthAPI and into a custom "svelte-common" library or something of type.
 - [ ] Validate octets of IPv4 addresses in ratelimit code of the reverse proxy, right now if the IP is:
