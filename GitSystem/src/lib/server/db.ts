@@ -64,6 +64,20 @@ CREATE TABLE IF NOT EXISTS contributors (
 );
 `);
 
+export async function getAllProjects() {
+  const stmt = db.prepare("SELECT name, authorUsername FROM repositories").all() as Array<{ name: string, authorUsername: string }>;
+
+  let projects = new Array<Project>();
+
+  for (const info of stmt) {
+    const p = await getUserProject(info.authorUsername, info.name);
+    if (!p) throw new Error("Uhh.. bug?");
+    projects.push(p);
+  }
+
+  return projects;
+}
+
 export async function registerRepository(
   name: string,
   description: string,

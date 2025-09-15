@@ -26,7 +26,7 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
-    filelist: await branchInfo.getFileList(""),
+    filelist: await branchInfo.getFileList(),
     commitCount: await branchInfo.getCommitCount(),
 
     hasMarkdownFile: (await branchInfo.getFile("README.md")) != null,

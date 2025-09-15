@@ -1,6 +1,6 @@
 import { getUserProject } from "$lib/server/db";
 import GitFS from "$lib/server/git/fs";
-import type { GitFSFile } from "$lib/server/git/fs/inspection";
+import type { GitFile } from "$lib/server/git/fs/branch";
 import { error, redirect } from "@sveltejs/kit";
 import AuthAPI from "node-aneauthapi";
 import path from "path";
@@ -28,33 +28,29 @@ export const load = (async ({ params, url }) => {
 
   const repo = await GitFS.RepositoryInfo.of(project);
   const branchInfo = repo.ofBranch(activeBranch);
-  const filelist = await branchInfo?.getFileList(params.path);
 
-  if (!filelist || !branchInfo) {
-    return error(404);
-  }
+  let directoryEntry = await branchInfo?.getFileList(params.path);
+  let individualFile: GitFile | undefined;
 
-  let individualFile: GitFSFile | undefined = undefined;
-  if (filelist.length == 0) {
-    // ok, clearly it exists and isn't a directory.
-    const file = await branchInfo.getFile(params.path);
-    if (!file) return error(404); // definitely impossible to happen, but still.
+  if (!directoryEntry || !branchInfo) {
+    directoryEntry = await branchInfo?.getFileList(path.dirname(params.path));
+    individualFile = directoryEntry?.children.find(v => v.filepath == params.path);
+    if (!directoryEntry || !individualFile)
+      return error(404);
 
-    const extension = path.extname(file.filename).substring(1);
+    const extension = path.extname(individualFile.filename).substring(1);
 
-    if (!SUPPORTED_LANGUAGES_BY_EXTENSION[extension])
+    if (!(SUPPORTED_LANGUAGES_BY_EXTENSION as Record<string, string>)[extension])
       return redirect(
         308,
         `/u/${project.authorUsername}/projects/${project.name}/fs-raw/${params.path}`
       );
-
-    individualFile = file;
   }
 
   return {
     profile,
     project,
-    filelist,
+    directoryEntry,
 
     filename: path.basename(params.path),
     individualFile,

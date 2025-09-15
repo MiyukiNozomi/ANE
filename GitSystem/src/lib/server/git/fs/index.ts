@@ -1,12 +1,11 @@
-import { GIT_USER_HOME_FOLDER } from "$env/static/private";
-import path from "path";
-import { type Project } from "../../db";
+import { dev } from "$app/environment";
+import { getAllProjects, type Project } from "../../db";
 import { BranchFS } from "./branch";
 import { getBranches, getPhysicalProjectLocation } from "./inspection";
-import { dev } from "$app/environment";
 
 class RepositoryInfo {
   public repository: Project;
+
   public branches: Array<string>;
   public branchFS: Record<string, BranchFS>;
 
@@ -32,26 +31,38 @@ class RepositoryInfo {
   /**
    * Holds a global cache of repository information.
    */
-  public static infoCache: Record<number, RepositoryInfo>;
+  public static infoCache: Record<number, RepositoryInfo> = {};
+
+  public static async onServerInit() {
+    const l = await getAllProjects()
+    for (const p of l) {
+      await this.of(p);
+    }
+  }
 
   public static async invalidateCache(project: Project) {
     delete this.infoCache[project.id];
     if (dev)
       console.log(
         "Project " +
-          project.authorUsername +
-          "#" +
-          project.name +
-          " has had it's cache invalidated."
+        project.authorUsername +
+        "#" +
+        project.name +
+        " has had it's cache invalidated (RELOADING)."
       );
+
+    // immediately load this fucker back up before someone tries to request it
+    await this.of(project);
   }
 
   public static async of(project: Project) {
-    if (this.infoCache == undefined) this.infoCache = {};
     if (this.infoCache[project.id]) return this.infoCache[project.id];
+
+    console.log("LOAD ", project.authorUsername + "#" + project.name);
 
     const branches = await getBranches(project);
     const info = new RepositoryInfo(project, branches);
+
 
     await info.__it__load();
 

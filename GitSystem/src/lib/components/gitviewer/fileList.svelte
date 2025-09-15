@@ -1,17 +1,21 @@
 <script lang="ts">
   import type { Project } from "$lib/server/db";
-  import type { GitFSFile } from "$lib/server/git/fs/inspection";
+  import type { GitFile } from "$lib/server/git/fs/branch";
   import { SUPPORTED_LANGUAGES_BY_EXTENSION } from "$lib/shared/constants";
 
   let {
     project,
-    filelist,
+    parentDirectory,
     isRoot = false,
-  }: { isRoot?: boolean; project: Project; filelist: GitFSFile[] } = $props();
+  }: {
+    isRoot?: boolean;
+    project: Project;
+    parentDirectory: GitFile;
+  } = $props();
 
   const galateaExplorerURL = "https://galatea.ane.jp.net/dl/images/explorer/";
 
-  function iconURLOf(file: GitFSFile) {
+  function iconURLOf(file: GitFile) {
     if (!file.isFile) return galateaExplorerURL + "folder.webp";
     const ext = file.filename.substring(file.filename.lastIndexOf(".") + 1);
     const lang = (SUPPORTED_LANGUAGES_BY_EXTENSION as Record<string, string>)[
@@ -35,7 +39,7 @@
       &LeftArrow;
     </a>
   {/if}
-  {#each filelist as fileEntry}
+  {#each parentDirectory.children as fileEntry}
     <a
       class="
     flex flex-row gap-4 p-1 text-xl items-center font-mplus2 group

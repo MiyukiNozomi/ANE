@@ -41,7 +41,7 @@
             <FileList
               isRoot={true}
               project={data.project}
-              filelist={data.filelist}
+              parentDirectory={data.filelist}
             />
           </CollapsablePanel>
         {:else}

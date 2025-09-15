@@ -22,7 +22,7 @@
       <p
         class="px-8 mx-auto italic text-xl font-baskervville text-orange-300 flex flex-row items-center gap-2"
       >
-        {data.filelist.length == 0 ? "Viewing" : "Index of"}
+        {data.individualFile ? "Viewing" : "Index of"}
         <span class="text-3xl">&quot;</span>
         {data.filename}
         <span class="text-3xl transform rotate-180">&quot;</span>
@@ -36,7 +36,10 @@
               sourceURL={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/${data.individualFile.filepath}`}
             />
           {:else}
-            <FileList project={data.project} filelist={data.filelist} />
+            <FileList
+              project={data.project}
+              parentDirectory={data.directoryEntry}
+            />
           {/if}
         </div>
       </div>

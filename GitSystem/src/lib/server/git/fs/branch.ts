@@ -4,23 +4,33 @@ import path from "path";
 import Git from "..";
 import {
   getPhysicalProjectLocation,
-  getProjectFileContent,
-  getProjectFileList,
   getProjectFileReadStream,
-  type Commit,
-  type GitFSFile,
 } from "./inspection";
 
-export type GitFileWithMetadata = GitFSFile & {
-  lastCommit?: Commit;
+export type GitFile = {
+  mode: string;
+  hash: string;
+  filename: string;
+  filepath: string;
+  size: number;
+  isFile: boolean;
+  children: GitFile[];
+};
+
+export type Commit = {
+  hash: string;
+  author: string;
+  date: string;
+  message: string;
+  age: string;
 };
 
 export class BranchFS {
   private branchName: string;
   private repository: Project;
 
-  private pathnames: string[];
-  private filelistCache: Record<string, GitFileWithMetadata[]>;
+  /** this is a mapping of Directories, not files.*/
+  private filelistCache: Record<string, GitFile>;
   private commitCount: number;
 
   constructor(branchName: string, repository: Project) {
@@ -28,11 +38,20 @@ export class BranchFS {
     this.repository = repository;
 
     this.commitCount = 0;
-    this.pathnames = [];
     this.filelistCache = {};
+    this.filelistCache['.'] = {
+      children: [],
+      filename: "<root>",
+      filepath: ".",
+      hash: "NULL",
+      isFile: false,
+      mode: "NULL",
+      size: -1
+    };
   }
 
-  /*** This function is used to load up properties of this class.
+  /***
+   * This internal function is used to load up properties of this class.
    * Since i cannot ignore async or force it to be synchronous inside of the constructor.
    */
   public async __it__load() {
@@ -47,82 +66,92 @@ export class BranchFS {
       ).toString()
     );
 
-    this.pathnames = (
+    const pathnames = (
       await Git.bridge.runImmediate(
         getPhysicalProjectLocation(this.repository),
         "ls-tree",
-        "--name-only",
+        "-l",
         "-r",
         "-t",
         this.branchName
       )
     )
       .toString()
-      .split("\n")
-      .map((v) => v.trim());
-  }
+      .split("\n");
 
-  public async getFileList(pathname: string) {
-    if (pathname.endsWith("/"))
-      pathname = pathname.substring(0, pathname.length - 1);
-    if (!this.pathnames.includes(pathname) && pathname.length > 0) return null;
+    for (const v of pathnames) {
+      let tabIndex = v.indexOf('\t');
+      let options = v.substring(0, tabIndex).split(" ").map(v => v.trim()).filter(v => v.length > 0);
+      if (options.length == 0) continue; // could be EOF though
 
-    if (dev) console.log("Pathname exists: " + pathname);
+      if (options.length < 3 || tabIndex == -1) throw new Error(`
+  Server has failed to start: git ls-tree -l -r -t ${this.branchName} did not match the following format:
+  mode blob|tree hash fsize\t<pathname>
+  
+  Miyuki! Verify your commits and production environment.
 
-    let cache = this.filelistCache[pathname];
+  Git has given: ${JSON.stringify(options)}
+`);
 
-    if (!cache) {
-      if (dev) console.log("Directory not yet cached: " + pathname);
 
-      const fileList = await getProjectFileList(
-        this.repository,
-        this.branchName,
-        pathname
-      );
+      let filepath = v.substring(tabIndex + 1).trim();
+      let filename = path.basename(filepath);
+      let parentPath = path.dirname(filepath);
 
-      cache = new Array();
-      for (const v of fileList) {
-        cache.push({
-          ...v,
-          lastCommit: (await this.getCommits(undefined, pathname))[0],
-        } satisfies GitFileWithMetadata);
+      let thisEntryInfo: GitFile;
+      {
+        let mode = options[0];
+        let isFile = options[1] == "blob";
+        let hash = options[2];
+        let size = parseInt(options[3]);
+        size = isNaN(size /* size may be '-' for dirs */) ? 0 : size;
+
+        thisEntryInfo = {
+          filename,
+          filepath,
+          hash,
+          isFile,
+          mode,
+          size,
+
+          children: []
+        }
       }
 
-      if (dev) console.log("Cache has been updated for " + pathname);
+      let parentDir = this.filelistCache[parentPath];
+      if (!parentDir) throw new Error("Out of order? could not get parent directory cache of " + filepath + " (parent " + parentPath + ")");
+      parentDir.children.push(thisEntryInfo);
 
-      this.filelistCache[pathname] = cache;
-    } else if (dev) {
-      console.log("Cache used for " + pathname);
+      if (!thisEntryInfo.isFile) {
+        this.filelistCache[filepath] = thisEntryInfo;
+      }
     }
 
+
+    Object.values(this.filelistCache).forEach(v => v.children.sort((a, b) => Number(a.isFile) - Number(b.isFile)));
+  }
+
+  public async getFileList(pathname: string = '.') {
+    const cache = this.filelistCache[pathname.endsWith('/') ? pathname.substring(0, pathname.length - 1) : pathname];
+    if (!cache) {
+      return null;
+    }
     return cache;
   }
 
   public async getFile(pathname: string) {
-    if (!this.pathnames.includes(pathname)) {
+    const dirname = path.dirname(pathname);
+    const parentFolderCache = this.filelistCache[dirname];
+    if (!parentFolderCache) {
       return null;
     }
 
     const filename = path.basename(pathname);
-    const parentDir = path.dirname(pathname);
-
-    const directoryListing = await this.getFileList(
-      parentDir == "." ? "" : parentDir
-    );
-    const thisFileInstance = directoryListing?.find(
-      (v) => v.filename == filename
-    );
-
-    if (!thisFileInstance) return null; // This is HIGHLY Unlikely to happen, considering we should only fall into this function if getFileList has
-    // previously returned a non-null array of 0 elements.
-    //Still, there could be the possibility of this occuring somehow, and we don't want to take any chances
-
-    return thisFileInstance;
+    console.log(filename, parentFolderCache);
+    return parentFolderCache.children.find(v => v.filename == filename);
   }
 
-  public async createReadStream(file: GitFSFile) {
-    if (!this.pathnames.includes(file.filepath)) return null; // unlikely but could happen if it's from another branch and doesn't exists here
-
+  public async createReadStream(file: GitFile) {
     return await getProjectFileReadStream(
       this.repository,
       this.branchName,
@@ -136,8 +165,15 @@ export class BranchFS {
    *
    * TODO: make it unhacky
    *
-   * Note: if desiredFile is not undefined, the number of commits will be at maximum 1.
-   */
+   * TODO Note: this cannot be easily cached like the filelist, consider finding another way of doing this.
+   *            Another possibility would be caching.. but maybe it would be better to have this function run at RepositoryInfo leve?
+   * 
+   * Anyway, actual documentation now:
+   * 
+   * This file is intended to give a commit list that should be loaded... lazily.
+   * It only loads 100 if desiredFile is undefined, 1 if desiredFile is present.
+   * Use beforehash to load the previous list of commits after a certain commit.
+  */
   public async getCommits(beforeHash?: string, desiredFile?: string) {
     const lineSeparator = "Kv!LN";
     const separator =
