@@ -28,13 +28,19 @@ class GitBridge {
     if (dev) console.log("Found Git Services: ", this.gitServices);
   }
 
-  /** Use this for generic git commands, like ls-tree */
+  /** 
+   * Use this for generic git commands, like ls-tree 
+   * Don't use this function for user-defined values, please.
+   * As it could be a pain to debug later on
+   */
   public async runImmediate(
     executionDirectory: string,
     ...params: Array<string>
   ) {
     return new Promise<Buffer>((resolve, reject) => {
-      console.log("RUN_IMMEDIATE git ", params, " on ", executionDirectory);
+      // i would have kept this for security purposes, but it's TOO FUCKING SLOW
+      // and also, this function isn't even supposed to be called with user-values anyway
+      //  console.log("RUN_IMMEDIATE git ", params, " on ", executionDirectory);
 
       const gitProcess = spawn(this.gitServices["git"], params, {
         cwd: executionDirectory,

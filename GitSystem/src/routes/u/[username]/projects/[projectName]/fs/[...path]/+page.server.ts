@@ -1,11 +1,11 @@
 import { getUserProject } from "$lib/server/db";
-import GitFS from "$lib/server/git/fs";
 import type { GitFile } from "$lib/server/git/fs/branch";
 import { error, redirect } from "@sveltejs/kit";
 import AuthAPI from "node-aneauthapi";
 import path from "path";
 import type { PageServerLoad } from "./$types";
 import { SUPPORTED_LANGUAGES_BY_EXTENSION } from "$lib/shared/constants";
+import { RepositoryInfo } from "$lib/server/git";
 
 export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
@@ -26,8 +26,8 @@ export const load = (async ({ params, url }) => {
       `/u/${project.authorUsername}/projects/${project.name}/`
     );
 
-  const repo = await GitFS.RepositoryInfo.of(project);
-  const branchInfo = repo.ofBranch(activeBranch);
+  const repo = await RepositoryInfo.of(project);
+  const branchInfo = repo?.branch(activeBranch);
 
   let directoryEntry = await branchInfo?.getFileList(params.path);
   let individualFile: GitFile | undefined;

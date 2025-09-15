@@ -1,43 +1,31 @@
 import { dev } from "$app/environment";
 import { getAllProjects, type Project } from "../../db";
-import { BranchFS } from "./branch";
-import { getBranches, getPhysicalProjectLocation } from "./inspection";
+import { RepositoryBranch } from "./branch";
+import { loadRepository } from "./loader";
 
-class RepositoryInfo {
+export class RepositoryInfo {
   public repository: Project;
+  public branches: Record<string, RepositoryBranch>;
 
-  public branches: Array<string>;
-  public branchFS: Record<string, BranchFS>;
-
-  private constructor(repository: Project, branches: Array<string>) {
+  constructor(repository: Project, branches: Record<string, RepositoryBranch>) {
     this.repository = repository;
-    this.branchFS = {};
     this.branches = branches;
   }
 
-  private async __it__load() {
-    for (const v of this.branches) {
-      this.branchFS[v] = new BranchFS(v, this.repository);
-      await this.branchFS[v].__it__load();
-    }
-  }
-
-  public ofBranch(branch: string) {
-    const bfs = this.branchFS[branch];
-    if (!bfs) return null;
-    return bfs;
+  public branch(branch: string): RepositoryBranch | null {
+    return this.branches[branch] ?? null;
   }
 
   /**
    * Holds a global cache of repository information.
    */
-  public static infoCache: Record<number, RepositoryInfo> = {};
+  private static infoCache: Record<number, RepositoryInfo> = {};
 
   public static async onServerInit() {
-    const l = await getAllProjects()
-    for (const p of l) {
-      await this.of(p);
-    }
+    const projects = await getAllProjects();
+    const loadPromises = projects.map(p => loadRepository(p).then(repo => [p.id, repo] as const));
+    const loaded = await Promise.all(loadPromises);
+    this.infoCache = Object.fromEntries(loaded);
   }
 
   public static async invalidateCache(project: Project) {
@@ -51,29 +39,20 @@ class RepositoryInfo {
         " has had it's cache invalidated (RELOADING)."
       );
 
-    // immediately load this fucker back up before someone tries to request it
-    await this.of(project);
+    this.infoCache[project.id] = await loadRepository(project);
   }
 
-  public static async of(project: Project) {
-    if (this.infoCache[project.id]) return this.infoCache[project.id];
+  public static async of(project: Project): Promise<RepositoryInfo | null> {
+    if (!this.infoCache[project.id]) {
+      try {
+        console.warn(`${project.authorUsername}#${project.name}: Got a cache miss! likely a new repository`);
+        this.infoCache[project.id] = await loadRepository(project);
+      } catch (err) {
+        console.error(err);
+        console.warn(`${project.authorUsername}#${project.name}: Oops, failed to load.`);
+      }
+    }
 
-    console.log("LOAD ", project.authorUsername + "#" + project.name);
-
-    const branches = await getBranches(project);
-    const info = new RepositoryInfo(project, branches);
-
-
-    await info.__it__load();
-
-    this.infoCache[project.id] = info;
-
-    return info;
+    return this.infoCache[project.id] ?? null;
   }
 }
-
-const GitFS = {
-  getPhysicalProjectLocation,
-  RepositoryInfo,
-};
-export default GitFS;

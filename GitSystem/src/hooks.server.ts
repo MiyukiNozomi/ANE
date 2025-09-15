@@ -1,4 +1,4 @@
-import GitFS from "$lib/server/git/fs";
+import { RepositoryInfo } from "$lib/server/git/fs";
 import { error, type Handle, type ServerInit } from "@sveltejs/kit";
 import AuthAPI from "node-aneauthapi";
 
@@ -37,5 +37,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 };
 
 export const init: ServerInit = async () => {
-  await GitFS.RepositoryInfo.onServerInit();
+  await RepositoryInfo.onServerInit();
 };

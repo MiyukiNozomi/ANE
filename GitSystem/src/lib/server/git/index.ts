@@ -1,11 +1,22 @@
-import bridge from "./bridge";
-import { getPhysicalProjectLocation } from "./fs";
-import { handleGitRequest } from "./gitHttp";
+import path from "path";
+import { GIT_USER_HOME_FOLDER } from "$env/static/private";
+import { existsSync, statSync } from "fs";
 
-const Git = {
-  bridge,
-  getPhysicalProjectLocation,
-  handleGitRequest,
-};
+export function getPhysicalProjectLocation(project: {
+  name: string;
+  authorUsername: string;
+}) {
+  const pth = path.join(
+    GIT_USER_HOME_FOLDER,
+    project.authorUsername,
+    project.name
+  );
 
-export default Git;
+  if (!existsSync(pth) || !statSync(pth).isDirectory())
+    throw new Error("Repository " + pth + " does not exist.");
+
+  return pth;
+}
+
+export * from "./bridge";
+export * from "./fs";

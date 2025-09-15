@@ -11,7 +11,7 @@ export async function createNewRepositoryService(
   if (!author.isAdmin)
     throw new Error("Author is not an admin! this is a bug!");
 
-  if (!Git.bridge.isNameValid(name)) {
+  if (!bridge.isNameValid(name)) {
     return "Invalid repository name.";
   }
 
@@ -26,7 +26,7 @@ export async function createNewRepositoryService(
     recursive: true,
   });
 
-  Git.bridge.runImmediate(
+  bridge.runImmediate(
     outputPath,
     "init",
     "--bare",

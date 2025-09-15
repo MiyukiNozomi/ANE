@@ -1,8 +1,8 @@
 import { getUserProject } from "$lib/server/db";
-import GitFS from "$lib/server/git/fs";
 import { error } from "@sveltejs/kit";
 import AuthAPI from "node-aneauthapi";
 import type { PageServerLoad } from "./$types";
+import { RepositoryInfo } from "$lib/server/git";
 
 export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
@@ -16,8 +16,8 @@ export const load = (async ({ params, url }) => {
     return error(404);
   }
 
-  const repo = await GitFS.RepositoryInfo.of(project);
-  const branchInfo = repo.ofBranch(activeBranch);
+  const repo = await RepositoryInfo.of(project);
+  const branchInfo = repo?.branch(activeBranch);
 
   if (!branchInfo) {
     return error(404);

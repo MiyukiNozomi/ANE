@@ -2,9 +2,9 @@ import { dev } from "$app/environment";
 import { error } from "@sveltejs/kit";
 import { existsSync } from "fs";
 import { PassThrough, Readable } from "stream";
-import Git from ".";
 import type { Project } from "../db";
-import { GitServiceNames, type GitService } from "./bridge";
+import bridge, { GitServiceNames, type GitService } from "./bridge";
+import { getPhysicalProjectLocation } from ".";
 
 /***
  * This function provides an actual implementation of git-on-the-server through HTTP.
@@ -24,7 +24,7 @@ export async function handleGitRequest(
   url: URL,
   pathname: string
 ) {
-  const projectPath = Git.getPhysicalProjectLocation(project);
+  const projectPath = getPhysicalProjectLocation(project);
   if (!existsSync(projectPath))
     return error(404, "Repository does not exist physically.");
 
@@ -55,7 +55,7 @@ export async function handleGitRequest(
   // e.g, current directory
   parameters.push("./");
 
-  let gitResponseStream = await Git.bridge.runWithPayload(
+  let gitResponseStream = await bridge.runWithPayload(
     serviceName,
     projectPath,
     method == "post" ? request.body : undefined,
