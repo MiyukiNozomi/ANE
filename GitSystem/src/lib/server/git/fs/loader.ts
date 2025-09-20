@@ -136,7 +136,11 @@ async function loadCommitList({ repository }: RepositoryInfo, branch: Repository
     for (const commitRef of commitList) {
         const placeholder = `CR\nLF\n`;
         const commitLog = (await bridge.runImmediate(physicalPath,
-            `--no-pager`, `show`, commitRef, `--quiet`, `--pretty=format:Commit: %H%nAuthor: %an%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n`
+            `--no-pager`,
+            `show`,
+            commitRef,
+            `--quiet`,
+            `--pretty=format:Commit: %H%nAuthor: %an%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n`
         )).toString();
 
         let placeholderIndex = commitLog.indexOf(placeholder);

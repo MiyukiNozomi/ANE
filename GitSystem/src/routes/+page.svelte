@@ -28,7 +28,9 @@
   />
 </svelte:head>
 
-<div class="font-mplus2 min-h-screen bg-index-bg text-white flex flex-col">
+<div
+  class="font-mplus2 min-h-screen bg-index-bg text-white flex flex-col overflow-y-scroll no-scrollbar"
+>
   <div class="relative flex flex-col h-[93vh] z-20">
     <Header />
     <MainPageBackground />

@@ -7,13 +7,11 @@
 }
 
 .clip-notch-br {
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - 30px),
-    calc(100% - 30px) 100%,
-    0 100%
-  );
+  clip-path: polygon(0 0,
+      100% 0,
+      100% calc(100% - 30px),
+      calc(100% - 30px) 100%,
+      0 100%);
 }
 
 .clip-notch-tl {
@@ -21,36 +19,30 @@
 }
 
 .clip-notch-tl-br {
-  clip-path: polygon(
-    30px 0,
-    100% 0,
-    100% calc(100% - 30px),
-    calc(100% - 30px) 100%,
-    0 100%,
-    0 30px
-  );
+  clip-path: polygon(30px 0,
+      100% 0,
+      100% calc(100% - 30px),
+      calc(100% - 30px) 100%,
+      0 100%,
+      0 30px);
 }
 
 .clip-notch-tr-bl {
-  clip-path: polygon(
-    0 0,
-    calc(100% - 30px) 0,
-    100% 30px,
-    100% 100%,
-    30px 100%,
-    0 calc(100% - 30px)
-  );
+  clip-path: polygon(0 0,
+      calc(100% - 30px) 0,
+      100% 30px,
+      100% 100%,
+      30px 100%,
+      0 calc(100% - 30px));
 }
 
 .clip-notch-bottom {
-  clip-path: polygon(
-    0 0,
-    100% 0,
-    100% calc(100% - 30px),
-    calc(100% - 30px) 100%,
-    30px 100%,
-    0 calc(100% - 30px)
-  );
+  clip-path: polygon(0 0,
+      100% 0,
+      100% calc(100% - 30px),
+      calc(100% - 30px) 100%,
+      30px 100%,
+      0 calc(100% - 30px));
 }
 
 .clip-banner {
@@ -71,16 +63,39 @@
   float: left;
 }
 
+::-webkit-scrollbar {
+  background-color: theme('colors.black');
+  width: 0.4rem;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: theme('colors.black');
+  border-radius: 2em;
+  border: 1px solid theme('colors.orange.200');
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @keyframes pulse {
   0% {
     transform: scale(0.8);
   }
+
   60% {
     transform: scale(0.8);
   }
+
   80% {
     transform: scale(1.5);
   }
+
   100% {
     transform: scale(0.8);
   }
@@ -116,6 +131,7 @@
   0% {
     rotate: 0deg;
   }
+
   100% {
     rotate: 360deg;
   }

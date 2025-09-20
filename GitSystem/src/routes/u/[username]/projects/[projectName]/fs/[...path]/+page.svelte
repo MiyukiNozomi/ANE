@@ -1,20 +1,11 @@
 <script lang="ts">
-  import { getAccountInfo } from "$lib/client/client-account";
   import CodeView from "$lib/components/gitviewer/codeView.svelte";
   import FileList from "$lib/components/gitviewer/fileList.svelte";
   import PageBody from "$lib/components/pageBody.svelte";
-  import NewRepository from "$lib/components/popups/newRepository.svelte";
-  import CollapsablePanel from "$lib/components/stellar/collapsablePanel.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-
-  const accountInfo = getAccountInfo();
-
-  let newRepositoryPopup: NewRepository;
 </script>
-
-<NewRepository bind:this={newRepositoryPopup} />
 
 <PageBody>
   <div class="flex flex-col gap-8">

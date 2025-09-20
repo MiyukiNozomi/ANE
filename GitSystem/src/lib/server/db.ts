@@ -100,13 +100,21 @@ export async function getUserProject(
     `SELECT * FROM repositories WHERE authorUsername = ? AND name = ?`
   );
 
-  const project = stmt.all(authorUsername, projectName)[0] as any;
+  const project = stmt.all(authorUsername, projectName)[0] as Repository;
 
   if (!project) return null;
 
   let contributors = db
     .prepare("SELECT * FROM contributors WHERE repositoryId = ?")
-    .all(project["id"] as number);
+    .all(project["id"] as number) as Contributor[];
+
+  contributors.unshift({
+    id: -1,
+    contributorUsername: authorUsername,
+    created_at: project.created_at,
+    hasWriteAccess: true,
+    repositoryId: project.id
+  });
 
   return {
     ...project,

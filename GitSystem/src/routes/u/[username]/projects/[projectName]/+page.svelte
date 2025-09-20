@@ -1,21 +1,13 @@
 <script lang="ts">
-  import { getAccountInfo } from "$lib/client/client-account";
   import FileList from "$lib/components/gitviewer/fileList.svelte";
   import MarkdownViewer from "$lib/components/gitviewer/markdownViewer.svelte";
   import PageBody from "$lib/components/pageBody.svelte";
-  import NewRepository from "$lib/components/popups/newRepository.svelte";
   import CollapsablePanel from "$lib/components/stellar/collapsablePanel.svelte";
   import StellarSection from "$lib/components/stellar/stellarSection.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
-
-  const accountInfo = getAccountInfo();
-
-  let newRepositoryPopup: NewRepository;
 </script>
-
-<NewRepository bind:this={newRepositoryPopup} />
 
 <PageBody>
   <div class="flex flex-row">
@@ -64,9 +56,47 @@
         >
           S T A T I S T I C S
         </h2>
-        <h1 class="font-mplus2 text-gray-300 font-extrabold text-sm">
-          <span class="text-white">{data.commitCount}</span> COMMITS
+        <h1 class="font-baskervville text-gray-300 font-light text-lg">
+          <a
+            href="/u/{data.profile.name}/projects/{data.project.name}/commits"
+            class="hover:text-orange-200 hover:underline group"
+          >
+            <span class="group-hover:text-orange-300 text-white"
+              >{data.commitCount}</span
+            > COMMITS
+          </a>
         </h1>
+        <h2
+          class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b-1 border-orange-200 border-dotted"
+        >
+          M E M B E R S
+        </h2>
+        <div class="grid grid-cols-3">
+          {#each data.project.contributors as contributor}
+            <a
+              href="/u/{contributor.contributorUsername}"
+              class="flex flex-row items-center w-12 h-12 relative cursor-pointer"
+              title={contributor.contributorUsername ==
+              data.project.authorUsername
+                ? contributor.contributorUsername +
+                  " is the author of this project."
+                : ""}
+            >
+              {#if contributor.contributorUsername == data.project.authorUsername}
+                <img
+                  class="absolute h-full w-full animate-spin-fast [animation-play-state:paused] hover:[animation-play-state:running] duration-1000 transition-all ease-out"
+                  src="https://galatea.ane.jp.net/dl/images/badges/gitsys-author.webp"
+                  alt=""
+                />
+              {/if}
+              <img
+                class="w-4/5 h-4/5 mx-auto rounded-full p-1"
+                src="https://auth.ane.jp.net/home/u/{contributor.contributorUsername}/picture"
+                alt=""
+              />
+            </a>
+          {/each}
+        </div>
       </StellarSection>
     </div>
   </div>

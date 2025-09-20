@@ -31,6 +31,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
   let headers: Record<string, string> = {};
   headers["content-type"] =
     typeof mimeType == "string" ? mimeType : "application/octet-stream";
+  headers["cache-control"] = "max-age=240";
 
   return new Response(Readable.toWeb(readStream) as ReadableStream, {
     headers,

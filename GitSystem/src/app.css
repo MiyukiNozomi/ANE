@@ -7,17 +7,28 @@
 @theme {
   --default-font-family: "Kumbh", var(--font-sans);
 
-  --color-suisei-50: #eff6ff; /* soft starlight */
-  --color-suisei-100: #dbeafe; /* icy glow */
-  --color-suisei-200: #bfdbfe; /* pale nebula mist */
-  --color-suisei-300: #93c5fd; /* gentle cosmic haze */
-  --color-suisei-400: #60a5fa; /* radiant blue drift */
-  --color-suisei-500: #3b82f6; /* vibrant nebula core */
-  --color-suisei-600: #2563eb; /* deep stellar blue */
-  --color-suisei-700: #1d4ed8; /* twilight orbit */
-  --color-suisei-800: #1e40af; /* galactic shadow */
-  --color-suisei-900: #1e3a8a; /* midnight void */
-  --color-suisei-950: #1e3a8a; /* translucent cosmic veil */
+  --color-suisei-50: #eff6ff;
+  /* soft starlight */
+  --color-suisei-100: #dbeafe;
+  /* icy glow */
+  --color-suisei-200: #bfdbfe;
+  /* pale nebula mist */
+  --color-suisei-300: #93c5fd;
+  /* gentle cosmic haze */
+  --color-suisei-400: #60a5fa;
+  /* radiant blue drift */
+  --color-suisei-500: #3b82f6;
+  /* vibrant nebula core */
+  --color-suisei-600: #2563eb;
+  /* deep stellar blue */
+  --color-suisei-700: #1d4ed8;
+  /* twilight orbit */
+  --color-suisei-800: #1e40af;
+  /* galactic shadow */
+  --color-suisei-900: #1e3a8a;
+  /* midnight void */
+  --color-suisei-950: #1e3a8a;
+  /* translucent cosmic veil */
 
   --color-index-bg: #1a1f21;
 
