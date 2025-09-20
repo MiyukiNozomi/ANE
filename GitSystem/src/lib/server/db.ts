@@ -78,6 +78,35 @@ export async function getAllProjects() {
   return projects;
 }
 
+export async function getOwnedProjects(authorUsername: string) {
+  const stmt = db.prepare("SELECT name, authorUsername FROM repositories WHERE authorUsername = ?").all(authorUsername) as Array<{ name: string, authorUsername: string }>;
+
+  let projects = new Array<Project>();
+
+  for (const info of stmt) {
+    const p = await getUserProject(info.authorUsername, info.name);
+    if (!p) throw new Error("Uhh.. bug?");
+    projects.push(p);
+  }
+
+  return projects;
+}
+
+export async function getContributingProjects(authorUsername: string) {
+  const stmt = db.prepare("SELECT repositoryId FROM contributors WHERE contributorUsername = ?").all(authorUsername) as Array<{ repositoryId: number }>;
+
+  let projects = new Array<Project>();
+
+  for (const info of stmt) {
+    const p = await getProjectById(info.repositoryId);
+    if (!p) throw new Error("Uhh.. bug?");
+    projects.push(p);
+  }
+
+  return projects;
+}
+
+
 export async function registerRepository(
   name: string,
   description: string,
@@ -90,6 +119,35 @@ export async function registerRepository(
     ) VALUES (?, ?, ?)`);
 
   stmt.run(name, description, authorUsername);
+}
+
+export async function getProjectById(
+  id: number
+): Promise<Project | null> {
+  const stmt = db.prepare(
+    `SELECT * FROM repositories WHERE id = ?`
+  );
+
+  const project = stmt.all(id)[0] as Repository;
+
+  if (!project) return null;
+
+  let contributors = db
+    .prepare("SELECT * FROM contributors WHERE repositoryId = ?")
+    .all(project["id"] as number) as Contributor[];
+
+  contributors.unshift({
+    id: -1,
+    contributorUsername: project.authorUsername,
+    created_at: project.created_at,
+    hasWriteAccess: true,
+    repositoryId: project.id
+  });
+
+  return {
+    ...project,
+    contributors,
+  };
 }
 
 export async function getUserProject(
