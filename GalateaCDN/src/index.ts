@@ -19,9 +19,6 @@ if (!existsSync(CURRENT_STORAGE_FOLDER)) {
   process.exit(-1);
 }
 
-const homepage = readFileSync("./index.html").toString();
-const directoryPage = readFileSync("./directory.html").toString();
-
 const imageMipmaps: Record<string, ImageScales[]> = JSON.parse(
   readFileSync(MIPMAP_JSON_PATH).toString()
 );
@@ -86,12 +83,17 @@ const server = createServer(async (req, res) => {
     return res.end();
   }
 
+  console.log(pathname, IS_DEV_MODE);
   if (pathname == "/") {
-    res.writeHead(200, {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": MAX_AGE,
-    });
-    res.write(homepage);
+    if (IS_DEV_MODE) {
+      res.writeHead(200);
+    } else {
+      res.writeHead(200, {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": MAX_AGE,
+      });
+    }
+    res.write(readFileSync("./index.html").toString().replace("{script-here}", readFileSync("./galatea-scripts.html").toString()));
     return res.end();
   }
 
@@ -117,9 +119,11 @@ const server = createServer(async (req, res) => {
       .map((v) => ({ st: statSync(path.join(pathname, v)), name: v }))
       .sort((a, b) => +b.st.isDirectory() - +a.st.isDirectory())
       .map(({ st, name }) => {
-        return `<a href="${path.join(url.pathname, name)}">${
-          st.isFile() ? "&#128196;" : "&#128193;"
-        } ${name}</a>`;
+        return `<pre><a href="${path.join(url.pathname, name)}">drwxr-xr-x    4 root wheel      ${(
+          st.isDirectory()
+            ? "[DIR]"
+            : st.size.toString()).padStart(8, " ")
+          } ${name}</a></pre>`;
       })
       .join("\n");
 
@@ -129,7 +133,8 @@ const server = createServer(async (req, res) => {
     });
 
     res.write(
-      directoryPage.replace("{list}", list).replaceAll("{path}", url.pathname)
+      readFileSync("./directory.html").toString().replace("{list}", list).replaceAll("{path}", url.pathname)
+        .replace("{script-here}", readFileSync("./galatea-scripts.html").toString())
     );
 
     return res.end();

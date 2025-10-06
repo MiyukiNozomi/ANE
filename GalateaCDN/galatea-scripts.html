@@ -1,0 +1,65 @@
+<script>
+	window.onload = () => {
+		const elms = document.querySelector("#logmsg");
+		const o = document.querySelector("#output");
+
+		let start = Date.now() / 1000;
+		function loop() {
+			let child = elms.childNodes.item(0);
+			if (!child) {
+				let n = document.createElement("p");
+				n.innerText = "Process complete after " + formatTimespan(Date.now() / 1000 - start) + " (host has disconnected)";
+				o.appendChild(n);
+				return;
+			}
+			elms.removeChild(child);
+			o.appendChild(child);
+
+			let delay = 30; //20;
+
+			if (child.className) {
+				if (child.className.includes("delay"))
+					delay = 400;
+				else if (child.className.includes("clear-all")) {
+					o.innerHTML = "";
+				}
+			}
+
+			setTimeout(() => window.requestAnimationFrame(loop), delay);
+		}
+
+		loop();
+	}
+
+	// I totally didn't steal this.
+	function formatTimespan(totalSeconds) {
+		totalSeconds = Number(totalSeconds);
+		const days = Math.floor(totalSeconds / (3600 * 24));
+		totalSeconds %= (3600 * 24);
+		const hours = Math.floor(totalSeconds / 3600);
+		totalSeconds %= 3600;
+		const minutes = Math.floor(totalSeconds / 60);
+		const seconds = Math.floor(totalSeconds % 60);
+		let parts = [];
+		if (days > 0) {
+			parts.push(`${days} day${days === 1 ? '' : 's'}`);
+		}
+		if (hours > 0) {
+			parts.push(`${hours} hour${hours === 1 ? '' : 's'}`);
+		}
+		if (minutes > 0) {
+			parts.push(`${minutes} minute${minutes === 1 ? '' : 's'}`);
+		}
+		if (seconds > 0 || parts.length === 0) {
+			parts.push(`${seconds} second${seconds === 1 ? '' : 's'}`);
+		}
+		if (parts.length === 0) {
+			return "0 seconds";
+		} else if (parts.length === 1) {
+			return parts[0];
+		} else {
+			const lastPart = parts.pop();
+			return parts.join(', ') + ' and ' + lastPart;
+		}
+	}
+</script>

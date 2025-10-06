@@ -1,40 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index of {path}</title>
 
     <style>
-    @font-face {
-      font-family: Kumbh;
-      src: url(/dl/fonts/kumbh_sans.ttf);
-    }
+        @font-face {
+            font-family: IBMPlex;
+            src: url(/dl/fonts/IBMPlexMono.ttf);
+        }
 
-    @font-face {
-      font-family: MPLUS2;
-      src: url(/dl/fonts/MPLUS2.ttf);
-    }
-    
-    body {
-        display: flex;
-        background-color: #0e0e0e;
-    }
+        body {
+            display: flex;
+            background-color: #000000;
+            font-family: IBMPlex;
+        }
 
-    a {
-        color: white;
-        text-decoration: none;
-    }
+        a:hover {
+            text-decoration: underline !important;
+            color: #0088ff !important;
+        }
 
-    a:hover {
-        text-decoration: underline;
-        color: #0088ff;
-    }
+        .list pre,
+        .list pre a {
+            color: white;
+            text-decoration: none;
+            margin: 0;
+            font-family: IBMPlex;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
+
+    {script-here}
 </head>
+
 <body>
-    <div style="display: flex; flex-direction: column; gap: 2px; padding: 1em; font-family: Kumbh; font-size: 1.1em;">
+    <div class="list" id="output">
+        <pre><p>azki@galatea $ ls -l ~{path}</p></pre>
+    </div>
+    <div id="logmsg" style="display: none">
         {list}
     </div>
 </body>
+
 </html>

@@ -1,146 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="darkreader-lock" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Galatea Storage</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="darkreader-lock" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="title" content="Galatea Storage" />
-    <meta name="theme-color" content="#d7514d" />
-    <meta
-      name="description"
-      content="A place where mostly immutable content is stored in ANE."
-    />
-    <meta
-      property="og:image"
-      content="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
-    />
+  <title>Galatea Storage</title>
 
-    <style>
-      @font-face {
-        font-family: Kumbh;
-        src: url(/dl/fonts/kumbh_sans.ttf);
-      }
+  <meta name="title" content="Galatea Storage" />
+  <meta name="theme-color" content="#d7514d" />
+  <meta name="description" content="A place where mostly immutable content is stored in ANE." />
+  <meta property="og:image" content="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp" />
 
-      @font-face {
-        font-family: MPLUS2;
-        src: url(/dl/fonts/MPLUS2.ttf);
-      }
+  <style>
+    @font-face {
+      font-family: IBMPlex;
+      src: url(/dl/fonts/IBMPlexMono.ttf);
+    }
 
-      header {
-        background-color: #d7514d;
-        border-top: 4px solid #a43f3b;
-        border-bottom: 4px solid #a43f3b;
-        color: white;
-        font-weight: bold;
+    body,
+    html {
+      min-height: 100%;
+    }
 
-        display: flex;
-        align-items: center;
-        gap: 1em;
-        font-size: 0.8em;
-      }
+    body {
+      background-color: black;
+      color: white;
+      font-family: IBMPlex;
+    }
 
-      header h1,
-      header p {
-        margin: 0;
-        padding: 0;
-      }
+    #output {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
 
-      header .logo {
-        display: flex;
-        align-items: center;
-        background-color: white;
-      }
+    #output img {
+      width: fit-content;
+      height: 7lh
+    }
 
-      p.content {
-        font-family: MPLUS2;
-        font-size: 1.5em;
-        color: #ffffff;
-        padding: 2em;
-      }
+    pre {
+      margin: 0;
+    }
 
-      a {
-        color: #00aeff;
-      }
+    #output p {
+      margin: 0;
+    }
 
-      .btn {
-        border-radius: 0.5em;
-        border: 2px solid #ff2200;
-        background-color: #010101;
-        padding: 0.5em 1em;
-        color: white;
-        text-decoration: none;
-      }
+    #output,
+    pre {
+      font-size: 1rem;
+    }
 
-      .btn:hover {
-        background-color: #a43f3b;
-      }
+    #blue {
+      color: #1ba4ff;
+    }
 
-      body,
-      html {
-        font-family: Kumbh;
-        margin: 0;
-      }
+    #blue-darker {
+      color: #3586ff;
+    }
 
-      body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        background: linear-gradient(45deg, #04030c, #aa033b);
-      }
+    #lighter-gray {
+      color: #9f9f9f;
+    }
 
-      .footer {
-        margin-top: auto;
+    #pink {
+      color: rgb(226, 155, 167);
+    }
 
-        display: flex;
-        flex-direction: row;
-        align-items: center;
+    .gray {
+      color: #8a8a8a;
+    }
 
-        padding: 4em 2em;
-        border-top: 4px solid #a43f3b;
-        background: linear-gradient(180deg, #010101, #2e0404, #010101);
-      }
+    a {
+      color: #3586ff;
+    }
+  </style>
 
-      @media screen and (orientation: portrait) {
-        .footer {
-          flex-direction: column;
-        }
-      }
-    </style>
-  </head>
+  {script-here}
+</head>
 
-  <body>
-    <header>
-      <div class="logo">
-        <img
-          src="/favicon.ico"
-          style="padding: 0.5rem; width: 4em; height: 4em"
-          alt=""
-        />
-      </div>
-      <div class="">
-        <h1>Galatea Storage</h1>
-        <p>The storage area of ANE.</p>
-      </div>
-    </header>
-    <p class="content">
-      A special place where all public files in my system are kept. send me an
-      email at
-      <a href="email:miyuki@ane.jp.net">miyuki@ane.jp.net</a> if you were
-      looking for something I've might have removed.
+<body>
+  <div id="output"></div>
+
+  <div id="logmsg" style="display: none">
+    <p></p>
+    <p></p>
+    <p><span id="pink">[GalateaOS]</span> Welcome!</p>
+    <p><span id="pink">[GalateaOS]</span> Need to load:</p>
+    <p class="gray">/galatea/modules/ftx-h3-soc.kdll</p>
+    <p class="gray">/galatea/modules/angelarc-h4le-serial.kdll</p>
+    <p class="gray">/galatea/modules/angelarc-h4le-simd.kdll</p>
+    <p class="gray">/galatea/modules/angelarc-h4le-expressci.kdll</p>
+    <p class="gray">/galatea/modules/hellengpu.kdll</p>
+    <p class="gray">/galatea/modules/kipnv8.kdll</p>
+    <p class="gray">/galatea/modules/kipnv8-router.kdll</p>
+    <p class="delay"><span id="pink">[GalateaOS]</span> Loading modules..</p>
+    <p><span id="pink">[GalateaOS]</span> Done!</p>
+    <p><span id="pink">[GalateaOS]</span> Launching init</p>
+    <p class="delay"><span id="blue">[hypervisor]</span> Preparing services..</p>
+    <p class="gray">/etc/hypervisor.d/ipnv8</p>
+    <p class="gray">/etc/hypervisor.d/mnsc/np-ntpd</p>
+    <p class="gray">/etc/hypervisor.d/mnsc/satcom</p>
+    <p class="delay"><span id="pink">[GalateaOS]</span> Network ready on interface "FTX Europa Series Network
+      Bridge" (alloc file:
+      /var/dev/ftx0em)</p>
+    <p class="gray">/etc/hypervisor.d/sshd</p>
+    <p class="delay"><span id="blue">[hypervisor]</span> Generating mipmaps..</p>
+
+    <p class=""><span id="pink">[GalateaOS]</span> === DEBUG INFORMATION === </p>
+    <pre><p id="lighter-gray"><span id="blue-darker">ProcessorName</span> FTX Europa A4-3200 @ 4.5 GHz (aarc-H4LE)</p></pre>
+    <pre><p id="lighter-gray"><span id="blue-darker">InstalledGPU </span> Hellen Electronics Starway Chipset B250EM</p></pre>
+    <pre><p id="lighter-gray"><span id="blue-darker">Memory       </span> 16 GiB (/var/dev/mmem02056 - /var/dev/mmem16e+10) </p></pre>
+    <pre><p id="lighter-gray"><span id="blue-darker">NetworkCard  </span> FTX Europa Series Network Bridge</p></pre>
+    <pre><p id="lighter-gray"><span id="blue-darker">MainDisk     </span> 470 GiB (/var/dev/disks/d0) 76% Free</p></pre>
+    <p class=""><span id="pink">[GalateaOS]</span> ========================= </p>
+    <p class="gray">System Ready!</p>
+    <p class="delay"><span id="blue">[hypervisor]</span> Launching user init script..</p>
+    <p class="delay"></p>
+    <p class="delay"></p>
+    <p class="clear-all"></p>
+
+    <p><span id="pink">[GalateaOS]</span> System ready!</p>
+    <p>&InvisibleComma;</p>
+    <p style="font-weight: bolder; text-decoration: underline; font-style: italic;">Welcome to Galatea! the foundation
+      of most of my websites!</p>
+    <p>&InvisibleComma;</p>
+    <p class="delay">This is a special place where all public files on my system are stored.</p>
+    <p>If you're looking for something that may have been removed, feel free to email me at
+      <a href="email:miyuki@ane.jp.net">miyuki@ane.jp.net</a>.
     </p>
-    <p class="content">
-      <a href="/dl/" class="btn">See file list</a>
-    </p>
-    <div class="footer">
-      <a href="https://ane.jp.net"
-        ><img
-          src="/dl/images/logos/ane-logo-final.webp"
-          alt="ANE logo"
-          style="height: 4.5em"
-      /></a>
-    </div>
-  </body>
+    <p>&InvisibleComma;</p>
+    <a href="/dl/" class="btn">Public file list</a>
+
+    <p>&InvisibleComma;</p>
+    <p>&InvisibleComma;</p>
+    <p>&InvisibleComma;</p>
+    <img src="/dl/images/logos/ane-logo-final.webp?height=512" alt="">
+  </div>
+</body>
+
 </html>
