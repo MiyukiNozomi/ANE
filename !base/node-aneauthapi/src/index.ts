@@ -101,11 +101,11 @@ namespace AuthAPI {
               reject(
                 new Error(
                   "Got a Non-200 status code: " +
-                    res.statusCode +
-                    " when contacting " +
-                    endpoint +
-                    "\n " +
-                    buffStr
+                  res.statusCode +
+                  " when contacting " +
+                  endpoint +
+                  "\n " +
+                  buffStr
                 )
               );
             else resolve(JSON.parse(buffStr) as T & { error?: any });
@@ -221,13 +221,17 @@ namespace AuthAPI {
   export async function getAccountById(
     accountId: number
   ): Promise<AccountInfo | null> {
-    const res = await invokeAuthAPI<DataOrErrorResponse<AccountInfo>>(
-      "get-account",
-      { accountId }
-    );
-    if (res.error == "DOES_NOT_EXIST") return null;
-    else if (res.error) throw new Error("API Error: " + res.error);
-    return res.data!;
+    try {
+      const res = await invokeAuthAPI<DataOrErrorResponse<AccountInfo>>(
+        "get-account",
+        { accountId }
+      );
+      if (res.error == "DOES_NOT_EXIST") return null;
+      else if (res.error) throw new Error("API Error: " + res.error);
+      return res.data!;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**
@@ -236,14 +240,17 @@ namespace AuthAPI {
   export async function getAccountByName(
     username: string
   ): Promise<AccountInfo | null> {
-    const res = await invokeAuthAPI<DataOrErrorResponse<AccountInfo>>(
-      "get-account",
-      { username }
-    );
-    if (res.error == "DOES_NOT_EXIST") return null;
-    else if (res.error) throw new Error("API Error: " + res.error);
-
-    return res.data!;
+    try {
+      const res = await invokeAuthAPI<DataOrErrorResponse<AccountInfo>>(
+        "get-account",
+        { username }
+      );
+      if (res.error == "DOES_NOT_EXIST") return null;
+      else if (res.error) throw new Error("API Error: " + res.error);
+      return res.data!;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**
