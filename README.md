@@ -50,7 +50,7 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
       - [ ] Support Ashen
       - [ ] Support SQL
       - [ ] Support C and others....
-    - [ ] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
+    - [X] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
     - [N] Explore by commit history -- this has problems, likely wont do it until i can afford that supercomputer
     - [X] Branch support
     - [X] Visible README.mds on active directory

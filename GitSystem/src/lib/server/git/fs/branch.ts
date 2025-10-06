@@ -68,13 +68,44 @@ export class RepositoryBranch {
     };
   }
 
-  public async getFileList(pathname: string = '.') {
-    const normalizedPath = path.normalize(pathname).replace(/\/+$/, '');
-    const cache = this.filelistCache[normalizedPath];
-    if (!cache) {
-      return null;
-    }
-    return cache;
+  public async getFileList(pathname: string = '.'): Promise<GitFile | null> {
+    let maxRecursions = 4;
+
+    // maybe this should be computed in loader.ts?
+    const getfilelist = (pathname: string, recursionCount = 0) => {
+      const normalizedPath = path.normalize(pathname).replace(/\/+$/, '');
+      const cache = this.filelistCache[normalizedPath];
+      if (!cache) {
+        return null;
+      }
+      let filelist = new Array<GitFile>();
+
+      if (recursionCount < maxRecursions) {
+        for (const file of cache.children) {
+          if (file.isFile) {
+            filelist.push(file);
+            continue;
+          };
+
+          const sublist = getfilelist(file.filepath, recursionCount + 1);
+          if (sublist && sublist.children.length == 1 && !sublist.children[0].isFile) {
+            filelist.push({
+              ...file,
+              filename: file.filename + "/" + sublist.children[0].filename,
+              filepath: sublist.children[0].filepath
+            });
+          } else {
+            filelist.push(file);
+          }
+        }
+      } else { filelist = cache.children; }
+      return {
+        ...cache,
+        children: filelist
+      };
+    };
+
+    return getfilelist(pathname);
   }
 
   public async getFile(pathname: string) {
