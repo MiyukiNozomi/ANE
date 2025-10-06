@@ -24,10 +24,12 @@
         <div class="bg-black clip-notch-tl-br p-6">
           {#if data.individualFile}
             <CodeView
+              activeBranch={data.activeBranch}
               sourceURL={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/${data.individualFile.filepath}`}
             />
           {:else}
             <FileList
+              activeBranch={data.activeBranch}
               project={data.project}
               parentDirectory={data.directoryEntry}
             />

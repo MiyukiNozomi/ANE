@@ -28,12 +28,23 @@ class GitBridge {
     if (dev) console.log("Found Git Services: ", this.gitServices);
   }
 
+
   /** 
    * Use this for generic git commands, like ls-tree 
    * Don't use this function for user-defined values, please.
-   * As it could be a pain to debug later on
    */
   public async runImmediate(
+    executionDirectory: string,
+    ...params: Array<string>) {
+    return this.runImmediateUnsafe(false, executionDirectory, ...params);
+  }
+
+  /**
+   * Function only exists as a optimization for faster loading in loader.ts
+   * dont call it.
+   */
+  public async runImmediateUnsafe(
+    inShell: boolean,
     executionDirectory: string,
     ...params: Array<string>
   ) {
@@ -41,12 +52,23 @@ class GitBridge {
       // i would have kept this for security purposes, but it's TOO FUCKING SLOW
       // and also, this function isn't even supposed to be called with user-values anyway
       //  console.log("RUN_IMMEDIATE git ", params, " on ", executionDirectory);
+      if (dev) console.log("Shell?", inShell, "RUN git", params);
 
-      const gitProcess = spawn(this.gitServices["git"], params, {
-        cwd: executionDirectory,
-        timeout: 5000,
-        shell: false,
-      });
+      let gitProcess;
+
+      if (!inShell)
+        gitProcess = spawn(this.gitServices["git"], params, {
+          cwd: executionDirectory,
+          timeout: 5000,
+          shell: false,
+        });
+      else {
+        gitProcess = spawn(params.join(" "), {
+          cwd: executionDirectory,
+          timeout: 5000,
+          shell: true,
+        });
+      }
 
       let output = new Array<Buffer>();
       let errors = "";

@@ -2,13 +2,16 @@
   import type { Project } from "$lib/server/db";
   import type { GitFile } from "$lib/server/git/fs/branch";
   import { SUPPORTED_LANGUAGES_BY_EXTENSION } from "$lib/shared/constants";
+  import BackArrow from "./backArrow.svelte";
 
   let {
     project,
+    activeBranch,
     parentDirectory,
     isRoot = false,
   }: {
     isRoot?: boolean;
+    activeBranch: string;
     project: Project;
     parentDirectory: GitFile;
   } = $props();
@@ -30,14 +33,7 @@
 
 <div class="flex flex-col">
   {#if !isRoot}
-    <a
-      class="
-            flex flex-row gap-4 p-1 text-4xl items-center
-            font-kumbh hover:text-orange-200 hover:underline transition-all ease-in-out duration-200"
-      href="./"
-    >
-      &LeftArrow;
-    </a>
+    <BackArrow {activeBranch}></BackArrow>
   {/if}
   {#each parentDirectory.children as fileEntry}
     <a
@@ -45,7 +41,7 @@
     flex flex-row gap-4 p-1 text-xl items-center font-mplus2 group
     text-orange-200 bg-inherit border-1 border-black
     hover:text-white hover:underline hover:border-orange-200"
-      href={`/u/${project.authorUsername}/projects/${project.name}/fs/${fileEntry.filepath}`}
+      href={`/u/${project.authorUsername}/projects/${project.name}/fs/${fileEntry.filepath}?branch=${activeBranch}`}
     >
       <img
         class="h-8

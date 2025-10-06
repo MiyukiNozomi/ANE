@@ -26,6 +26,8 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
+    activeBranch: activeBranch,
+    branchlist: Object.keys(repo!.branches).filter(v => v != activeBranch),
     filelist: await branchInfo.getFileList(),
     commitCount: await branchInfo.getCommitCount(),
 

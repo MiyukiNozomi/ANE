@@ -50,6 +50,7 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
+    activeBranch,
     directoryEntry,
 
     filename: path.basename(params.path),

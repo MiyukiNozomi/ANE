@@ -40,8 +40,8 @@ export async function loadRepository(project: Project) {
 async function loadBranch(repository: RepositoryInfo, branchName: string) {
     let branch = new RepositoryBranch(repository, branchName, await getCommitCountOf(repository, branchName));
 
-    await loadFileTree(repository, branch);
     await loadCommitList(repository, branch);
+    await loadFileTree(repository, branch);
 
     return branch;
 }
@@ -49,9 +49,11 @@ async function loadBranch(repository: RepositoryInfo, branchName: string) {
 async function loadFileTree({ repository }: RepositoryInfo, branch: RepositoryBranch) {
     let startTime = Date.now();
 
-    (
+    const physicalPath = getPhysicalProjectLocation(repository);
+
+    const lines = (
         await bridge.runImmediate(
-            getPhysicalProjectLocation(repository),
+            physicalPath,
             "ls-tree",
             "-l",
             "-r",
@@ -60,54 +62,54 @@ async function loadFileTree({ repository }: RepositoryInfo, branch: RepositoryBr
         )
     )
         .toString()
-        .split("\n").forEach(v => {
+        .split("\n");
 
-            let tabIndex = v.indexOf('\t');
-            let options = v.substring(0, tabIndex).split(" ").filter(v => v.trim());
-            if (options.length == 0) return; // could be EOF though
-            if (options.length < 3 || tabIndex == -1) throw new Error(`Git has given: ${JSON.stringify(options)} (bug)`);
-            let filepath = v.substring(tabIndex + 1).trim();
-            let parentDirectory = path.dirname(filepath);
+    for (const v of lines) {
+        let tabIndex = v.indexOf('\t');
+        let options = v.substring(0, tabIndex).split(" ").filter(v => v.trim());
+        if (options.length == 0) continue; // could be EOF though
+        if (options.length < 3 || tabIndex == -1) throw new Error(`Git has given: ${JSON.stringify(options)} (bug)`);
+        let filepath = v.substring(tabIndex + 1).trim();
+        let parentDirectory = path.dirname(filepath);
 
-            let currEntry: GitFile = {
-                filename: path.basename(filepath),
-                filepath,
-                mode: options[0],
-                isFile: options[1] == "blob",
-                hash: options[2],
-                size: Number(options[3]) || 0,
-                children: []
-            };
+        let currEntry: GitFile = {
+            filename: path.basename(filepath),
+            filepath,
+            mode: options[0],
+            isFile: options[1] == "blob",
+            hash: options[2],
+            size: Number(options[3]) || 0,
+            children: [],
+        };
 
+        let parentDirEntry = branch.filelistCache[parentDirectory];
+        if (!parentDirEntry) {
+            // for some reason this happened, it's highly unlikely but since it did:
+            // we'll define a 'stub' entry here.
+            // it wont show up properly unless we find it in the future.
+            // it's fine if it stays in the cache but unreferenced from branch.filelistCache['.'] (root directory)
+            parentDirEntry = (branch.filelistCache[parentDirectory] = {
+                children: [],
+                filename: "",
+                filepath: "",
+                hash: "",
+                isFile: false,
+                mode: "",
+                size: 0
+            });
+            // log this because it's an non-fatal error
+            console.warn("WARNING WARNING file " + currEntry.filepath + " was inserted into a stub-definition (parent did not exist beforehand)");
+        }
 
-            let parentDirEntry = branch.filelistCache[parentDirectory];
-            if (!parentDirEntry) {
-                // for some reason this happened, it's highly unlikely but since it did:
-                // we'll define a 'stub' entry here.
-                // it wont show up properly unless we find it in the future.
-                // it's fine if it stays in the cache but unreferenced from branch.filelistCache['.'] (root directory)
-                parentDirEntry = (branch.filelistCache[parentDirectory] = {
-                    children: [],
-                    filename: "",
-                    filepath: "",
-                    hash: "",
-                    isFile: false,
-                    mode: "",
-                    size: 0
-                });
-                // log this because it's an non-fatal error
-                console.warn("WARNING WARNING file " + currEntry.filepath + " was inserted into a stub-definition (parent did not exist beforehand)");
-            }
-
-            parentDirEntry.children.push(currEntry);
-            if (!currEntry.isFile) {
-                // just in case of a stub..
-                const existingEntry = branch.filelistCache[currEntry.filepath];
-                if (existingEntry)
-                    currEntry.children.push(...existingEntry.children);
-                branch.filelistCache[filepath] = currEntry;
-            }
-        });
+        parentDirEntry.children.push(currEntry);
+        if (!currEntry.isFile) {
+            // just in case of a stub..
+            const existingEntry = branch.filelistCache[currEntry.filepath];
+            if (existingEntry)
+                currEntry.children.push(...existingEntry.children);
+            branch.filelistCache[filepath] = currEntry;
+        }
+    }
 
 
     // now we sort
@@ -127,21 +129,11 @@ async function loadCommitList({ repository }: RepositoryInfo, branch: Repository
     let startTime = Date.now();
 
     const physicalPath = getPhysicalProjectLocation(repository)
-    const commitList = (await bridge.runImmediate(physicalPath,
-        '--no-pager',
-        'log',
-        `--max-count=${MAXIMUM_COMMIT_COUNT_TO_LOAD}`,
-        `--pretty=format:%H`)).toString().split('\n');
+    const commitList = (await bridge.runImmediateUnsafe(true, physicalPath,
+        `git --no-pager log --max-count=${MAXIMUM_COMMIT_COUNT_TO_LOAD} --pretty=format:%H | xargs -I {} sh -c 'git --no-pager show {} --quiet --pretty=format:"Commit: %H%nAuthor: %an%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n"; echo "==[SEPARATOR]=="' | sed '$d'`)).toString().split('==[SEPARATOR]==');
 
-    for (const commitRef of commitList) {
+    for (const commitLog of commitList) {
         const placeholder = `CR\nLF\n`;
-        const commitLog = (await bridge.runImmediate(physicalPath,
-            `--no-pager`,
-            `show`,
-            commitRef,
-            `--quiet`,
-            `--pretty=format:Commit: %H%nAuthor: %an%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n`
-        )).toString();
 
         let placeholderIndex = commitLog.indexOf(placeholder);
         let headers: Record<string, string> = {};
@@ -154,15 +146,21 @@ async function loadCommitList({ repository }: RepositoryInfo, branch: Repository
         });;
 
         let commitMessage = commitLog.substring(placeholderIndex + placeholder.length).trim();
+        let hash = headers["Commit"];
 
-        branch.commits.push({
+        if (!hash) {
+            console.warn("WARN: Found commits in project id " + repository.id + " lacking a hash!");
+            continue;
+        }
+
+        branch.commits[hash] = {
             age: headers["Age"] ?? COMMIT_INFO_MISSING,
             author: headers["Author"] ?? COMMIT_INFO_MISSING,
             authorEmail: headers["E-Mail"] ?? COMMIT_INFO_MISSING,
             date: headers["Date"] ?? (new Date().toDateString()),
-            hash: headers["Commit"] ?? commitLog,
+            hash: hash,
             message: commitMessage.length == 0 ? "No commit message." : commitMessage
-        });
+        };
     }
 
     console.log("Loaded commits of", repository.authorUsername + "#" + repository.name, "in", (Date.now() - startTime) / 1000, "seconds.");

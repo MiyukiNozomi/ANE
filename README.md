@@ -44,15 +44,15 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 
 - [ ] Finish git.ane.jp.net
   - [ ] Use Git's C api instead of the CLI
-  - [ ] Contributor Support
+  - [X] Contributor Support
   - [X] File Explorer
     - [-] Code Reader
       - [ ] Support Ashen
       - [ ] Support SQL
       - [ ] Support C and others....
     - [ ] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
-    - [ ] Explore by commit history
-    - [ ] Branch support
+    - [N] Explore by commit history -- this has problems, likely wont do it until i can afford that supercomputer
+    - [X] Branch support
     - [X] Visible README.mds on active directory
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)
 

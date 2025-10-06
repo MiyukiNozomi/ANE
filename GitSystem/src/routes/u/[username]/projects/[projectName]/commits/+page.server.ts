@@ -26,6 +26,6 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
-    commits: branchInfo.commits
+    commits: Object.values(branchInfo.commits)
   };
 }) satisfies PageServerLoad;

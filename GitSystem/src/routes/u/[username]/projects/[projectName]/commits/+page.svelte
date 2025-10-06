@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BackArrow from "$lib/components/gitviewer/backArrow.svelte";
   import PageBody from "$lib/components/pageBody.svelte";
   import type { PageProps } from "./$types";
 
@@ -19,14 +20,7 @@
     <div class="flex flex-col gap-4 mb-8 px-8">
       <div class="bg-orange-200 clip-notch-tl-br p-[1px]">
         <div class="flex flex-col gap-4 bg-black clip-notch-tl-br p-6">
-          <a
-            class="
-            flex flex-row gap-4 p-1 text-4xl items-center
-            font-kumbh hover:text-orange-200 hover:underline transition-all ease-in-out duration-200"
-            href="./"
-          >
-            &LeftArrow;
-          </a>
+          <BackArrow activeBranch="master"></BackArrow>
           {#each data.commits as commit}
             <div
               class="flex flex-row gap-4 group items-center cursor-default group hover:bg-orange-400/20 px-2"

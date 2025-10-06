@@ -48,13 +48,13 @@ export class RepositoryBranch {
    * Has a maximum of loader.ts#MAXIMUM_COMMIT_COUNT_TO_LOAD, which is why
    * it's length is not the same as RepositoryBranch#commitCount.
    */
-  public commits: Array<Commit>;
+  public commits: Record<string, Commit>;
 
   constructor(repository: RepositoryInfo, branchName: string, commitCount: number) {
     this.repository = repository;
     this.branchName = branchName;
     this.commitCount = commitCount;
-    this.commits = new Array();
+    this.commits = {};
     this.filelistCache = {
       '.': {
         children: [],

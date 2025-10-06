@@ -32,6 +32,7 @@
           >
             <FileList
               isRoot={true}
+              activeBranch={data.activeBranch}
               project={data.project}
               parentDirectory={data.filelist}
             />
@@ -66,6 +67,25 @@
             > COMMITS
           </a>
         </h1>
+
+        {#if data.branchlist.length > 0}
+          <h2
+            class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b-1 border-orange-200 border-dotted"
+          >
+            B R A N C H E S
+          </h2>
+          <div class="flex flex-col">
+            {#each data.branchlist as branch}
+              <a
+                href="/u/{data.profile.name}/projects/{data.project
+                  .name}?branch={branch}"
+                class="hover:text-orange-200 hover:underline group font-baskervville"
+              >
+                {branch}
+              </a>
+            {/each}
+          </div>
+        {/if}
         <h2
           class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b-1 border-orange-200 border-dotted"
         >
