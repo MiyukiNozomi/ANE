@@ -43,6 +43,9 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Restyle Auth
 
 - [ ] Finish git.ane.jp.net
+  - [ ] Search Function
+  - [ ] Main Page
+  - [ ] Refactor database handling code (it sucks)
   - [-] Use Git's C api instead of the CLI -- wont happen unless i change the backend into Java or my own language
   - [X] Contributor Support
   - [X] File Explorer
