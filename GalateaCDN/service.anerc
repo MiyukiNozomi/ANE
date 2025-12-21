@@ -7,11 +7,7 @@ build : root {
     pnpm rebuild sharp
     tsc
     SHARP_FORCE_GLOBAL_LIBVIPS=1 node \
-        --max-old-space-size=1400 --max-semi-space-size-32\
-        --optimize-for-size \
-        --concurrent-marking \
-        --scavenge-before-full \
-        --single-threaded-gc \
+        --max-old-space-size=1400 --single-threaded-gc \
          bin/prebuild.js
 }
 

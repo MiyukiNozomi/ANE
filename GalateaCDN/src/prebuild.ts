@@ -63,8 +63,8 @@ async function convertImage(fullPath: string, outputPath: string) {
 
   let list = new Array<ImageScales>();
 
-  let w = Math.min(MAX_SCALE, size.width * 2);
-  let h = Math.min(MAX_SCALE, size.height * 2);
+  let w = Math.min(MAX_SCALE, size.width * 1.2);
+  let h = Math.min(MAX_SCALE, size.height * 1.2);
 
   //mipmapping
   console.log("ℹ️  Generating mipmaps for " + fullPath);
