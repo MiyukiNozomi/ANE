@@ -117,7 +117,7 @@ nameserver 2001:4860:4860::8844
         fsWriteText(fsPathJoin(jaildir.clone(), "/service/launch.sh"), script);
         recipe.runCommand("root", "chmod u+x /service/launch.sh");
 
-        fsWriteText(fsPathJoin(jaildir.clone(), "/etc/rc.d/aneservice"), getDefaultRCScript());
+        fsWriteText(fsPathJoin(jaildir.clone(), "/etc/rc.d/aneservice"), getDefaultRCScript(recipe));
         recipe.runCommand("root", "chmod +x /etc/rc.d/aneservice");
 
         recipe.runCommand("root", "sysrc aneservice_enable=\"YES\"");
@@ -164,8 +164,8 @@ ip4 = inherit;
     return builder;
 }
 
-proc getDefaultRCScript() {
-    return "#!/bin/sh
+proc getDefaultRCScript(recipe : JailRecipe) {
+    return formatStrings(["#!/bin/sh
 # PROVIDE: aneservice
 # KEYWORD: shutdown
 
@@ -174,20 +174,22 @@ proc getDefaultRCScript() {
 name=\"aneservice\"
 rcvar=\"aneservice_enable\"
 
-script_path=\"/service/launch.sh\"  # CHANGE THIS TO YOUR SCRIPT'S PATH
+script_path=\"/service/launch.sh\"
 logfile=\"/service/logs.txt\"
 pidfile=\"/var/run/${name}.pid\"
 
 command=\"/usr/sbin/daemon\"
-command_args=\"-f -P ${pidfile} -t ${name} -o ${logfile} ${script_path} >> ${logfile} 2>&1\"
-
-myservice_user=\"azki\"
+command_args=\"-u ", 
+    if (recipe.isFlagTruty("rootServiceInit"))
+        then "root"
+        else "azki"
+,"-f -P ${pidfile} -t ${name} -o ${logfile} ${script_path} >> ${logfile} 2>&1\"
 
 load_rc_config $name
 
 # Default enable if not set
-: ${myservice_enable:=\"NO\"}
+: ${aneservice_enable:=\"NO\"}
 
 run_rc_command \"$1\"
-";
+"]);
 }
