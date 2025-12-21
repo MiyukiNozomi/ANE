@@ -7,14 +7,16 @@ build : root {
     npm i -g typescript
     npm i
     tsc
-
-    certbot certonly --standalone
-
-    cd /service/bin/ssl && ./copy-certs.sh
-
     su - azki -c 'cd /service/bin && /usr/local/bin/node bin/prebuild.js'
+    
+    echo "REVERSEPROXY NOTE: IF YOU HAVENT SETUP THE CERTIFICATE YET, RUN THE setup-cert TASK!!!"
 }
 
-run : azki {
+setup-cert : root {
+    certbot certonly --standalone
+}
+
+run : root {
+    cd /service/bin/ssl && ./copy-certs.sh
     cd /service/bin && /usr/local/bin/node .
 }
