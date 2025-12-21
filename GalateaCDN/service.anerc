@@ -1,0 +1,14 @@
+image galatea
+
+build : root {
+    pkg install -y node24 npm-node24
+    npm i -g pnpm
+    pnpm i
+    pnpm rebuild sharp
+    tsc
+    SHARP_FORCE_GLOBAL_LIBVIPS=1 node bin/prebuild.js --force 
+}
+
+run : azki {
+    cd /service/bin && /usr/local/bin/node .
+}
