@@ -7,8 +7,8 @@ build : root {
     npm i -g typescript
     npm i
     tsc
-    su - azki -c 'cd /service/bin && /usr/local/bin/node bin/prebuild.js'
-    
+    su - azki -c "cd /service/bin && /usr/local/bin/node bin/prebuild.js"
+
     echo "REVERSEPROXY NOTE: IF YOU HAVENT SETUP THE CERTIFICATE YET, RUN THE setup-cert TASK!!!"
 }
 
