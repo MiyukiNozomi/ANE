@@ -7,13 +7,13 @@ export const IS_DEV_MODE = process.argv.includes("--dev");
 
 export const DATABASE_FILE = IS_DEV_MODE
   ? "./proxyASN.db"
-  : "/home/AZKi/proxyASN.db";
+  : "/service/storage/proxyASN.db";
 
 export const DOMAIN_NAME = "ane.jp.net";
 
 if (IS_PREBUILD_SCRIPT) {
   Sys.println(
-    "⚠️ You are running the prebuild script! if this is a false alarm, things will go really bad! ⚠️"
+    "⚠️ You are running the prebuild script! if this is a false alarm, things will go really bad! ⚠️",
   );
 }
 

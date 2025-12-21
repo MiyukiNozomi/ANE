@@ -78,7 +78,7 @@ struct JailRecipe {
         if (nullFlag then flag) {
             if (flag.values.length > 0 && (
                 flag.values[0] == "yes" ||
-                flag.values[1] == "true"
+                flag.values[0] == "true"
             ))
                 return true;
         }
