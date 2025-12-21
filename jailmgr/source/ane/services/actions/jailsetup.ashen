@@ -183,7 +183,7 @@ command_args=\"-u ",
     if (recipe.isFlagTruty("rootServiceInit"))
         then "root"
         else "azki"
-,"-f -P ${pidfile} -t ${name} -o ${logfile} ${script_path} >> ${logfile} 2>&1\"
+," -f -P ${pidfile} -t ${name} -o ${logfile} ${script_path} >> ${logfile} 2>&1\"
 
 load_rc_config $name
 
