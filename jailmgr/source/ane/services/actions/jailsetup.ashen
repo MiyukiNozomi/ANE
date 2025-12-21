@@ -115,7 +115,11 @@ nameserver 2001:4860:4860::8844
         }
 
         fsWriteText(fsPathJoin(jaildir.clone(), "/service/launch.sh"), script);
-        recipe.runCommand("root", "chmod u+x /service/launch.sh");
+        
+        // Lock it down
+        recipe.runCommand("root", "chown root:wheel /service/launch.sh");
+        // Allow any user to read and execute only
+        recipe.runCommand("root", "chmod 555 /service/launch.sh");
 
         fsWriteText(fsPathJoin(jaildir.clone(), "/etc/rc.d/aneservice"), getDefaultRCScript(recipe));
         recipe.runCommand("root", "chmod +x /etc/rc.d/aneservice");
