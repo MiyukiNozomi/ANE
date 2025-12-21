@@ -12,7 +12,7 @@ build : root {
 
     cd /service/bin/ssl && ./copy-certs.sh
 
-    su - azki -c 'cd /service/bin && node bin/prebuild.js'
+    su - azki -c 'cd /service/bin && /usr/local/bin/node bin/prebuild.js'
 }
 
 run : azki {
