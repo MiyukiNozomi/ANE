@@ -3,8 +3,9 @@ image reverse-proxy
 flag rootServiceInit true
 
 build : root {
-    pkg install -y security/py-certbot node24 npm-node24
+    pkg install -y security/py-certbot node24 npm-node24 sqlite3
     npm i -g typescript
+    npm i
     tsc
 
     certbot certonly --standalone
