@@ -2,7 +2,7 @@ image galatea
 
 build : root {
     pkg install -y node24 npm-node24
-    npm i -g pnpm tsc
+    npm i -g pnpm typescript
     pnpm i
     pnpm rebuild sharp
     tsc
