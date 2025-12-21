@@ -5,6 +5,7 @@ flag rootServiceInit true
 build : root {
     pkg install -y security/py-certbot node24 npm-node24
     npm i -g typescript
+    tsc
 
     certbot certonly --standalone
 
