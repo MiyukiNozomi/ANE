@@ -12,13 +12,13 @@ if (!process.setuid) throw "Wrong platform buddy!";
 
 export type HandleFunc = (
   req: IncomingMessage,
-  res: ServerResponse
+  res: ServerResponse,
 ) => Promise<any>;
 
 export type MiddlewareFunction = (
   req: IncomingMessage,
   res: ServerResponse,
-  func: HandleFunc
+  func: HandleFunc,
 ) => Promise<any>;
 
 const middlewares = [securityMiddleware, maintenanceMiddleware];
@@ -26,12 +26,17 @@ const middlewares = [securityMiddleware, maintenanceMiddleware];
 async function runMiddlewares(
   req: http.IncomingMessage,
   res: http.ServerResponse,
-  finalHandler: HandleFunc
+  finalHandler: HandleFunc,
 ) {
   let ii = 0;
 
   Sys.println(
-    "[" + req.socket.remoteAddress + "] " + encodeURI(req.method ?? "GET") + " " + encodeURI(req.url ?? '/')
+    "[" +
+      req.socket.remoteAddress +
+      "] " +
+      encodeURI(req.method ?? "GET") +
+      " " +
+      encodeURI(req.url ?? "/"),
   );
 
   const next = async () => {
@@ -52,7 +57,7 @@ const handleFunc: HandleFunc = async (req, res) =>
 
 const httpServer = http.createServer(handleFunc);
 httpServer.on("listening", () =>
-  Sys.println("[HTTP] Router has been launched.")
+  Sys.println("[HTTP] Router has been launched."),
 );
 
 // SSLConfig == null means development mode
@@ -65,14 +70,14 @@ if (!SSLConfig) {
   const httpsServer = https.createServer(SSLConfig, handleFunc);
 
   httpsServer.on("listening", () =>
-    Sys.println("[HTTPS] Router has been launched.")
+    Sys.println("[HTTPS] Router has been launched."),
   );
 
   httpServer.listen(80);
   httpsServer.listen(443);
 
-  Sys.println("Servers listening! downgrading permissions to AZKi.");
-  process.setuid("AZKi");
+  Sys.println("Servers listening! downgrading permissions to azki.");
+  process.setuid("azki");
   Sys.println("Whoami? " + execSync("whoami") + "!");
 
   initASN();
