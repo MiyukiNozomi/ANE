@@ -6,7 +6,7 @@ build : root {
     pnpm i
     pnpm rebuild sharp
     tsc
-    SHARP_FORCE_GLOBAL_LIBVIPS=1 node bin/prebuild.js --force 
+    SHARP_FORCE_GLOBAL_LIBVIPS=1 node bin/prebuild.js
 }
 
 run : azki {

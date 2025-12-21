@@ -28,7 +28,7 @@ const MIN_SCALE = 30;
 
 if (IS_FORCE_MODE)
   console.log(
-    "⚠️⚠️⚠️ '--force' parameter used! ALL mipmaps will be REGENERATED!"
+    "⚠️⚠️⚠️ '--force' parameter used! ALL mipmaps will be REGENERATED!",
   );
 
 const IMAGES_FOLDER = path.join(CURRENT_STORAGE_FOLDER, "images");
@@ -40,19 +40,14 @@ cpSync(DEFAULT_CDN_FOLDER, CURRENT_STORAGE_FOLDER, {
 let mipmapInfo: Record<string, ImageScales[]> = {};
 
 async function convertImage(fullPath: string, outputPath: string) {
-  let promises = new Array<Promise<any>>();
-
   let fileBuff = readFileSync(fullPath);
-  let imgSharp = sharp(fileBuff);
 
   // original image
-  promises.push(
-    imgSharp
-      .webp({
-        quality: 100,
-      })
-      .toFile(outputPath)
-  );
+  await sharp(fileBuff)
+    .webp({
+      quality: 100,
+    })
+    .toFile(outputPath);
 
   if (!fullPath.startsWith(IMAGES_FOLDER)) {
     return console.log(
@@ -60,11 +55,11 @@ async function convertImage(fullPath: string, outputPath: string) {
         fullPath +
         " (not inside of " +
         IMAGES_FOLDER +
-        ")"
+        ")",
     );
   }
 
-  let size = await imgSharp.metadata();
+  let size = await sharp(fileBuff).metadata();
 
   let list = new Array<ImageScales>();
 
@@ -99,7 +94,7 @@ async function convertImage(fullPath: string, outputPath: string) {
           h +
           "' generation at " +
           outPath +
-          " (already generated, mipmaps are expensive!)"
+          " (already generated, mipmaps are expensive!)",
       );
       continue;
     }
@@ -108,18 +103,16 @@ async function convertImage(fullPath: string, outputPath: string) {
       recursive: true,
     });
 
-    promises.push(
-      imgSharp
-        .resize({
-          kernel: "mks2021",
-          width: w,
-          height: h,
-        })
-        .webp({
-          quality: 100,
-        })
-        .toFile(outPath)
-    );
+    await sharp(fileBuff)
+      .resize({
+        kernel: "mks2021",
+        width: w,
+        height: h,
+      })
+      .webp({
+        quality: 100,
+      })
+      .toFile(outPath);
 
     list.push({
       path: outPath,
@@ -129,8 +122,6 @@ async function convertImage(fullPath: string, outputPath: string) {
   }
 
   mipmapInfo[outputPath] = list;
-
-  return Promise.all(promises);
 }
 
 console.log("ℹ️  Processing images in default/");
