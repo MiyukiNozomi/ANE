@@ -76,8 +76,8 @@ nameserver 2001:4860:4860::8844
             return false;
         }
 
-        recipe.runCommand("root", "pw useradd azki -d /service/storage -c \"INoNoKa AZKi\" -s /bin/sh");
-        recipe.runCommand("root", "mkdir -p /service/storage && chown -R azki:azki /service/storage");
+        recipe.runCommand("root", "pw useradd azki -d /service/storage -c \"INoNoKa AZKi\" -s /bin/sh", false);
+        recipe.runCommand("root", "mkdir -p /service/storage && chown -R azki:azki /service/storage", false);
     }
 
     recipe.runCommand("root", "rm -rf /service/bin && mkdir -p /service/bin", false);

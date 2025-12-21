@@ -9,7 +9,7 @@ export const IS_DEV_MODE = process.argv.includes("--dev");
 export const DEFAULT_CDN_FOLDER = "./default";
 export const CURRENT_STORAGE_FOLDER = IS_DEV_MODE
   ? "./storage"
-  : path.join(os.homedir(), "/storage");
+  : path.join(os.homedir(), "/galateaStorage");
 export const MIPMAP_JSON_PATH = IS_DEV_MODE
   ? path.join(__dirname, "/mipmaps.info.json")
   : path.join(os.homedir(), "/mipmaps.info.json");
