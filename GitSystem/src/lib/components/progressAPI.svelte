@@ -8,7 +8,7 @@
     label: string,
     endpointString: string,
     payload: any,
-    method: "POST" | "PUT" = "POST"
+    method: "POST" | "PUT" = "POST",
   ) {
     requestProgressLabel = label;
     await tick();

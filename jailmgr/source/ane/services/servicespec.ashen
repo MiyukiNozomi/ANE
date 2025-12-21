@@ -1,0 +1,221 @@
+import ashen.fs;
+import ashen.io;
+
+import stdc.stdio;
+import stdc.stdlib;
+
+struct Flag {
+    key : String,
+    values : String[];
+}
+
+struct Task {
+    name : String,
+    targetUser : String,
+    commands : String[];
+}
+
+struct JailRecipe {
+    name : String,
+    flags : Flag[],
+    tasks : Task[];
+
+    proc tryRunTask(taskname : String) {
+        printStrings(["Trying to run task ", taskname, " on jail ", this.name, "\n"]);
+        var nTask = this.getTask(taskname);
+
+        if (nTask then tsk) {
+            for (command in tsk.commands) {
+                if (!this.runCommand(tsk.targetUser, command)) {
+                    printString("Command failed! ");
+                    printString(command);
+                    printString("\n");
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    proc runCommand(user : String, command : String) {
+        return this.runCommand(user, command, true);
+    }
+
+    proc runCommand(user : String, command : String, seekIntoDirectory : Bool) {
+        command.trim();
+        if (command.startsWith("@ANE:")) {
+            var task = command.slice(5, command.length).trim();
+            this.tryRunTask(task);
+            return true;
+        }
+
+        if (seekIntoDirectory) {
+            command = "cd /service/bin && ".concat(command);
+        }
+
+        var shCommandLine = "sh";
+        // TODO != for strings in ashen (i forgot about them)
+        if (!(user == "root")) {
+            shCommandLine = "su";
+            shCommandLine.concat(" - ".concat(user));
+        }
+        shCommandLine.concat(" -c '").concat(command).concat("'");
+
+        var cmd = "jexec -u root ".concat(this.name).concat(" ").concat(shCommandLine);
+        printString("RUN ");
+        printString(cmd);
+        printString("\n");
+        return !system(cmd.toNullTerminatedPointer());
+    }
+
+    proc jailDirectory() {
+        return  "/ANE/containers/".concat(this.name);
+    }
+
+    proc isFlagTruty(key : String) {
+        var nullFlag = this.getFlag(key);
+        if (nullFlag then flag) {
+            if (flag.values.length > 0 && (
+                flag.values[0] == "yes" ||
+                flag.values[1] == "true"
+            ))
+                return true;
+        }
+        return false;
+    }
+
+    proc getFlag(key : String) {
+        for (fl in this.flags) {
+            if (fl.key == key) {
+                return fl;
+            }
+        }
+        return null as Flag?;
+    }
+
+    proc getTask(taskname : String) {
+        for (task in this.tasks) {
+            if (task.name == taskname) {
+                return task;
+            }
+        }
+        return null as Task?;
+    }
+
+    proc print() {
+        printStrings(["Recipe ", this.name, "\n"]);
+        for (task in this.tasks) {
+            printString("  task:".concat(task.name).concat(":").concat(task.targetUser).concat("\n"));
+            for (cmd in task.commands) {
+                printString("    - ".concat(cmd).concat("\n"));
+            }
+        }
+    }
+}
+
+proc splitBy(ctn : String, ch : Byte) {
+    var lines = new String[0];
+    let collected = "";
+
+    for (c in ctn) {
+        if (c == ch) {
+            if (collected.length > 0) {
+                lines.push(collected);
+                collected = "";
+            }
+        } else {
+            collected.push(c);
+        }
+    }
+
+    if (collected.length > 0)
+        lines.push(collected);
+    return lines;  
+}
+
+proc removeEmpty(n : String[]) {
+    var res = new String[0];
+    for (l in n) {
+        let isEmpty = true;
+        for (ch in l) {
+            if (ch != ' ' && ch != '\t') {
+                isEmpty = false;
+                break;
+            }
+        }
+
+        if (!isEmpty)
+            res.push(l);
+    }
+    return res;
+}
+
+proc parseRecipeFile(filename : String) {
+    var nullFileContents = fsReadText(filename);
+    
+    if (nullFileContents then fileContents) {
+        let lines = splitBy(fileContents, '\n');
+        let recipe = JailRecipe {
+            name: "",
+            flags: new Flag[0],
+            tasks: new Task[0]
+        };
+        
+        for (i in 0 < lines.length) {
+            let tokens = removeEmpty(splitBy(lines[i], ' '));
+            if (tokens.length == 0) continue;
+
+            if (tokens[0] == "image") {
+                if (tokens.length < 2) {
+                    printf("Unclosed image directive.\n"N);
+                    return null as JailRecipe?;
+                }
+                recipe.name = tokens[1];
+            } else if (tokens[0] == "flag") {
+                if (tokens.length < 3) {
+                    printf("Unclosed flag directive.\n"N);
+                    return null as JailRecipe?;
+                }
+                recipe.flags.push(Flag {
+                    key: tokens[1], 
+                    values: tokens.slice(2, tokens.length)
+                });
+            } else {
+                let name = tokens[0];
+                let targetUser = "azki";
+                let commands = new String[0];
+
+                if (tokens.length > 2 && tokens[1] == ":") {
+                    targetUser = tokens[2];
+                }
+
+                i++;
+                while (i < lines.length && !lines[i].startsWith("}")) {
+                    let command = lines[i++].trim();
+
+                    if (commands.length > 0 && commands[commands.length - 1].endsWith("\\")) {
+                        commands[commands.length - 1].pop();
+                        commands[commands.length - 1].concat(command);
+                    } else {
+                        commands.push(command);
+                    }
+                }
+
+                recipe.tasks.push(Task {
+                    name: name,
+                    targetUser: targetUser,
+                    commands: commands
+                });
+            }
+        }
+
+        if (recipe.name.length == 0) {
+            printf("Unnamed recipe! need a image directive.\n"N);
+            return null as JailRecipe?; 
+        }
+        return recipe;
+    }
+
+    return null as JailRecipe?;
+}

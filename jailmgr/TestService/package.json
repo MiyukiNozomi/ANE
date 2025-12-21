@@ -1,0 +1,7 @@
+{
+    "name": "test",
+    "main": "index.js",
+    "scripts": {
+        "build": "echo 'I HAVE BEEN CALLED! YAY!' && exit 0"
+    }
+}

@@ -1,13 +1,9 @@
 import z from "zod";
 import type { RequestHandler } from "./$types";
 import { error, json } from "@sveltejs/kit";
-import { Backend } from "$lib/server/backend-api";
-import {
-  asLocalResponse,
-  MAX_SECRET_LENGTH,
-  MIN_SECRET_LENGTH,
-} from "$lib/server/backend";
 import { dev } from "$app/environment";
+import { MAX_SECRET_LENGTH, MIN_SECRET_LENGTH } from "$lib/shared/safety";
+import { Backend } from "$lib/server/services";
 
 let requestData = z.object({
   sharedSecret: z
@@ -28,14 +24,15 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   const { sharedSecret, authRequestCode } = obj.data;
   if (!sharedSecret && !authRequestCode) return error(400);
 
-  const backendResponse = await Backend.getAuthorizationStatus(
-    sharedSecret ?? undefined,
-    authRequestCode ?? undefined
+  const res = await Backend.getAuthorizationStatus(
+    sharedSecret
+      ? {
+          sharedSecret,
+        }
+      : {
+          id: authRequestCode!,
+        },
   );
-  if (!backendResponse) return error(500);
-  if (backendResponse.error) return json(backendResponse);
-
-  if (dev) console.log(backendResponse.data);
-
-  return json(backendResponse.data!);
+  if (dev) console.log(res);
+  return json(res);
 };

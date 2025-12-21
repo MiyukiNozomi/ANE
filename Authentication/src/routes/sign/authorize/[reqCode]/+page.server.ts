@@ -1,6 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import { Backend } from "$lib/server/backend-api";
+import { Backend } from "$lib/server/services";
 import { dev } from "$app/environment";
 import { redirectToLoginPage } from "$lib/server/tools";
 
@@ -9,24 +9,16 @@ export const load = (async ({ locals, request, params }) => {
     return redirectToLoginPage(request.url);
   }
 
-  const reqInfo = await Backend.getAuthorizationStatus(
-    undefined,
-    params.reqCode
-  );
+  const reqInfo = await Backend.getAuthorizationStatus({ id: params.reqCode });
   if (dev) {
     console.log(reqInfo);
   }
 
-  if (!reqInfo || reqInfo.error) {
+  if ("error" in reqInfo) {
     return {};
   }
 
   return {
-    reqInfo: {
-      realm: reqInfo.data!.realm,
-      reqCode: reqInfo.data?.reqCode,
-      redirectURL: reqInfo.data?.redirectURL,
-      status: reqInfo.data?.sessionStatus,
-    },
+    reqInfo: reqInfo.object,
   };
 }) satisfies PageServerLoad;

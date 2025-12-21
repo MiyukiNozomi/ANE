@@ -3,14 +3,14 @@
     getAccountInfo,
     getCookie,
     invalidateSession,
-    MIN_REALM_LENGTH,
   } from "$lib/client-api";
   import Input from "$lib/components/input.svelte";
-  import type { SessionInfo } from "$lib/server/backend-types";
   import { fade, slide } from "svelte/transition";
   import type { PageData } from "./$types";
-  import { error } from "@sveltejs/kit";
   import ProgressApi from "$lib/components/progressAPI.svelte";
+  import type { Session, User } from "$lib/server/db/schema";
+  import { MIN_REALM_LENGTH } from "$lib/shared/safety";
+  import type { UserSessionInfo } from "$lib/server/serviceTypes";
 
   let { data }: { data: PageData } = $props();
 
@@ -38,8 +38,9 @@
   //
   let sessionList = $state(
     data.sessions.sort(
-      (a, b) => (a.isThirdParty ? 1 : 0) - (b.isThirdParty ? 1 : 0)
-    )
+      (a, b) =>
+        (a.isThirdPartySession ? 1 : 0) - (b.isThirdPartySession ? 1 : 0),
+    ),
   );
 
   async function onDeleteAll() {
@@ -48,12 +49,12 @@
     const res = await progressAPI?.invokeAPIWithStatus<any>(
       "Deleting all sessions...",
       "signed/session/delete-all",
-      undefined
+      undefined,
     );
-    if (!res || res.translatedError)
+    if (!res || "error" in res)
       setError(
-        res?.translatedError ??
-          "Failed to contact backend. Verify your network or try reloading the page."
+        res?.error ??
+          "Failed to contact backend. Verify your network or try reloading the page.",
       );
 
     // nothing else to do now
@@ -61,44 +62,44 @@
     window.location.href = "/";
   }
 
-  async function onDeleteSingleSession(idForDeletion: SessionInfo) {
+  async function onDeleteSingleSession(idForDeletion: Session) {
     if (progressAPI?.isActive()) return;
 
     if (
       !window.confirm(
         `Are you sure you wish to delete the session '${idForDeletion.realmName ?? "ANE"}'?
                 ${
-                  idForDeletion.isThirdParty
+                  idForDeletion.isThirdPartySession
                     ? "You will have to authorize the application again if you later need this session."
                     : "It can only be recreated after a sign in."
                 }
-                `
+                `,
       )
     ) {
       return;
     }
     const thisSession = getCookie("AuthToken");
     // temporariarly switch to the session ID
-    document.cookie = `AuthToken=${idForDeletion.ID}; SameSite=Lax; Path=/`;
+    document.cookie = `AuthToken=${idForDeletion.id}; SameSite=Lax; Path=/`;
 
     const res = await progressAPI?.invokeAPIWithStatus<any>(
-      "Removing " + idForDeletion.ID + "...",
+      "Removing " + idForDeletion.id + "...",
       "signed/session/delete-self",
-      undefined
+      undefined,
     );
 
     // switch back to our ID
     document.cookie = `AuthToken=${thisSession}; SameSite=Lax; Path=/`;
 
-    if (!res || res.translatedError) {
+    if (!res || "error" in res) {
       setError(
-        res?.translatedError ??
-          "Failed to contact backend. Verify your network or try reloading the page."
+        res?.error ??
+          "Failed to contact backend. Verify your network or try reloading the page.",
       );
     } else {
       sessionList.splice(
-        sessionList.findIndex((a) => a.ID == idForDeletion.ID),
-        1
+        sessionList.findIndex((a) => a.id == idForDeletion.id),
+        1,
       );
       setSuccessful("Successfully deleted session!");
     }
@@ -114,20 +115,19 @@
         MIN_REALM_LENGTH +
         " characters in length.");
 
-    const res = await progressAPI?.invokeAPIWithStatus<SessionInfo>(
+    const res = await progressAPI?.invokeAPIWithStatus<UserSessionInfo>(
       "Creating API token...",
       "signed/create-api-token",
       {
         name: newTokenLabel,
-      }
+      },
     );
 
-    if (!res || res.translatedError) {
-      return (errorMessage =
-        res?.translatedError ?? "Failed to contact backend!");
+    if (!res || "error" in res) {
+      return (errorMessage = res?.error ?? "Failed to contact backend!");
     }
-    sessionList.unshift(res.data!);
-    resultingToken = res.data?.ID;
+    sessionList.unshift(res.object.session);
+    resultingToken = res.object.session.id;
   }
 </script>
 
@@ -250,14 +250,14 @@
         </thead>
         <tbody>
           {#each sessionList as session, i}
-            {#if session.ID != getCookie("AuthToken")}
+            {#if session.id != getCookie("AuthToken")}
               <tr
                 class="{i % 2 == 0
                   ? 'bg-slate-800'
                   : 'bg-slate-900'} text-md hover:bg-slate-700"
               >
                 <td>
-                  {#if session.isThirdParty}
+                  {#if session.isThirdPartySession}
                     {session.realmName}
                   {:else}
                     ANE
@@ -274,7 +274,7 @@
                   })()}
                 </td>
                 <td>
-                  {session.isThirdParty ? "read-only" : "read-write"}
+                  {session.isThirdPartySession ? "read-only" : "read-write"}
                 </td>
                 <td class="text-sm">
                   <button

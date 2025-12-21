@@ -31,25 +31,25 @@
   >
     <div class="flex flex-row items-center gap-4">
       <img
-        src="/home/u/{homeAccountInfo.name}/picture"
+        src="/home/u/{homeAccountInfo.username}/picture"
         alt=""
         class="rounded-full h-24"
       />
       <div class="flex flex-col justify-start">
         <h1 class="text-white text-xl m-0">{homeAccountInfo.displayName}</h1>
         <p class="text-gray-300 text-md m-0">
-          /home/u/{homeAccountInfo.name}
+          /home/u/{homeAccountInfo.username}
         </p>
         <!-- badges-->
         <div class="flex flex-row mt-4">
-          {#if homeAccountInfo.isAdmin}
+          {#if homeAccountInfo.capabilities.includes("admin")}
             <img
               class="h-16"
               src="https://galatea.ane.jp.net/dl/images/badges/admin-badge.webp"
               alt="{homeAccountInfo.displayName} is an Admin."
             />
           {/if}
-          {#if homeAccountInfo.isDonator}
+          {#if homeAccountInfo.capabilities.includes("donator")}
             <img
               class="h-16"
               src="https://galatea.ane.jp.net/dl/images/badges/donator-badge.webp"
@@ -62,7 +62,7 @@
     <p class="mt-4 text-gray-400 italic">
       <!-- ane.jp.net times are always Unix Time-->
       Account created on {new Date(
-        homeAccountInfo.createdAt * 1000
+        homeAccountInfo.createdAt * 1000,
       ).toDateString()}
     </p>
 

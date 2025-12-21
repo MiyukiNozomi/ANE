@@ -1,5 +1,0 @@
-BEGIN TRANSACTION;
-
-ALTER TABLE users DROP COLUMN totpBackupCode;
-
-COMMIT;

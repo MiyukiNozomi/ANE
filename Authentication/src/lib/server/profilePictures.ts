@@ -1,6 +1,6 @@
 import { AUTH_DATA_FOLDER } from "$env/static/private";
 import { mkdirSync } from "fs";
-import type { AccountInfo } from "./backend-types";
+import type { AccountInfo } from "./serviceTypes";
 import sharp from "sharp";
 import path from "path";
 

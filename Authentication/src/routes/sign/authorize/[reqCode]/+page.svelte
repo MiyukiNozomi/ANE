@@ -25,9 +25,9 @@
   let currentStep = $state(
     data.reqInfo == undefined
       ? Steps.MISSING_OR_EXPIRED
-      : data.reqInfo.status == "AUTHORIZED"
+      : data.reqInfo.authStatus == "AUTHORIZED"
         ? Steps.ALREADY_AUTHORIZED
-        : Steps.ASK_AUTHORIZATION
+        : Steps.ASK_AUTHORIZATION,
   );
 
   let errorMessage = $state("");
@@ -46,8 +46,8 @@
           "Authorizing...",
           "signed/authorize",
           {
-            authRequestCode: data.reqInfo!.reqCode,
-          }
+            authRequestCode: data.reqInfo!.id,
+          },
         );
 
         if (!res)
@@ -60,7 +60,7 @@
       }
       default:
         alert(
-          "Unimplemented step conversion: " + currentStep + " to <undefined>"
+          "Unimplemented step conversion: " + currentStep + " to <undefined>",
         );
         return;
     }
@@ -111,7 +111,7 @@
           {#if currentStep == Steps.MISSING_OR_EXPIRED}
             <div transition:slide class="flex flex-col gap-2">
               <h1>
-                Hello, {accountInfo?.name}.
+                Hello, {accountInfo?.displayName}.
               </h1>
               <p>
                 You have attempted to authorize a Invalid or non-existant
@@ -190,7 +190,7 @@
                 onclick={() =>
                   (window.location.href = data.reqInfo.redirectURL!.replace(
                     "[reqCode]",
-                    data.reqInfo.reqCode!
+                    data.reqInfo.id,
                   ))}>Return to Service</button
               >
             {/if}

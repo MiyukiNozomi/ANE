@@ -1,0 +1,79 @@
+import ashen.io;
+
+import stdc.stdio;
+import stdc.stdlib;
+
+import stdc.sys.freebsd.unistd;
+
+import ane.services.servicespec;
+import ane.services.actions.jailsetup;
+
+proc printHelp() {
+    printString("
+    ane-service runtask <service file> <task>
+    ane-service delete  <service file>
+    ane-service build   <service file>
+    ane-service restart   <service file>
+    ane-service start   <service file>
+    ane-service stop    <service file>
+
+    ane-service manage <service file>
+
+    ane-service status
+    ane-service help
+");
+}
+
+@Export
+proc main(args : String[]) {
+    if (args.length < 1 || args[0] == "help") 
+        return printHelp();
+
+    if (getuid() != 0) {
+        printf("ane-service must be run as root.\n"N);
+        return;
+    }
+
+    if (args[0] == "status") {
+        system("jls"N);
+        return;
+    }
+
+    if (args.length < 2)
+        return printHelp();
+    
+    var nullRecipe = parseRecipeFile(args[1]);
+    if (nullRecipe then recipe) {
+        printString("Recipe loaded.\n ");
+        recipe.print();
+
+
+        if (args[0] == "build") {
+            buildJail(recipe, args[1]);
+        } else if (args[0] == "manage") {
+            system(formatStrings(["service jail start ", recipe.name]).toNullTerminatedPointer());
+            system(formatStrings(["jexec -u root ", recipe.name]).toNullTerminatedPointer());
+        } else if (args[0] == "runtask") {
+            if (args.length < 3) {
+                return printf("Usage: ane-service runtask <jail> <taskname>\n"N);
+            }
+            recipe.tryRunTask(args[2]);
+        } else if (args[0] == "start") {
+            system(formatStrings(["service jail start ", recipe.name]).toNullTerminatedPointer());
+        } else if (args[0] == "stop") {
+            system(formatStrings(["service jail stop ", recipe.name]).toNullTerminatedPointer());
+        } else if (args[0] == "restart") {
+            system(formatStrings(["service jail restart ", recipe.name]).toNullTerminatedPointer());
+        } else if (args[0] == "delete") {
+            system(formatStrings(["service jail stop ", recipe.name]).toNullTerminatedPointer());
+            system(formatStrings(["rm -rf /etc/jail.conf.d/", recipe.name, ".conf"]).toNullTerminatedPointer());
+            system(formatStrings(["chflags -R 0 ", recipe.jailDirectory()]).toNullTerminatedPointer());
+            system(formatStrings(["rm -rf ", recipe.jailDirectory()]).toNullTerminatedPointer());
+            printf("Done.\n."N);
+        } else {
+            printStrings(["Unknown task: ", args[0], "\n"]);
+        }
+    } else {
+        printf("Bad recipe file, quitting.\n"N);
+    }
+}

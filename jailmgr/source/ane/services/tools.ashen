@@ -1,0 +1,5 @@
+import ashen.fs;
+
+proc jailLocation(name : String) {
+    return fsPathJoin("/jails/containers", name);
+}

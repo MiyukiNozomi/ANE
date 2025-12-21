@@ -1,0 +1,17 @@
+image Test
+
+installdeps : root {
+    pkg install -y node24 npm-node24
+    npm i
+}
+
+build : root {
+    @ANE:installdeps
+    npm run build
+}
+
+run : azki {
+    export PORT=4000
+    export HOST=test.ane.jp.net
+    cd /service/bin && /usr/local/bin/node .
+}

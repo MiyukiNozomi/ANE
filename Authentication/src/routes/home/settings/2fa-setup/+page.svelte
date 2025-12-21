@@ -3,7 +3,7 @@
   import Input from "$lib/components/input.svelte";
   import type { PageData } from "./$types";
 
-  import type { TwoFactorStepFinish } from "$lib/server/backend-types";
+  import type { TwoFactorStepFinish } from "$lib/server/serviceTypes";
   import QRCode from "@castlenine/svelte-qrcode";
   import ProgressApi from "$lib/components/progressAPI.svelte";
   import { slide } from "svelte/transition";
@@ -42,7 +42,7 @@
     const apiRes = await progressAPI?.invokeAPIWithStatus<TwoFactorStepFinish>(
       "Verifying...",
       "signed/2fa/setup",
-      { twoFactorCode }
+      { twoFactorCode },
     );
 
     if (!apiRes) return setError("Failed to contact miyuki.gov.nt, Sorry.");
@@ -116,7 +116,7 @@
           <QRCode
             backgroundColor="#ffffff"
             color="#155dfc"
-            data={`otpauth://totp/${Issuer}:${accountInfo?.name}?secret=${data.sharedSecret}&issuer=${Issuer}`}
+            data={`otpauth://totp/${Issuer}:${accountInfo?.username}?secret=${data.sharedSecret}&issuer=${Issuer}`}
           />
         </div>
         <div class="flex flex-col text-start gap-4">

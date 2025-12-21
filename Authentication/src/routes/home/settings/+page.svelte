@@ -3,8 +3,6 @@
     getAccountInfo,
     getCookie,
     invalidateSession,
-    MAX_USERNAME_LENGTH,
-    MIN_USERNAME_LENGTH,
     setAccountInfo,
   } from "$lib/client-api";
   import Input from "$lib/components/input.svelte";
@@ -13,6 +11,7 @@
   import ProgressApi from "$lib/components/progressAPI.svelte";
   import { slide } from "svelte/transition";
   import ImagePicker from "$lib/components/imagePicker.svelte";
+  import { MAX_USERNAME_LENGTH, MIN_USERNAME_LENGTH } from "$lib/shared/safety";
 
   let { data }: { data: PageData } = $props();
 
@@ -51,7 +50,7 @@
       return setError(
         "Display names must have at least " +
           MIN_USERNAME_LENGTH +
-          " characters."
+          " characters.",
       );
 
     const res = await progressAPI?.invokeAPIWithStatus(
@@ -59,12 +58,12 @@
       "signed/set-display-name",
       {
         displayName: newDisplayName,
-      }
+      },
     );
 
     if (!res || res.error) {
       return setError(
-        "Could not perform request, this is a bug. please report it to miyuki@ane.jp.net with your inspector's logs."
+        "Could not perform request, this is a bug. please report it to miyuki@ane.jp.net with your inspector's logs.",
       );
     }
     setSuccessful("Successfully updated your display name!");
@@ -116,7 +115,7 @@
           type="text"
           maxLength={MAX_USERNAME_LENGTH}
           bind:text={newDisplayName}
-          placeholder="Your new display name, or '{accountInfo?.name}'"
+          placeholder="Your new display name, or '{accountInfo?.username}'"
         />
       </div>
 
@@ -154,7 +153,7 @@
         onclick={() => {
           if (
             window.confirm(
-              "Wait! Be aware this token grants FULL permission over your account. Are you sure you wish to proceed?"
+              "Wait! Be aware this token grants FULL permission over your account. Are you sure you wish to proceed?",
             )
           ) {
             window.alert("Your Root Key: \n" + getCookie("AuthToken"));

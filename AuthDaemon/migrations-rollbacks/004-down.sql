@@ -1,1 +1,0 @@
-ALTER TABLE thirdPartySessionRequest DROP COLUMN redirectURL;

@@ -16,6 +16,7 @@
     "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.22.0",
     "@sveltejs/vite-plugin-svelte": "^6.0.0",
+    "@sveltejs/vite-plugin-svelte-inspector": "^5.0.1",
     "@tailwindcss/vite": "^4.0.0",
     "svelte": "^5.0.0",
     "svelte-check": "^4.0.0",
@@ -31,6 +32,7 @@
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
+      "argon2",
       "esbuild",
       "sharp"
     ]
@@ -38,6 +40,8 @@
   "dependencies": {
     "@img/sharp-wasm32": "^0.34.3",
     "@types/node": "^24.3.0",
+    "argon2": "^0.44.0",
+    "bson": "^7.0.0",
     "node-addon-api": "^8.5.0",
     "node-gyp": "^11.4.1",
     "sharp": "^0.34.3",

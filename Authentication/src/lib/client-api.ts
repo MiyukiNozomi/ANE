@@ -1,36 +1,18 @@
 import { browser } from "$app/environment";
-import type { AccountInfo, BackendResponse } from "./server/backend-types";
-
-export type LocalResponse<T> = {
-  translatedError?: string;
-} & BackendResponse<T>;
-
-export const MIN_USERNAME_LENGTH = 3;
-export const MAX_USERNAME_LENGTH = 32;
-
-export const MIN_PASSWORD_LENGTH = 6;
-export const MAX_PASSWORD_LENGTH = 200;
-
-export const MIN_REALM_LENGTH = 3;
-export const MAX_REALM_LENGTH = 128;
-
-export function isUsernameValidClientCheck(username: string): boolean {
-  const usernameRegex = /^[A-Za-z0-9_]+$/;
-  return usernameRegex.test(username);
-}
+import type { AccountInfo, APIResponse } from "./server/serviceTypes";
 
 export async function invokeAPI<T>(
   endpoint: string,
   payload: any | FormData,
-  requestMethod: "POST" | "PUT" = "POST"
-): Promise<LocalResponse<T> | null> {
+  requestMethod: "POST" | "PUT" = "POST",
+): Promise<APIResponse<T> | null> {
   try {
     const res = await fetch("/api/" + endpoint, {
       method: requestMethod,
       body: payload instanceof FormData ? payload : JSON.stringify(payload),
     });
     if (res.status != 200) return null;
-    return (await res.json()) as LocalResponse<T>;
+    return (await res.json()) as APIResponse<T>;
   } catch (err) {
     return null;
   }
@@ -55,7 +37,7 @@ export function getAccountInfo(): AccountInfo | null {
 
 export function setAccountInfo(accountInfo: AccountInfo) {
   document.cookie = `AccountInfo=${btoa(
-    JSON.stringify(accountInfo)
+    JSON.stringify(accountInfo),
   )}; SameSite=Lax; Path=/`;
 }
 

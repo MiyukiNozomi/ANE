@@ -1,32 +1,29 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
-import { Backend } from '$lib/server/backend-api';
-import { text } from '@sveltejs/kit';
-import { redirectToLoginPage } from '$lib/server/tools';
+import { redirect } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
+import { Backend } from "$lib/server/services";
+import { text } from "@sveltejs/kit";
+import { redirectToLoginPage } from "$lib/server/tools";
 
 export const load = (async ({ locals, request }) => {
-    if (!locals.account)
-        return redirectToLoginPage(request.url);
+  if (!locals.account) return redirectToLoginPage(request.url);
 
-    const securityInfo = await Backend.getSecurityInfo(locals.sessionToken!);
-    if (!securityInfo || securityInfo.error) {
-        console.log(securityInfo?.error);
-        return text("Error: miyuki.gov.nt returned an error or is unreachable. this is internal, there's nothing you can do besides report this to miyuki@ane.jp.net", {
-            status: 500
-        });
-    }
+  const securityInfo = await Backend.getSecurityInfo(locals.sessionToken!);
+  if ("error" in securityInfo) {
+    return text(securityInfo.error, {
+      status: 500,
+    });
+  }
 
-    if (securityInfo.data!.has2FA) {
-        return redirect(302, "/home/settings#danger-zone")
-    }
+  if (securityInfo.object.has2FA) {
+    return redirect(302, "/home/settings#danger-zone");
+  }
 
-    const twofactorSetup = await Backend.twoFactorEnableStep1(locals.sessionToken!);
-    if (!twofactorSetup || twofactorSetup.error) {
-        console.log(twofactorSetup?.error);
-        return text("Error: miyuki.gov.nt returned an error or is unreachable. this is internal, there's nothing you can do besides report this to miyuki@ane.jp.net", {
-            status: 500
-        });
-    }
+  const twofactorSetup = await Backend.twoFactorEnableStep1(locals.account.id);
+  if ("error" in twofactorSetup) {
+    return text(twofactorSetup.error, {
+      status: 500,
+    });
+  }
 
-    return { sharedSecret: twofactorSetup.data!['shared-secret'] };
+  return { sharedSecret: twofactorSetup.object["shared-secret"] };
 }) satisfies PageServerLoad;

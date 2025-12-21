@@ -6,15 +6,17 @@
   import {
     getAccountInfo,
     invalidateSession,
-    isUsernameValidClientCheck,
+    setAccountInfo,
+  } from "$lib/client-api";
+  import type { UserSessionInfo, AccountInfo } from "$lib/server/serviceTypes";
+  import { slide } from "svelte/transition";
+  import ProgressApi from "$lib/components/progressAPI.svelte";
+  import {
     MAX_USERNAME_LENGTH,
     MIN_PASSWORD_LENGTH,
     MIN_USERNAME_LENGTH,
-    setAccountInfo,
-  } from "$lib/client-api";
-  import type { UserSessionInfo, AccountInfo } from "$lib/server/backend-types";
-  import { slide } from "svelte/transition";
-  import ProgressApi from "$lib/components/progressAPI.svelte";
+    USERNAME_SAFETY_REGEX,
+  } from "$lib/shared/safety";
 
   let canvas: HTMLCanvasElement;
   let { data }: { data: PageData } = $props();
@@ -61,7 +63,7 @@
         " characters.";
       return true;
     }
-    if (!isUsernameValidClientCheck(username)) {
+    if (!USERNAME_SAFETY_REGEX.test(username)) {
       errorMessage = "Usernames may only contain A-Z, 0-9 or underscores.";
       return true;
     }
@@ -70,10 +72,7 @@
 
   function isPasswordInvalid() {
     if (password.length < MIN_PASSWORD_LENGTH) {
-      errorMessage =
-        "Passwords must contain at least " +
-        MIN_USERNAME_LENGTH +
-        " characters.";
+      errorMessage = `Passwords must contain at least ${MIN_PASSWORD_LENGTH} characters.`;
       return true;
     }
     return false;
@@ -96,16 +95,19 @@
           await progressAPI?.invokeAPIWithStatus<AccountInfo>(
             "Verifying...",
             "get-account",
-            { username }
+            { username },
           );
 
         if (!existingAccountInfo)
-          return (errorMessage = "Could not reach miyuki.gov.neptune, sorry.");
+          return (errorMessage = "Could not reach server, sorry.");
 
-        currentStep =
-          existingAccountInfo.error == "DOES_NOT_EXIST"
-            ? Steps.ACCOUNT_DOES_NOT_EXIST
-            : Steps.ACCOUNT_EXISTS;
+        if ("error" in existingAccountInfo) {
+          if (existingAccountInfo.error == "ERR_UNKNOWN_ACCOUNT")
+            currentStep = Steps.ACCOUNT_DOES_NOT_EXIST;
+          else errorMessage = "Could not reach miyuki.gov.neptune, sorry.";
+        } else {
+          currentStep = Steps.ACCOUNT_EXISTS;
+        }
         break;
       }
       case Steps.ACCOUNT_DOES_NOT_EXIST: {
@@ -120,20 +122,16 @@
             {
               username,
               password,
-            }
+            },
           );
 
-        if (!accountSession)
-          return (errorMessage = "Could not reach miyuki.gov.neptune, sorry.");
-
-        if (accountSession?.translatedError) {
-          errorMessage = accountSession.translatedError;
-          return;
-        }
+        if (!accountSession || "error" in accountSession)
+          return (errorMessage =
+            accountSession?.error ?? "Could not server, sorry.");
 
         disableBackButton = true;
         currentStep = Steps.ACCOUNT_REGISTERED;
-        authSession = accountSession?.data!;
+        authSession = accountSession.object;
         break;
       }
       case Steps.ACCOUNT_EXISTS:
@@ -146,24 +144,21 @@
 
             currentStep == Steps.TWOFACTOR_CODE_INPUT
               ? { username, password, totpCode }
-              : { username, password }
+              : { username, password },
           );
 
-        if (!accountSession)
-          return (errorMessage = "Could not reach miyuki.gov.neptune, sorry.");
-
-        if (accountSession.error == "TWO_FACTOR_REQUIRED") {
-          currentStep = Steps.TWOFACTOR_CODE_INPUT;
-          return;
-        }
-        if (accountSession?.translatedError) {
-          errorMessage = accountSession.translatedError;
-          return;
+        if (!accountSession || "error" in accountSession) {
+          if (accountSession?.error == "ERR_TWOFACTOR_REQUIRED") {
+            currentStep = Steps.TWOFACTOR_CODE_INPUT;
+            return;
+          }
+          return (errorMessage =
+            accountSession?.error ?? "Could not server, sorry.");
         }
 
         disableBackButton = true;
         currentStep = Steps.ACCOUNT_SIGNED_IN;
-        authSession = accountSession?.data!;
+        authSession = accountSession.object;
         break;
       }
       case Steps.ALREADY_HAS_SESSION:
@@ -176,7 +171,7 @@
         }
         let pth: string | undefined;
         const rawRedirect = new URLSearchParams(window.location.search).get(
-          "redir"
+          "redir",
         );
 
         if (rawRedirect) pth = decodeURI(rawRedirect);
@@ -189,7 +184,7 @@
       }
       default:
         alert(
-          "Unimplemented step conversion: " + currentStep + " to <undefined>"
+          "Unimplemented step conversion: " + currentStep + " to <undefined>",
         );
         return;
     }
@@ -198,7 +193,7 @@
   async function installSession() {
     if (!authSession)
       return alert(
-        "This is a bug: installSession called with authSession being null"
+        "This is a bug: installSession called with authSession being null",
       );
 
     document.cookie = `AuthToken=${authSession.sessionToken}; SameSite=Lax; Path=/`;
@@ -316,7 +311,7 @@
             </div>
           {:else if currentStep == Steps.ALREADY_HAS_SESSION && accountInfo}
             <div transition:slide class="flex flex-col gap-2">
-              <h1>Welcome back, {accountInfo.name}!</h1>
+              <h1>Welcome back, {accountInfo.displayName}!</h1>
               <p>
                 Since you have a valid session, there's no need to authenticate
                 again.

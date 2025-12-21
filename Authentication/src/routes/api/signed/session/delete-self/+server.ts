@@ -1,13 +1,11 @@
-import { error, json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { Backend } from '$lib/server/backend-api';
+import { error, json } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
+import { Backend } from "$lib/server/services";
+import { dev } from "$app/environment";
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-    if (!locals.sessionToken)
-        return error(401);
-
-    const backendRes = await Backend.deleteSingleSession(locals.sessionToken);
-    if (!backendRes || backendRes.error)
-        return error(500);
-    return json({ ok: true });
+  if (!locals.sessionToken) return error(401);
+  const res = await Backend.deleteSingleSession(locals.sessionToken);
+  if (dev) console.log(res);
+  return json(res);
 };
