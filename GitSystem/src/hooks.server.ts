@@ -1,6 +1,6 @@
+import { getSignedAccount } from "$lib/ANEAuthAPI/publicInvoker";
 import { RepositoryInfo } from "$lib/server/git/fs";
 import { error, type Handle, type ServerInit } from "@sveltejs/kit";
-import AuthAPI from "node-aneauthapi";
 
 export const handle: Handle = async ({ event, resolve }) => {
   let authtoken = null;
@@ -21,7 +21,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   if (authtoken) {
     try {
-      const accountInfo = await AuthAPI.getSignedAccount(authtoken);
+      const accountInfo = await getSignedAccount(authtoken);
 
       if (accountInfo) {
         event.locals.session = {
