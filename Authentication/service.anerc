@@ -1,0 +1,20 @@
+image galatea
+
+build : root {
+    pkg install -y node24 npm-node24 vips pkgconf sqlite3
+    
+    echo "DEVMODE=false >> /service/bin/.env"
+    
+    npm i -g pnpm typescript
+    pnpm i
+    pnpm rebuild sharp better-sqlite3
+
+    pnpm build
+}
+
+run : azki {
+    export DEVMODE=false
+    export PORT=4000
+    export SHARP_FORCE_GLOBAL_LIBVIPS=1
+    cd /service/bin && /usr/local/bin/node build/
+}
