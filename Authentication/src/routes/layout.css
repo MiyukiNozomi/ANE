@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+
+@font-face {
+    font-family: "Kumbh";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/kumbh_sans.ttf) format("truetype");
+}
+
+@font-face {
+    font-family: "MPLUS2";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/MPLUS2.ttf) format("truetype");
+}
+
+@theme {
+    --font-kumbh: "Kumbh", "sans-serif";
+    --font-mplus2: "MPLUS2", "sans-serif";
+}

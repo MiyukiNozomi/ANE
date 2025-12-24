@@ -1,4 +1,5 @@
 import crypto, { randomUUID } from "crypto";
+import { base32Decode } from "./keystores";
 
 export namespace TimeBasedOTP {
   export function getCode(
@@ -39,64 +40,5 @@ export namespace TimeBasedOTP {
       if (generated === token) return true;
     }
     return false;
-  }
-
-  // TODO Move these somewhere else?
-  export function genAuthToken() {
-    return base32Encode(crypto.randomBytes(70));
-  }
-
-  export function genRecoveryKey() {
-    return base32Encode(crypto.randomBytes(80));
-  }
-
-  export function genSecret() {
-    return base32Encode(crypto.randomBytes(61));
-  }
-
-  function base32Encode(buffer: Buffer) {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    let bits = "";
-    let output = "";
-
-    for (let byte of buffer) {
-      bits += byte.toString(2).padStart(8, "0");
-    }
-
-    while (bits.length % 5 !== 0) {
-      bits += "0";
-    }
-
-    for (let i = 0; i < bits.length; i += 5) {
-      const chunk = bits.substring(i, i + 5);
-      const index = parseInt(chunk, 2);
-      output += alphabet[index];
-    }
-
-    while (output.length % 8 !== 0) {
-      output += "=";
-    }
-
-    return output;
-  }
-
-  function base32Decode(base32: string) {
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-    let bits = "";
-    let output = [];
-
-    base32 = base32.replace(/=+$/, "").toUpperCase();
-
-    for (let char of base32) {
-      const val = alphabet.indexOf(char);
-      if (val === -1) throw new Error("Invalid Base32 character.");
-      bits += val.toString(2).padStart(5, "0");
-    }
-
-    for (let i = 0; i + 8 <= bits.length; i += 8) {
-      output.push(parseInt(bits.substring(i, i + 8), 2));
-    }
-
-    return Buffer.from(output);
   }
 }

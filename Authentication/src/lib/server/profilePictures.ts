@@ -1,17 +1,14 @@
-import { AUTH_DATA_FOLDER } from "$env/static/private";
 import { mkdirSync } from "fs";
-import type { AccountInfo } from "./serviceTypes";
 import sharp from "sharp";
 import path from "path";
+import { PROFILE_PICTURE_STORE_FOLDER } from "./constants";
+import type { Account } from "./schema";
 
-mkdirSync(AUTH_DATA_FOLDER, {
+mkdirSync(PROFILE_PICTURE_STORE_FOLDER, {
   recursive: true,
 });
 
-export async function encodeAndStoreUserPicture(
-  image: File,
-  user: AccountInfo
-) {
+export async function encodeAndStoreUserPicture(image: File, user: Account) {
   const sharpImg = sharp(await image.bytes());
   const imageDimensions = await sharpImg.metadata();
   const imageSize =
@@ -19,7 +16,10 @@ export async function encodeAndStoreUserPicture(
       ? 300
       : Math.min(imageDimensions.height, imageDimensions.width);
 
-  const outPth = path.join(AUTH_DATA_FOLDER, `${user.name}.webp`);
+  const outPth = path.join(
+    PROFILE_PICTURE_STORE_FOLDER,
+    `${user.username}.webp`,
+  );
 
   sharpImg
     .webp({

@@ -1,357 +1,271 @@
 <script lang="ts">
-  import { renderBackgroundCanvas } from "$lib/background";
-  import { onMount, tick } from "svelte";
-  import type { PageData } from "./$types";
-  import Input from "$lib/components/input.svelte";
+  import type {
+    AccountSession,
+    ClientSideAccount,
+  } from "$lib/client/API/apiTypes";
   import {
     getAccountInfo,
     invalidateSession,
-    setAccountInfo,
-  } from "$lib/client-api";
-  import type { UserSessionInfo, AccountInfo } from "$lib/server/serviceTypes";
-  import { slide } from "svelte/transition";
-  import ProgressApi from "$lib/components/progressAPI.svelte";
+    setClientSideAccountInfo,
+  } from "$lib/client/API/client";
+  import Input from "$lib/client/component/basic/input.svelte";
+  import ProgressAPI from "$lib/client/component/progressAPI.svelte";
+  import SignPage from "$lib/client/component/signPage.svelte";
   import {
+    MAX_PASSWORD_LENGTH,
     MAX_USERNAME_LENGTH,
     MIN_PASSWORD_LENGTH,
     MIN_USERNAME_LENGTH,
     USERNAME_SAFETY_REGEX,
-  } from "$lib/shared/safety";
+  } from "$lib/shared/safetyConstants";
+  import type { PageData } from "./$types";
 
-  let canvas: HTMLCanvasElement;
-  let { data }: { data: PageData } = $props();
+  let pageData: PageData = $props();
 
-  const Steps = {
-    USERNAME_STEP: 0,
-    ACCOUNT_DOES_NOT_EXIST: 1,
-    ACCOUNT_EXISTS: 2,
+  const StepsList = [
+    "WAIT",
+    "ALREADY_SIGNED_IN",
+    "USERNAME_INPUT",
+    "LOGIN_PASSWORD_INPUT",
+    "TWO_FACTOR_INPUT",
+    "REGISTRATION_PASSWORD_INPUT",
+    "POST_REGISTRATION",
+    "POST_LOGIN",
+  ] as const;
+  type Steps = (typeof StepsList)[number];
 
-    TWOFACTOR_CODE_INPUT: 3,
+  let currentStep: Steps = $state(
+    pageData.isSignedIn ? "ALREADY_SIGNED_IN" : "USERNAME_INPUT",
+  );
+  let previousSteps = new Array<Steps>();
 
-    ACCOUNT_REGISTERED: 10,
-    ACCOUNT_SIGNED_IN: 11,
+  let API: ProgressAPI | undefined = $state();
+  let signPage: SignPage | undefined = $state();
+  let repeatPasswordField: Input | undefined = $state();
 
-    ALREADY_HAS_SESSION: 20,
+  let blockAdvances = $state(!pageData.isSignedIn);
+
+  let data = {
+    username: "",
+    inputPassword: "",
+    repeatPassword: "",
+
+    totpCode: "",
   };
 
-  const accountInfo = getAccountInfo();
+  async function onNextStep() {
+    if (blockAdvances) return;
 
-  let disableBackButton = $state(false);
+    if (previousSteps[previousSteps.length - 1] != currentStep)
+      previousSteps.push(currentStep);
 
-  let currentStep = $state(Steps.USERNAME_STEP);
-  let progressAPI: ProgressApi | undefined = $state();
+    if (currentStep == "ALREADY_SIGNED_IN") {
+      currentStep = "USERNAME_INPUT";
+      blockAdvances = true;
+      await invalidateSession();
+    } else if (currentStep == "USERNAME_INPUT") {
+      currentStep = "WAIT";
 
-  let username = $state("");
-  let password = $state("");
-  let repeatPassword = $state("");
-  let totpCode = $state("");
-
-  let errorMessage = $state("");
-
-  let authSession: UserSessionInfo | undefined = $state(undefined);
-
-  onMount(async () => {
-    renderBackgroundCanvas(canvas);
-    await tick();
-  });
-
-  function isUsernameInvalid() {
-    if (username.length < MIN_USERNAME_LENGTH) {
-      errorMessage =
-        "Usernames must contain at least " +
-        MIN_USERNAME_LENGTH +
-        " characters.";
-      return true;
-    }
-    if (!USERNAME_SAFETY_REGEX.test(username)) {
-      errorMessage = "Usernames may only contain A-Z, 0-9 or underscores.";
-      return true;
-    }
-    return false;
-  }
-
-  function isPasswordInvalid() {
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      errorMessage = `Passwords must contain at least ${MIN_PASSWORD_LENGTH} characters.`;
-      return true;
-    }
-    return false;
-  }
-
-  async function backwardStep() {
-    errorMessage = "";
-    if (currentStep == Steps.ACCOUNT_EXISTS)
-      return (currentStep = Steps.USERNAME_STEP);
-    currentStep--;
-  }
-
-  async function nextStep() {
-    errorMessage = "";
-
-    switch (currentStep) {
-      case Steps.USERNAME_STEP: {
-        if (isUsernameInvalid()) return;
-        const existingAccountInfo =
-          await progressAPI?.invokeAPIWithStatus<AccountInfo>(
-            "Verifying...",
-            "get-account",
-            { username },
-          );
-
-        if (!existingAccountInfo)
-          return (errorMessage = "Could not reach server, sorry.");
-
-        if ("error" in existingAccountInfo) {
-          if (existingAccountInfo.error == "ERR_UNKNOWN_ACCOUNT")
-            currentStep = Steps.ACCOUNT_DOES_NOT_EXIST;
-          else errorMessage = "Could not reach miyuki.gov.neptune, sorry.";
-        } else {
-          currentStep = Steps.ACCOUNT_EXISTS;
-        }
-        break;
-      }
-      case Steps.ACCOUNT_DOES_NOT_EXIST: {
-        if (isPasswordInvalid()) return;
-        if (repeatPassword != password)
-          return (errorMessage = "Passwords don't match!");
-
-        const accountSession =
-          await progressAPI?.invokeAPIWithStatus<UserSessionInfo>(
-            "Creating account...",
-            "register",
-            {
-              username,
-              password,
-            },
-          );
-
-        if (!accountSession || "error" in accountSession)
-          return (errorMessage =
-            accountSession?.error ?? "Could not server, sorry.");
-
-        disableBackButton = true;
-        currentStep = Steps.ACCOUNT_REGISTERED;
-        authSession = accountSession.object;
-        break;
-      }
-      case Steps.ACCOUNT_EXISTS:
-      case Steps.TWOFACTOR_CODE_INPUT: {
-        if (isPasswordInvalid()) return;
-        const accountSession =
-          await progressAPI?.invokeAPIWithStatus<UserSessionInfo>(
-            "Trying to sign you in...",
-            "login",
-
-            currentStep == Steps.TWOFACTOR_CODE_INPUT
-              ? { username, password, totpCode }
-              : { username, password },
-          );
-
-        if (!accountSession || "error" in accountSession) {
-          if (accountSession?.error == "ERR_TWOFACTOR_REQUIRED") {
-            currentStep = Steps.TWOFACTOR_CODE_INPUT;
-            return;
-          }
-          return (errorMessage =
-            accountSession?.error ?? "Could not server, sorry.");
-        }
-
-        disableBackButton = true;
-        currentStep = Steps.ACCOUNT_SIGNED_IN;
-        authSession = accountSession.object;
-        break;
-      }
-      case Steps.ALREADY_HAS_SESSION:
-      case Steps.ACCOUNT_REGISTERED:
-      case Steps.ACCOUNT_SIGNED_IN: {
-        if (currentStep != Steps.ALREADY_HAS_SESSION) await installSession();
-        if (currentStep == Steps.ACCOUNT_REGISTERED) {
-          window.location.href = "/home/settings";
-          return;
-        }
-        let pth: string | undefined;
-        const rawRedirect = new URLSearchParams(window.location.search).get(
-          "redir",
-        );
-
-        if (rawRedirect) pth = decodeURI(rawRedirect);
-
-        pth = pth ?? "/home";
-        if (!pth.startsWith("/")) pth = "/" + pth;
-
-        window.location.href = pth;
-        break;
-      }
-      default:
-        alert(
-          "Unimplemented step conversion: " + currentStep + " to <undefined>",
-        );
-        return;
-    }
-  }
-
-  async function installSession() {
-    if (!authSession)
-      return alert(
-        "This is a bug: installSession called with authSession being null",
+      let accountInfo = await API?.invokeAPIWithStatus<ClientSideAccount>(
+        "Locating ID..",
+        "accounts/getinfo",
+        {
+          username: data.username,
+        },
       );
 
-    document.cookie = `AuthToken=${authSession.sessionToken}; SameSite=Lax; Path=/`;
-    setAccountInfo(authSession.accountInfo);
+      if (!accountInfo) return;
+      blockAdvances = true;
+      if (accountInfo.error == "ERR_ACCOUNT_DOES_NOT_EXIST") {
+        signPage?.setAllowBackButton(true);
+        currentStep = "REGISTRATION_PASSWORD_INPUT";
+      } else if (accountInfo.data) {
+        signPage?.setAllowBackButton(true);
+        currentStep = "LOGIN_PASSWORD_INPUT";
+      } else {
+        console.log("API response: ", accountInfo);
+        API?.setError(
+          "Improper response by backend, check your inspector logs and report this as a bug.",
+        );
+      }
+    } else if (currentStep == "REGISTRATION_PASSWORD_INPUT") {
+      if (data.repeatPassword != data.inputPassword) {
+        return;
+      }
+
+      currentStep = "WAIT";
+      let sessionInfo = await API?.invokeAPIWithStatus<AccountSession>(
+        "Creating account...",
+        "accounts/create",
+        {
+          username: data.username,
+          password: data.inputPassword,
+        },
+      );
+
+      if (!sessionInfo || sessionInfo.error) {
+        return API?.setError(
+          sessionInfo?.error ?? "Failed to contact backend!",
+        );
+      }
+
+      installSession(sessionInfo.data!);
+      currentStep = "POST_REGISTRATION";
+    } else if (currentStep == "POST_REGISTRATION") {
+      window.location.href = "/home/settings";
+    } else if (
+      currentStep == "LOGIN_PASSWORD_INPUT" ||
+      currentStep == "TWO_FACTOR_INPUT"
+    ) {
+      let entranceStep = currentStep;
+
+      currentStep = "WAIT";
+      let sessionInfo = await API?.invokeAPIWithStatus<AccountSession>(
+        "Creating account...",
+        "accounts/login",
+        {
+          username: data.username,
+          password: data.inputPassword,
+          totpCode: data.totpCode,
+        },
+      );
+
+      if (!sessionInfo || sessionInfo.error) {
+        if (sessionInfo?.error == "ERR_ACCOUNT_TWOFACTOR_REQUIRED") {
+          currentStep = "TWO_FACTOR_INPUT";
+          return;
+        } else if (
+          sessionInfo?.error == "ERR_ACCOUNT_INCORRECT_PASSWORD" ||
+          sessionInfo?.error == "ERR_ACCOUNT_INCORRECT_TWOFACTOR"
+        ) {
+          currentStep = entranceStep;
+
+          return API?.setError(sessionInfo.error);
+        }
+        return API?.setError(
+          sessionInfo?.error ?? "Failed to contact backend!",
+        );
+      }
+
+      installSession(sessionInfo.data!);
+      currentStep = "POST_LOGIN";
+    } else if (currentStep == "POST_LOGIN") {
+      window.location.pathname = decodeURI(
+        new URLSearchParams(window.location.search).get("for") ?? "/",
+      );
+    } else {
+      currentStep = "WAIT";
+      API?.setError(
+        "Apologies! you haved ended in a unimplemented authentication pathway.",
+      );
+    }
   }
 
-  if (data.isUserSessionValid && accountInfo != null) {
-    disableBackButton = true;
-    currentStep = Steps.ALREADY_HAS_SESSION;
+  async function installSession(authSession: AccountSession) {
+    document.cookie = `AuthToken=${authSession.sessionInfo.id}; SameSite=Lax; Path=/`;
+    setClientSideAccountInfo(authSession.accountInfo);
+  }
+
+  async function onBackStep() {
+    let last = previousSteps.pop();
+    if (last) {
+      currentStep = last;
+    }
+    if (previousSteps.length > 0) signPage?.setAllowBackButton(false);
+  }
+
+  function handleInputError(error: string | undefined) {
+    blockAdvances = Boolean(error);
   }
 </script>
 
 <svelte:head>
   <title>Sign In</title>
-  <meta name="title" content="Sign In" />
-  <meta
-    name="description"
-    content="A sign-in page. (You might see this with a few URLs that aren't a sign-in, this just means your crawler tried to access a protected resource)"
-  />
 </svelte:head>
 
-<div class="w-screen h-screen bg-black">
-  <h2 class="z-0 text-blue-950">Background is rendering...</h2>
-  <canvas bind:this={canvas} class="fixed top-0 left-0 z-10"> </canvas>
-
-  <div class="fixed flex items-center h-screen w-screen z-20">
-    <div
-      class="md:w-96 w-screen flex flex-col p-6 mx-auto text-gray-200
-        bg-gradient-to-b from-sky-900/40 via-blue-950/80 to-indigo-900/100
-        border-indigo-800 border-solid border-2
-        backdrop-blur-lg gap-3"
-    >
-      <a href="/">
-        <img
-          src="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
-          class="w-36 md:w-2/4"
-          alt=""
-        /></a
-      >
-      <div class="flex flex-col gap-2">
-        <div transition:slide>
-          <ProgressApi bind:this={progressAPI} />
-        </div>
-        {#if progressAPI && !progressAPI.isActive()}
-          {#if currentStep == Steps.USERNAME_STEP}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>
-                Welcome! {!data.isUserSessionValid && accountInfo != null
-                  ? "Your session has expired, sorry!"
-                  : ""}
-              </h1>
-              <Input
-                type="text"
-                placeholder="Input your username"
-                maxLength={MAX_USERNAME_LENGTH}
-                bind:text={username}
-              />
-            </div>
-          {:else if currentStep == Steps.ACCOUNT_DOES_NOT_EXIST}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>Welcome {username}, to ANE!</h1>
-              <p>
-                Your username isn't taken, therefore you have entered the
-                registration pathway!
-              </p>
-              <Input
-                type="password"
-                placeholder="Input a unique password here"
-                bind:text={password}
-              />
-              <Input
-                type="password"
-                placeholder="Repeat your unique password here"
-                bind:text={repeatPassword}
-              />
-            </div>
-          {:else if currentStep == Steps.ACCOUNT_EXISTS}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>Welcome back, {username}!</h1>
-              <p>
-                Input your password, if you have 2FA enabled, we will ask for
-                your OTP code later.
-              </p>
-              <Input
-                type="password"
-                placeholder="Input your password"
-                bind:text={password}
-              />
-            </div>
-          {:else if currentStep == Steps.TWOFACTOR_CODE_INPUT}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>Security demands it, {username}.</h1>
-              <p>
-                Your account has two factor authentication enabled, therefore...
-              </p>
-              <Input
-                type="text"
-                placeholder="Input your one time password."
-                maxLength={6}
-                bind:text={totpCode}
-              />
-            </div>
-          {:else if currentStep == Steps.ACCOUNT_REGISTERED}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>Welcome to the community!</h1>
-              <p>
-                This page will now take you to your account's settings, I'm glad
-                you're here.
-              </p>
-            </div>
-          {:else if currentStep == Steps.ACCOUNT_SIGNED_IN}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>Welcome back, {username}!</h1>
-              <p>I'll soon redirect you back to the resource you wanted.</p>
-            </div>
-          {:else if currentStep == Steps.ALREADY_HAS_SESSION && accountInfo}
-            <div transition:slide class="flex flex-col gap-2">
-              <h1>Welcome back, {accountInfo.displayName}!</h1>
-              <p>
-                Since you have a valid session, there's no need to authenticate
-                again.
-              </p>
-              <p>
-                However, If you wish to sign in with a different account, <button
-                  onclick={async (event) => {
-                    event.preventDefault();
-                    await invalidateSession();
-                    window.location.reload();
-                  }}
-                  class="text-red-500 underline cursor-pointer"
-                  >click here</button
-                >.
-              </p>
-            </div>
-          {:else}
-            <div transition:slide class="flex flex-col gap-2">
-              <p>
-                <strong>Error!</strong> you stumbled upon a unknown or
-                Unimplemented step (Current step: {currentStep})
-              </p>
-              <p>Please report this to miyuki@ane.jp.net</p>
-            </div>
-          {/if}
-          <p class="text-red-500">{errorMessage}</p>
-          <div class="flex flex-row">
-            {#if currentStep > 0 && !disableBackButton}
-              <button
-                class="bg-red-600 px-8 py-2 text-lg"
-                onclick={backwardStep}>Back</button
-              >
-            {/if}
-            <button
-              class="ml-auto bg-sky-600 px-8 py-2 text-lg"
-              onclick={nextStep}>Next</button
-            >
-          </div>
-        {/if}
-      </div>
-    </div>
-  </div>
-</div>
+<SignPage bind:this={signPage} {onNextStep} {onBackStep}>
+  <ProgressAPI bind:this={API} />
+  {#if currentStep == "ALREADY_SIGNED_IN"}
+    <p>Hi, {getAccountInfo()?.name}.</p>
+    <p>
+      You are already signed in, you might choose to return to the main page, or
+      hit "Next" to sign in again.
+    </p>
+  {:else if currentStep == "USERNAME_INPUT"}
+    <Input
+      type="text"
+      placeholder="Enter your username"
+      minLength={MIN_USERNAME_LENGTH}
+      maxLength={MAX_USERNAME_LENGTH}
+      bind:text={data.username}
+      onErrorChange={handleInputError}
+      validate={(text) => {
+        if (!USERNAME_SAFETY_REGEX.test(text)) {
+          return "Invalid username.";
+        }
+      }}
+    />
+  {:else if currentStep == "REGISTRATION_PASSWORD_INPUT"}
+    <p>It appears you currently lack an account.</p>
+    <Input
+      type="password"
+      placeholder="Create a memorable password."
+      minLength={MIN_PASSWORD_LENGTH}
+      maxLength={MAX_PASSWORD_LENGTH}
+      bind:text={data.inputPassword}
+      onErrorChange={handleInputError}
+      validate={(t) => {
+        repeatPasswordField?.changeEvent();
+        return undefined;
+      }}
+    />
+    <Input
+      bind:this={repeatPasswordField}
+      type="password"
+      bind:text={data.repeatPassword}
+      placeholder="Repeat your chosen password"
+      minLength={MIN_PASSWORD_LENGTH}
+      maxLength={MAX_PASSWORD_LENGTH}
+      onErrorChange={handleInputError}
+      validate={(text) => {
+        if (text != data.inputPassword) return "Passwords must match.";
+      }}
+    />
+  {:else if currentStep == "POST_REGISTRATION"}
+    <p>Hi {data.username}, Welcome to ANE Software!</p>
+    <p>
+      I will now redirect you to your account's settings page so you can change
+      a few details about your profile.
+    </p>
+  {:else if currentStep == "LOGIN_PASSWORD_INPUT"}
+    <p>Welcome back, {data.username}</p>
+    <Input
+      type="password"
+      placeholder="Input your password."
+      minLength={MIN_PASSWORD_LENGTH}
+      maxLength={MAX_PASSWORD_LENGTH}
+      bind:text={data.inputPassword}
+      onErrorChange={handleInputError}
+    />
+  {:else if currentStep == "TWO_FACTOR_INPUT"}
+    <p>Sorry, {data.username}. But as a safety measure,</p>
+    <Input
+      type="password"
+      placeholder="Input your one time password."
+      minLength={MIN_PASSWORD_LENGTH}
+      maxLength={MAX_PASSWORD_LENGTH}
+      bind:text={data.totpCode}
+      onErrorChange={handleInputError}
+    />
+  {:else if currentStep == "POST_LOGIN"}
+    <p>Hi {data.username}, Welcome back!</p>
+    <p>
+      I will now redirect you to your requested resourc (or the main page),
+      thank you and have a nice day!.
+    </p>
+  {:else if currentStep == "WAIT"}
+    <p>...</p>
+  {:else}
+    <p>Unknown step, please reload the page.</p>
+  {/if}
+</SignPage>
