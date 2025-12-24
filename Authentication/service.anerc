@@ -1,4 +1,4 @@
-image galatea
+image authentication
 
 build : root {
     pkg install -y node24 npm-node24 vips pkgconf sqlite3
