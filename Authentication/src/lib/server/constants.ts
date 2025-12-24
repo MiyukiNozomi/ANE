@@ -1,5 +1,8 @@
-import { DEVMODE } from "$env/static/private";
 import path from "path";
+import os from "os";
+
+const DEVMODE = os.userInfo().username.toLowerCase() != "azki";
+console.log("Dev? ", DEVMODE);
 
 export const PROFILE_PICTURE_STORE_FOLDER = DEVMODE
   ? "./debug-storage/profilepictures"
