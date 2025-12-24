@@ -5,7 +5,7 @@ build : root {
     echo "DEVMODE=false >> /service/bin/.env"
     npm i -g pnpm typescript
     pnpm i
-    pnpm rebuild sharp better-sqlite3 argon2
+    SHARP_FORCE_GLOBAL_LIBVIPS=1 pnpm rebuild sharp better-sqlite3 argon2
     SHARP_FORCE_GLOBAL_LIBVIPS=1 pnpm build
 }
 
