@@ -22,12 +22,12 @@
         } else {
           downloadedMarkdown = mk;
         }
-      })
+      }),
     );
   });
 </script>
 
-<div class="relative bg-orange-200 p-[1px] clip-notch-tl-br">
+<div class="relative bg-orange-200 p-px clip-notch-tl-br">
   <div class="flex flex-col bg-black p-8 pt-0 clip-notch-tl-br">
     <div
       class="

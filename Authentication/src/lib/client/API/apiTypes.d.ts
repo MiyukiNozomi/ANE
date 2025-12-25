@@ -1,5 +1,3 @@
-import type { Session } from "$lib/server/schema";
-
 export type ServerErrors =
   | "ERR_ACCOUNT_DOES_NOT_EXIST"
   | "ERR_ACCOUNT_INCORRECT_PASSWORD"
@@ -46,5 +44,11 @@ export type AuthorizationRequestStatusString = "AWAITING" | "AUTHORIZED";
 export interface AuthorizationRequestStatus {
   status: AuthorizationRequestStatusString;
   /*** only present if requested by sharedSecret */
-  session: Session?;
+  session: {
+    id: string;
+    userId: number;
+    expiresIn: number;
+    isThirdPartySession: boolean;
+    createdAt: number;
+  }?;
 }

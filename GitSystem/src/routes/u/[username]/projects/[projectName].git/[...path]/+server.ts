@@ -31,7 +31,7 @@ const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
     // AneAUTH has case-insensitive usernames, so we'll keep up that part of the implementation..
     !project.contributors.find(
       (v) =>
-        v.contributorUsername.toLowerCase() == accountInfo.name.toLowerCase()
+        v.contributorUsername.toLowerCase() == accountInfo.name.toLowerCase(),
     )
   )
     return error(403, "You do not have write-access to this repository."); // Also nope!
@@ -50,7 +50,7 @@ const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
     project,
     request,
     url,
-    params.path
+    params.path,
   );
 };
 

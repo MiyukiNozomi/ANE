@@ -121,7 +121,7 @@
 
       currentStep = "WAIT";
       let sessionInfo = await API?.invokeAPIWithStatus<AccountSession>(
-        "Creating account...",
+        "Signing In...",
         "accounts/login",
         {
           username: data.username,

@@ -56,7 +56,7 @@
       currentStep = "WAIT";
 
       let status = await API?.invokeAPIWithStatus<ClientSideAccount>(
-        "Locating ID..",
+        "Authorizing..",
         "accounts/authorize",
         {
           rememberMe: shouldRememberMe,
@@ -70,7 +70,10 @@
       signPage?.setAllowNextButton(Boolean(data.authRequest?.webhookURL));
       currentStep = "AUTHORIZATION_GRANTED";
     } else if (currentStep == "AUTHORIZATION_GRANTED") {
-      window.location.href = data.authRequest?.webhookURL!;
+      window.location.href = (data.authRequest.webhookURL! ?? "/").replace(
+        "[reqCode]",
+        data.authRequest.id,
+      );
     } else {
       currentStep = "WAIT";
       API?.setError(

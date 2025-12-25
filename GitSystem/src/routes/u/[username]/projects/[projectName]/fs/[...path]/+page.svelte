@@ -20,7 +20,7 @@
       </p>
     </div>
     <div class="flex flex-col gap-4 mb-8 px-8">
-      <div class="bg-orange-200 clip-notch-tl-br p-[1px]">
+      <div class="bg-orange-200 clip-notch-tl-br p-px">
         <div class="bg-black clip-notch-tl-br p-6">
           {#if data.individualFile}
             <CodeView

@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { browser } from "$app/environment";
   import { onMount } from "svelte";
-  import { fade, slide } from "svelte/transition";
+  import { fade } from "svelte/transition";
 
   let props: {} = $props();
 
@@ -44,7 +43,7 @@
         y: number,
         degrees: number,
         iw?: number,
-        ih?: number
+        ih?: number,
       ) => {
         const radians = degrees * (Math.PI / 180);
         const imageWidth = iw ?? image.width;
@@ -80,7 +79,7 @@
         centerY,
         bgRotation,
         bgSize,
-        bgSize
+        bgSize,
       );
       bgRotation += bgRotationSpeed;
 
@@ -102,7 +101,7 @@
         centerY,
         compassRotation,
         compassSize,
-        compassSize
+        compassSize,
       );
 
       compassRotation += compassRotationSpeed;

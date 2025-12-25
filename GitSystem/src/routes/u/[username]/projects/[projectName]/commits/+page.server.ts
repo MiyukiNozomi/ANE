@@ -1,15 +1,20 @@
 import { getUserProject } from "$lib/server/db";
 import { RepositoryInfo } from "$lib/server/git";
 import { error } from "@sveltejs/kit";
-import AuthAPI from "node-aneauthapi";
 import type { PageServerLoad } from "./$types";
+import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
+import { dev } from "$app/environment";
 
 export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
 
-  const profile = await AuthAPI.getAccountByName(params.username);
-  if (!profile) return error(404);
+  const profileReq = await getAccountByName(params.username);
+  if (!profileReq || profileReq.error) {
+    if (dev) console.log(profileReq);
+    return error(404);
+  }
 
+  const profile = profileReq.data!;
   const project = await getUserProject(profile.name, params.projectName);
 
   if (!project) {
@@ -26,6 +31,6 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
-    commits: Object.values(branchInfo.commits)
+    commits: Object.values(branchInfo.commits),
   };
 }) satisfies PageServerLoad;

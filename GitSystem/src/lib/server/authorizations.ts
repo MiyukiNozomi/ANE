@@ -1,9 +1,9 @@
 import { dev } from "$app/environment";
-import type AuthAPI from "node-aneauthapi";
+import type { AuthorizationRequest } from "$lib/ANEAuthAPI/apiTypes";
 
 export let AuthorizationList: Record<
   string,
-  AuthAPI.AuthorizationRequest & {
+  AuthorizationRequest & {
     creationDate: number;
     urlToReturnTo: string;
   }
@@ -20,9 +20,9 @@ setInterval(() => {
     if (Date.now() - info.creationDate > AUTHORIZATION_EXPIRITY) {
       console.log(
         "Remove: ",
-        info["request-code"],
+        info.id,
         " ",
-        dev ? info["sharedSecret"] : "<truncated (production build>"
+        dev ? info["sharedSecret"] : "<truncated (production build>",
       );
       delete AuthorizationList[key];
     }

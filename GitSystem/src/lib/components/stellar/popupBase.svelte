@@ -31,7 +31,7 @@
   >
     <div class="fixed right-8 top-8">
       <div
-        class="flex flex-col items-center bg-black border-orange-300 transition-colors duration-300 ease-in-out hover:bg-orange-300 rotate-45 border-1 aspect-square w-8 h-8"
+        class="flex flex-col items-center bg-black border-orange-300 transition-colors duration-300 ease-in-out hover:bg-orange-300 rotate-45 border aspect-square w-8 h-8"
       >
         <button
           onclick={() => setVisible(false)}
@@ -42,7 +42,7 @@
     </div>
     <div transition:slide class="flex flex-row h-full items-center">
       <div class="flex flex-col mx-auto">
-        <div class="bg-orange-300 clip-notch-tl-br p-[1px] w-full md:w-auto">
+        <div class="bg-orange-300 clip-notch-tl-br p-px w-full md:w-auto">
           <div
             class="bg-black mx-auto clip-notch-tl-br p-6 gap-6 text-gray-300 w-full md:w-auto
           flex flex-col {buttons != undefined ? 'pb-16' : ''}"

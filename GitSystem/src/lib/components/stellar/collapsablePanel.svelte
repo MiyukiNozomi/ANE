@@ -36,7 +36,7 @@
     </div>
 
     <div
-      class="absolute -left-3 bg-none rotate-45 border-l-1 border-b-1 aspect-square h-6 bg-black"
+      class="absolute -left-3 bg-none rotate-45 border-l-1 border-b aspect-square h-6 bg-black"
     ></div>
     <div
       class="absolute -right-3 bg-none rotate-45 border-r-1 border-t-1 aspect-square h-6 bg-black"

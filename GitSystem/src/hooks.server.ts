@@ -1,4 +1,4 @@
-import { getSignedAccount } from "$lib/ANEAuthAPI/publicInvoker";
+import { getSignedAccount } from "$lib/ANEAuthAPI/publicAPI";
 import { RepositoryInfo } from "$lib/server/git/fs";
 import { error, type Handle, type ServerInit } from "@sveltejs/kit";
 
@@ -23,9 +23,9 @@ export const handle: Handle = async ({ event, resolve }) => {
     try {
       const accountInfo = await getSignedAccount(authtoken);
 
-      if (accountInfo) {
+      if (accountInfo && accountInfo.data) {
         event.locals.session = {
-          accountInfo,
+          accountInfo: accountInfo.data,
           sessionToken: authtoken,
         };
       }

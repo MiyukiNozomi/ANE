@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invokeAPI } from "$lib/client/client-account";
+  import { invokeAPI } from "$lib/ANEAuthAPI/client";
   import { tick } from "svelte";
 
   let requestProgressLabel: string | undefined = $state(undefined);

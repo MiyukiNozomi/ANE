@@ -1,12 +1,13 @@
-import Git from "$lib/server/git";
-import GitFS from "$lib/server/git/fs";
+import type { ClientSideAccount } from "$lib/ANEAuthAPI/apiTypes";
+import { registerRepository } from "$lib/server/db";
+import { getPhysicalProjectLocation } from "$lib/server/git";
+import bridge from "$lib/server/git/bridge";
 import { existsSync, mkdirSync } from "fs";
-import type { AccountInfo } from "node-aneauthapi";
 
 export async function createNewRepositoryService(
-  author: AccountInfo,
+  author: ClientSideAccount,
   name: string,
-  description: string
+  description: string,
 ): Promise<string | undefined> {
   if (!author.isAdmin)
     throw new Error("Author is not an admin! this is a bug!");
@@ -15,7 +16,7 @@ export async function createNewRepositoryService(
     return "Invalid repository name.";
   }
 
-  const outputPath = GitFS.getPhysicalProjectLocation({
+  const outputPath = getPhysicalProjectLocation({
     name: name,
     authorUsername: author.name,
   });
@@ -25,11 +26,7 @@ export async function createNewRepositoryService(
   mkdirSync(outputPath, {
     recursive: true,
   });
+  await registerRepository(name, description, author.name);
 
-  bridge.runImmediate(
-    outputPath,
-    "init",
-    "--bare",
-    "--initial-branch=master"
-  );
+  bridge.runImmediate(outputPath, "init", "--bare", "--initial-branch=master");
 }

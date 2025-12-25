@@ -39,7 +39,7 @@
     <a
       class="
     flex flex-row gap-4 p-1 text-xl items-center font-mplus2 group
-    text-orange-200 bg-inherit border-1 border-black
+    text-orange-200 bg-inherit border border-black
     hover:text-white hover:underline hover:border-orange-200"
       href={`/u/${project.authorUsername}/projects/${project.name}/fs/${fileEntry.filepath}?branch=${activeBranch}`}
     >

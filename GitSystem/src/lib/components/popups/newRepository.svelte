@@ -1,13 +1,11 @@
 <script lang="ts">
-  import { getAccountInfo, invokeAPI } from "$lib/client/client-account";
+  import { getAccountInfo, invokeAPI } from "$lib/ANEAuthAPI/client";
   import {
     REPOSITORY_DESCRIPTION_MAX,
     GIT_OBJECT_NAME_MAX,
     GIT_OBJECT_NAME_MIN,
   } from "$lib/shared/constants";
-  import { boolean } from "zod";
   import PopupBase from "../stellar/popupBase.svelte";
-  import StellarButton from "../stellar/stellarButton.svelte";
   import StellarInput from "../stellar/stellarInput.svelte";
 
   const accountInfo = getAccountInfo();
@@ -28,9 +26,9 @@
       description: repoDesc,
     });
 
-    if (!res || !res.ok) {
+    if (!res || res.error) {
       return base.setError(
-        res?.message ?? "Failed to contact API, try again later."
+        res?.error ?? "Failed to contact API, try again later.",
       );
     }
 

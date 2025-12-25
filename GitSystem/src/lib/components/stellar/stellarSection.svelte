@@ -26,7 +26,7 @@
     const calculateLine = (
       rad: number,
       startRadius: number,
-      lineEndRadius: number
+      lineEndRadius: number,
     ) => {
       const x1 = centerX + startRadius * Math.cos(rad);
       const y1 = centerY - startRadius * Math.sin(rad);
@@ -62,7 +62,7 @@
           calculateLine(
             rad,
             Math.min(maxRadius, minSubrayRadius),
-            Math.min(maxRadius, thisSubrayRadius + minSubrayRadius)
+            Math.min(maxRadius, thisSubrayRadius + minSubrayRadius),
           );
 
           minSubrayRadius += thisSubrayRadius + subrayGap;
@@ -81,14 +81,12 @@
     ⯌
   </p>
   <div
-    class="flex flex-col p-2 border-1 border-orange-200 bg-black rounded-t-full"
+    class="flex flex-col p-2 border border-orange-200 bg-black rounded-t-full"
   >
     <div
-      class="flex flex-col p-6 border-1 border-orange-200 bg-black rounded-t-full"
+      class="flex flex-col p-6 border border-orange-200 bg-black rounded-t-full"
     >
-      <div
-        class="border-1 border-orange-200 border-b-0 bg-black rounded-t-full"
-      >
+      <div class="border border-orange-200 border-b-0 bg-black rounded-t-full">
         <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
           <!-- Explanation for future miyuki..
         
@@ -112,7 +110,7 @@
         </svg>
       </div>
       <div
-        class="relative flex flex-row items-center border-x-1 border-orange-200 px-4 h-9"
+        class="relative flex flex-row items-center border-x border-orange-200 px-4 h-9"
       >
         <div class="absolute left-0 top-2/4 w-full transform rotate-180">
           <svg
@@ -139,7 +137,7 @@
         <div class="bg-orange-200 w-full h-[2px]"></div>
       </div>
       <div
-        class="flex flex-col gap-3 pt-0 p-4 border-1 border-t-0 border-orange-200"
+        class="flex flex-col gap-3 pt-0 p-4 border border-t-0 border-orange-200"
       >
         {@render children()}
       </div>

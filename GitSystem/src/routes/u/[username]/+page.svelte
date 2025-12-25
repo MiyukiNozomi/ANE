@@ -1,8 +1,5 @@
 <script lang="ts">
-  import {
-    getAccountInfo,
-    invalidateSession,
-  } from "$lib/client/client-account";
+  import { getAccountInfo, invalidateSession } from "$lib/ANEAuthAPI/client";
   import PageBody from "$lib/components/pageBody.svelte";
   import NewRepository from "$lib/components/popups/newRepository.svelte";
   import StellarButton from "$lib/components/stellar/stellarButton.svelte";
@@ -25,7 +22,7 @@
   <div class="flex flex-row text-center md:text-start relative pt-0 p-6 gap-6">
     <!-- Profile Banner -->
     <div class="clip-notch-tl-br flex flex-col bg-black">
-      <div class="clip-notch-tl-br p-[1px] bg-orange-200 w-64">
+      <div class="clip-notch-tl-br p-px bg-orange-200 w-64">
         <div
           class="clip-notch-tl-br p-4 bg-black flex flex-col items-center gap-2"
         >
@@ -46,7 +43,7 @@
       </div>
       {#if accountInfo?.name == data.profile.name}
         <div class="flex flex-col w-full items-center p-4 gap-4">
-          {#if accountInfo.isAdmin || accountInfo.isDonator}
+          {#if accountInfo.isAdmin}
             <StellarButton
               onclick={() => newRepositoryPopup.setVisible(true)}
               label={"New Project"}
@@ -62,7 +59,7 @@
         <h1 class="font-baskervville text-4xl text-orange-300">Projects</h1>
         <div class="flex flex-col gap-6">
           {#each data.projects as project}
-            <div class="clip-notch-tr p-[1px] bg-orange-300 text-orange-300">
+            <div class="clip-notch-tr p-px bg-orange-300 text-orange-300">
               <div class="flex flex-row bg-black clip-notch-tr p-4 px-4">
                 <a
                   href="/u/{project.authorUsername}/projects/{project.name}"
@@ -92,7 +89,7 @@
         </h1>
         <div class="flex flex-col gap-6">
           {#each data.involvedProjects as project}
-            <div class="clip-notch-tr p-[1px] bg-suisei-300 text-suisei-300">
+            <div class="clip-notch-tr p-px bg-suisei-300 text-suisei-300">
               <div class="flex flex-row bg-black clip-notch-tr p-4 px-4">
                 <a
                   href="/u/{project.authorUsername}/projects/{project.name}"

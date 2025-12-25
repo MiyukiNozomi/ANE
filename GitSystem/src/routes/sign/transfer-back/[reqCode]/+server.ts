@@ -1,20 +1,28 @@
 import { AuthorizationList } from "$lib/server/authorizations";
 import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import AuthAPI from "node-aneauthapi";
 import { DOMAIN } from "$lib/server/db";
+import {
+  getAuthorizationRequest,
+  getSignedAccount,
+} from "$lib/ANEAuthAPI/publicAPI";
 
 export const GET: RequestHandler = async ({ params, cookies }) => {
   const req = AuthorizationList[params.reqCode];
   if (!req) return error(400);
-  /*** 
-   * document.cookie = `AuthToken=${json.session}; SameSite=Lax; Path=/`;
-        document.cookie = `AccountInfo=${btoa(JSON.stringify(json.accountInfo))}; SameSite=Lax; Path=/`;
-        */
-  const result = await AuthAPI.getAuthorizationRequest(req.sharedSecret);
 
-  if (result.sessionStatus == "AUTHORIZED") {
-    cookies.set("AuthToken", result.session, {
+  const result = await getAuthorizationRequest({
+    sharedSecret: req.sharedSecret,
+  });
+
+  if (!result || result.error) {
+    return error(500, result?.error ?? "Could not contact auth.ane.jp.net!");
+  }
+
+  const reqStatus = result.data!;
+
+  if (reqStatus.status == "AUTHORIZED") {
+    cookies.set("AuthToken", reqStatus.session!.id, {
       sameSite: "lax",
       path: "/",
       secure: false,
@@ -23,14 +31,14 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
     cookies.set(
       "AccountInfo",
       Buffer.from(
-        JSON.stringify(await AuthAPI.getSignedAccount(result.session))
+        JSON.stringify(await getSignedAccount(reqStatus.session!.id)),
       ).toString("base64"),
       {
         sameSite: "lax",
         path: "/",
         secure: false,
         httpOnly: false,
-      }
+      },
     );
 
     return redirect(
@@ -39,7 +47,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
         req.urlToReturnTo.startsWith("/")
           ? req.urlToReturnTo
           : "/" + req.urlToReturnTo
-      }`
+      }`,
     );
   }
   return error(401, "Still waiting for authorization!");

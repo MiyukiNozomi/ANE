@@ -2,16 +2,21 @@ import { getUserProject } from "$lib/server/db";
 
 import { error } from "@sveltejs/kit";
 import mime from "mime-types";
-import AuthAPI from "node-aneauthapi";
 import { Readable } from "stream";
 import type { RequestHandler } from "./$types";
 import { RepositoryInfo } from "$lib/server/git";
+import { dev } from "$app/environment";
+import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
 
 export const GET: RequestHandler = async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
 
-  const profile = await AuthAPI.getAccountByName(params.username);
-  if (!profile) return error(404);
+  const profileReq = await getAccountByName(params.username);
+  if (!profileReq || profileReq.error) {
+    if (dev) console.log(profileReq);
+    return error(404);
+  }
+  const profile = profileReq.data!;
 
   const project = await getUserProject(profile.name, params.projectName);
   if (!project) {

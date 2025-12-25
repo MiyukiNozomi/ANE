@@ -28,7 +28,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const gitError = await createNewRepositoryService(
     locals.session.accountInfo,
     name,
-    description
+    description,
   );
 
   if (gitError)

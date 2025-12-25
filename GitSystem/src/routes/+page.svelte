@@ -45,8 +45,11 @@
         Welcome to Miyuki's online git repository, a compass into the crazy
         ideas I've written and maintain.
         <br />
-        I no longer sees my projects as just software, I see them as an artistic
-        mean.
+        For a long time, I have no longer seen my projects as just software, I see
+        them as an artistic mean.
+        <br />
+        The word "impossible" in my head has no meaning until I can see with my own
+        eyes that said idea cannot be executed in reality.
       </p>
     </SplitPanel>
     <SplitPanel label="PROJECTS">

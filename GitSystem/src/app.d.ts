@@ -1,6 +1,6 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 
-import type AuthAPI from "node-aneauthapi";
+import type { ClientSideAccount } from "$lib/ANEAuthAPI/apiTypes";
 
 // for information about these interfaces
 declare global {
@@ -9,7 +9,7 @@ declare global {
     interface Locals {
       session?: {
         sessionToken: string;
-        accountInfo: AuthAPI.AccountInfo;
+        accountInfo: ClientSideAccount;
       };
     }
     // interface PageData {}

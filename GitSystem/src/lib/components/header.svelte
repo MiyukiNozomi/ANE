@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getAccountInfo } from "$lib/client/client-account";
+  import { getAccountInfo } from "$lib/ANEAuthAPI/client";
 
   const accountInfo = getAccountInfo();
 </script>
@@ -9,15 +9,15 @@
 >
   <div
     class="absolute top-0 left-0 bg-black w-full h-2/4
-    flex flex-row border-orange-200 border-b-1 border-t-1 border-solid"
+    flex flex-row border-orange-200 border-b border-t border-solid"
   >
     <!-- left conner -->
     <div
-      class="hidden md:flex absolute mr-auto w-18 aspect-square left-[-2.25rem] border-orange-200 -rotate-36 border-r-black border-1 bg-black rounded-full"
+      class="hidden md:flex absolute mr-auto w-18 aspect-square -left-9 border-orange-200 -rotate-36 border-r-black border bg-black rounded-full"
     ></div>
     <!-- right conner-->
     <div
-      class="hidden md:flex absolute mr-auto w-18 aspect-square right-[-2.25rem] border-orange-200 rotate-36 border-l-black border-1 bg-black rounded-full"
+      class="hidden md:flex absolute mr-auto w-18 aspect-square -right-9 border-orange-200 rotate-36 border-l-black border bg-black rounded-full"
     ></div>
 
     <div class="w-full mt-[1.1rem] flex flex-row items-start text-orange-200">
@@ -43,7 +43,7 @@
   </div>
 
   <div
-    class="flex mx-auto flex-row items-center p-[1px] bg-orange-200 clip-banner"
+    class="flex mx-auto flex-row items-center p-px bg-orange-200 clip-banner"
   >
     <!-- inner hexagon background -->
     <div
@@ -56,7 +56,7 @@
 
       <!-- inner hexagon -->
       <div
-        class="relative z-50 flex mx-auto flex-row items-center p-[1px] bg-orange-200 clip-banner"
+        class="relative z-50 flex mx-auto flex-row items-center p-px bg-orange-200 clip-banner"
       >
         <a
           href="/"

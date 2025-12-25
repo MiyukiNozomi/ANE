@@ -6,7 +6,7 @@
 </script>
 
 <div
-  class="bg-black border-t-orange-200 border-solid border-t-1 relative px-8 py-6"
+  class="bg-black border-t-orange-200 border-solid border-t relative px-8 py-6"
 >
   <SplitPanelHexagon
     extraClasses="absolute left-1/2 transform -translate-x-1/2  top-[-2.3rem] z-30"

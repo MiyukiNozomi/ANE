@@ -19,6 +19,7 @@ export async function invokeAPI<T>(
 }
 
 export async function invalidateSession() {
+  // TODO: session management.
   console.log(await invokeAPI<any>("signed/session/delete-self", undefined));
   document.cookie = `AuthToken=CLEARLY_INVALID; SameSite=Lax; Path=/`;
   document.cookie = `AccountInfo=CLEARLY_INVALID; SameSite=Lax; Path=/`;

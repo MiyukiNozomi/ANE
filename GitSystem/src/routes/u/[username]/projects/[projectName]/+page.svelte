@@ -53,7 +53,7 @@
         className="col-span-3 md:col-span-2 h-fit"
       >
         <h2
-          class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b-1 border-orange-200 border-dotted"
+          class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b border-orange-200 border-dotted"
         >
           S T A T I S T I C S
         </h2>
@@ -70,7 +70,7 @@
 
         {#if data.branchlist.length > 0}
           <h2
-            class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b-1 border-orange-200 border-dotted"
+            class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b border-orange-200 border-dotted"
           >
             B R A N C H E S
           </h2>
@@ -87,7 +87,7 @@
           </div>
         {/if}
         <h2
-          class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b-1 border-orange-200 border-dotted"
+          class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b border-orange-200 border-dotted"
         >
           M E M B E R S
         </h2>
