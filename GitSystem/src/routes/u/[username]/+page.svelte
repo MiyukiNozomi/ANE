@@ -15,7 +15,7 @@
 <NewRepository bind:this={newRepositoryPopup} />
 
 <svelte:head>
-  <title>{data.profile.displayName}'s Profile</title>
+  <title>{data.profile.displayName ?? data.profile.name}'s Profile</title>
 </svelte:head>
 
 <PageBody>
