@@ -197,7 +197,7 @@ proc parseRecipeFile(filename : String) {
                     if (commands.length > 0 && commands[commands.length - 1].endsWith("\\")) {
                         commands[commands.length - 1].pop();
                         commands[commands.length - 1].concat(command);
-                    } else {
+                    } else if (command.length > 0) {
                         commands.push(command);
                     }
                 }

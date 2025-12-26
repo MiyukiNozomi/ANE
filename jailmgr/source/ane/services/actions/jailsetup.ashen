@@ -58,10 +58,7 @@ nameserver 2001:4860:4860::8844
         // but 15.0 is already up to date anyway so.. good enough.
 
         system("mkdir -p /etc/jail.conf.d/"N);
-        
-        if (!fsExists("/etc/jail.conf")) {
-            fsWriteText("/etc/jail.conf", "include \"/etc/jail.conf.d/*.conf\"");
-        }
+        fsWriteText("/etc/jail.conf", ".include \"/etc/jail.conf.d/*.conf\";");
 
         var builder = createConfig(recipe);
 
