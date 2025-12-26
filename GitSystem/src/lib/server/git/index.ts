@@ -1,6 +1,5 @@
-import path from "path";
-import { existsSync, statSync } from "fs";
 import { GIT_USER_HOME_FOLDER } from "$lib/server/constants";
+import path from "path";
 
 export function getPhysicalProjectLocation(project: {
   name: string;
@@ -12,9 +11,6 @@ export function getPhysicalProjectLocation(project: {
     "projects",
     project.name,
   );
-
-  if (!existsSync(pth) || !statSync(pth).isDirectory())
-    throw new Error("Repository " + pth + " does not exist.");
 
   return pth;
 }

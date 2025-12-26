@@ -15,6 +15,13 @@
 }
 
 @font-face {
+    font-family: "IBMPlex";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/IBMPlexMono.ttf) format("truetype");
+}
+
+@font-face {
     font-family: "Metal";
     font-style: normal;
     font-weight: normal;
@@ -24,5 +31,6 @@
 @theme {
     --font-kumbh: "Kumbh", "sans-serif";
     --font-mplus2: "MPLUS2", "sans-serif";
+    --font-ibmplex: "IBMPlex", "sans-serif";
     --font-metal: "Metal", "sans-serif";
 }
