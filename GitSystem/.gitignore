@@ -27,3 +27,4 @@ vite.config.ts.timestamp-*
 .pnpm-workspace.yaml
 
 /generated/prisma
+node_modules
