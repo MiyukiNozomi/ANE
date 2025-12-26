@@ -186,18 +186,28 @@ rcvar=\"aneservice_enable\"
 script_path=\"/service/launch.sh\"
 logfile=\"/service/logs.txt\"
 pidfile=\"/var/run/${name}.pid\"
+supervisor_pidfile=\"/var/run/supervisor_${name}.pid\"
 
 command=\"/usr/sbin/daemon\"
 command_args=\"-u ", 
     if (recipe.isFlagTruty("rootServiceInit"))
         then "root"
         else "azki"
-," -f -P ${pidfile} -t ${name} -o ${logfile} ${script_path} >> ${logfile} 2>&1\"
+," -r -f -P ${supervisor_pidfile} -p ${pidfile} -t ${name} -o ${logfile} ${script_path} >> ${logfile} 2>&1\"
 
 load_rc_config $name
 
 # Default enable if not set
 : ${aneservice_enable:=\"NO\"}
+
+stop_postcmd=\"${name}_stop_post\"
+${name}_stop_post() {
+    # Clean up supervisor if it lingers
+    if [ -e \"${supervisor_pidfile}\" ]; then
+        kill -TERM $(cat ${supervisor_pidfile}) 2>/dev/null
+        rm -f ${supervisor_pidfile}
+    fi
+}
 
 run_rc_command \"$1\"
 "]);
