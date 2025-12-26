@@ -1,7 +1,11 @@
 <script lang="ts">
   import { browser } from "$app/environment";
 
-  let links = [["Welcome", "/docs"]];
+  let links = [
+    ["Welcome", "/docs"],
+    ["Syntaxes", "/docs/syntax"],
+    ["Pattern Matching", "/docs/pattern-matching"],
+  ];
 </script>
 
 <div

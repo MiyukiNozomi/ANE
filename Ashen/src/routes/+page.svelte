@@ -142,7 +142,7 @@ proc main(args : String[]) {
       *only UNIX systems, Microsoft Windows(R) are unsupported.
     </div>
     <a
-      href=""
+      href="https://git.ane.jp.net/u/miyuki/projects/ashen/releases"
       class="cursor-pointer mx-auto bg-linear-to-br from-black/20 to-black/40 hover:bg-indigo-200 transition-colors duration-300 ease-in-out p-6 py-3 rounded-xl font-kumbh"
     >
       Ashen Releases on ANE Git

@@ -18,6 +18,7 @@ export const load = (async ({ params, url }) => {
   const project = await getUserProject(profile.name, params.projectName);
 
   if (!project) {
+    console.log("Missing Project: " + project);
     return error(404);
   }
 
@@ -25,6 +26,7 @@ export const load = (async ({ params, url }) => {
   const branchInfo = repo?.branch(activeBranch);
 
   if (!branchInfo) {
+    console.log("Missing branches: " + branchInfo);
     return error(404);
   }
 
