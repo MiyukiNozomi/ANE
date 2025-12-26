@@ -14,7 +14,15 @@
     src: url(https://galatea.ane.jp.net/dl/fonts/MPLUS2.ttf) format("truetype");
 }
 
+@font-face {
+    font-family: "Metal";
+    font-style: normal;
+    font-weight: normal;
+    src: url(https://galatea.ane.jp.net/dl/fonts/Metal.ttf) format("truetype");
+}
+
 @theme {
     --font-kumbh: "Kumbh", "sans-serif";
     --font-mplus2: "MPLUS2", "sans-serif";
+    --font-metal: "Metal", "sans-serif";
 }
