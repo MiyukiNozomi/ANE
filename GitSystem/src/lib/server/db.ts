@@ -1,10 +1,8 @@
 import { dev } from "$app/environment";
+import { DB_FILE_NAME } from "$lib/server/constants";
 import Database from "better-sqlite3";
-import { mkdirSync } from "fs";
-import path from "path";
 
 export const DOMAIN = dev ? "http://localhost:5173" : "https://git.ane.jp.net";
-export const ACTIVE_FOLDER = dev ? "./debug-data" : "/home/AZKi/gitSystem";
 
 export type Repository = {
   id: number;
@@ -27,13 +25,21 @@ export type Contributor = {
   hasWriteAccess: boolean;
 };
 
+export type ProjectRelease = {
+  id: number;
+  contributorUsername: string;
+  repositoryId: number;
+
+  markdownText: string;
+  created_at: number;
+};
+
 export type Project = Repository & { contributors: Contributor[] };
 
-mkdirSync(ACTIVE_FOLDER, { recursive: true });
-export const db = new Database(path.join(ACTIVE_FOLDER, "database.db"));
+export const db = new Database(DB_FILE_NAME);
 
 db.exec(`
-CREATE TABLE IF NOT EXISTS repositories (
+CREATE TABLE IF NOT EXISTS Repositories (
     id INTEGER PRIMARY KEY,
     
     displayName TEXT DEFAULT NULL,
@@ -50,7 +56,7 @@ CREATE TABLE IF NOT EXISTS repositories (
     created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')) -- unix time (seconds)
 );
 
-CREATE TABLE IF NOT EXISTS contributors (
+CREATE TABLE IF NOT EXISTS Contributors (
     id INTEGER PRIMARY KEY,
     
     contributorUsername TEXT NOT NULL,
@@ -60,12 +66,26 @@ CREATE TABLE IF NOT EXISTS contributors (
        
     created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')), -- unix time (seconds)
  
-    FOREIGN KEY (repositoryId) REFERENCES repositories (id) ON DELETE CASCADE
+    FOREIGN KEY (repositoryId) REFERENCES Repositories (id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Releases (
+    id INTEGER PRIMARY KEY,
+    
+    contributorUsername TEXT NOT NULL,
+    repositoryId INTEGER NOT NULL,
+
+    markdownText TEXT NOT NULL,
+       
+    created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')), -- unix time (seconds)
+    FOREIGN KEY (repositoryId) REFERENCES Repositories (id) ON DELETE CASCADE
 );
 `);
 
 export async function getAllProjects() {
-  const stmt = db.prepare("SELECT name, authorUsername FROM repositories").all() as Array<{ name: string, authorUsername: string }>;
+  const stmt = db
+    .prepare("SELECT name, authorUsername FROM Repositories")
+    .all() as Array<{ name: string; authorUsername: string }>;
 
   let projects = new Array<Project>();
 
@@ -79,7 +99,11 @@ export async function getAllProjects() {
 }
 
 export async function getOwnedProjects(authorUsername: string) {
-  const stmt = db.prepare("SELECT name, authorUsername FROM repositories WHERE authorUsername = ?").all(authorUsername) as Array<{ name: string, authorUsername: string }>;
+  const stmt = db
+    .prepare(
+      "SELECT name, authorUsername FROM Repositories WHERE authorUsername = ?",
+    )
+    .all(authorUsername) as Array<{ name: string; authorUsername: string }>;
 
   let projects = new Array<Project>();
 
@@ -93,7 +117,11 @@ export async function getOwnedProjects(authorUsername: string) {
 }
 
 export async function getContributingProjects(authorUsername: string) {
-  const stmt = db.prepare("SELECT repositoryId FROM contributors WHERE contributorUsername = ?").all(authorUsername) as Array<{ repositoryId: number }>;
+  const stmt = db
+    .prepare(
+      "SELECT repositoryId FROM Contributors WHERE contributorUsername = ?",
+    )
+    .all(authorUsername) as Array<{ repositoryId: number }>;
 
   let projects = new Array<Project>();
 
@@ -106,13 +134,12 @@ export async function getContributingProjects(authorUsername: string) {
   return projects;
 }
 
-
 export async function registerRepository(
   name: string,
   description: string,
-  authorUsername: string
+  authorUsername: string,
 ) {
-  const stmt = db.prepare(`INSERT INTO repositories (
+  const stmt = db.prepare(`INSERT INTO Repositories (
     name,
     description,
     authorUsername
@@ -121,19 +148,15 @@ export async function registerRepository(
   stmt.run(name, description, authorUsername);
 }
 
-export async function getProjectById(
-  id: number
-): Promise<Project | null> {
-  const stmt = db.prepare(
-    `SELECT * FROM repositories WHERE id = ?`
-  );
+export async function getProjectById(id: number): Promise<Project | null> {
+  const stmt = db.prepare(`SELECT * FROM Repositories WHERE id = ?`);
 
   const project = stmt.all(id)[0] as Repository;
 
   if (!project) return null;
 
   let contributors = db
-    .prepare("SELECT * FROM contributors WHERE repositoryId = ?")
+    .prepare("SELECT * FROM Contributors WHERE repositoryId = ?")
     .all(project["id"] as number) as Contributor[];
 
   contributors.unshift({
@@ -141,7 +164,7 @@ export async function getProjectById(
     contributorUsername: project.authorUsername,
     created_at: project.created_at,
     hasWriteAccess: true,
-    repositoryId: project.id
+    repositoryId: project.id,
   });
 
   return {
@@ -152,10 +175,10 @@ export async function getProjectById(
 
 export async function getUserProject(
   authorUsername: string,
-  projectName: string
+  projectName: string,
 ): Promise<Project | null> {
   const stmt = db.prepare(
-    `SELECT * FROM repositories WHERE authorUsername = ? AND name = ?`
+    `SELECT * FROM Repositories WHERE authorUsername = ? AND name = ?`,
   );
 
   const project = stmt.all(authorUsername, projectName)[0] as Repository;
@@ -163,7 +186,7 @@ export async function getUserProject(
   if (!project) return null;
 
   let contributors = db
-    .prepare("SELECT * FROM contributors WHERE repositoryId = ?")
+    .prepare("SELECT * FROM Contributors WHERE repositoryId = ?")
     .all(project["id"] as number) as Contributor[];
 
   contributors.unshift({
@@ -171,11 +194,30 @@ export async function getUserProject(
     contributorUsername: authorUsername,
     created_at: project.created_at,
     hasWriteAccess: true,
-    repositoryId: project.id
+    repositoryId: project.id,
   });
 
   return {
     ...project,
     contributors,
   };
+}
+
+/** returns the ID of the release information. */
+export async function createRelease(
+  repoId: number,
+  contributorUsername: string,
+  markdownDescription: string,
+) {
+  return db
+    .prepare(
+      `INSERT INTO Releases(repositoryId, contributorUsername, markdownText) VALUES (?, ?, ?)`,
+    )
+    .run(repoId, contributorUsername, markdownDescription).lastInsertRowid;
+}
+
+export async function getReleasesOf(repoId: number): Promise<ProjectRelease[]> {
+  return db
+    .prepare(`SELECT * FROM Releases WHERE repositoryId = ?`)
+    .all(repoId) as ProjectRelease[];
 }

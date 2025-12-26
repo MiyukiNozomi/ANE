@@ -6,7 +6,9 @@
     children,
     buttons,
     title,
+    onClose,
   }: {
+    onClose?: () => void;
     buttons?: Record<string, () => void>;
     children: Function;
     title: string;
@@ -17,6 +19,7 @@
 
   export function setVisible(b: boolean) {
     visible = b;
+    if (!visible && onClose) onClose();
   }
 
   export function setError(text: string) {

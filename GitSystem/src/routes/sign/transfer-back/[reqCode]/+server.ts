@@ -22,6 +22,13 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
   const reqStatus = result.data!;
 
   if (reqStatus.status == "AUTHORIZED") {
+    const signedAccountReq = await getSignedAccount(reqStatus.session!.id);
+    if (!signedAccountReq || signedAccountReq.error)
+      return error(
+        500,
+        signedAccountReq.error ?? "ANE AuthAPI may be out of order.",
+      );
+
     cookies.set("AuthToken", reqStatus.session!.id, {
       sameSite: "lax",
       path: "/",
@@ -30,9 +37,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
     });
     cookies.set(
       "AccountInfo",
-      Buffer.from(
-        JSON.stringify(await getSignedAccount(reqStatus.session!.id)),
-      ).toString("base64"),
+      Buffer.from(JSON.stringify(signedAccountReq.data)).toString("base64"),
       {
         sameSite: "lax",
         path: "/",

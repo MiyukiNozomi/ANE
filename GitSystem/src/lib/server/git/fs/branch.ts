@@ -2,6 +2,7 @@ import path from "path";
 import type { RepositoryInfo } from ".";
 import bridge from "../bridge";
 import { getPhysicalProjectLocation } from "..";
+import { mkdirSync } from "fs";
 
 export type GitFile = {
   mode: string;
@@ -24,7 +25,7 @@ export type Commit = {
 
 /**
  * Represents a repository's branch in-memory
- * 
+ *
  * @see loader.ts for how this is loaded.
  */
 export class RepositoryBranch {
@@ -32,10 +33,10 @@ export class RepositoryBranch {
 
   public branchName: string;
 
-  /** 
+  /**
    * This is NOT the number of commits in this.commits, instead
    * it's the FULL count of commits this branch has.
-   * 
+   *
    * @see RepositoryBranch#commits
    */
   public commitCount: number;
@@ -43,37 +44,41 @@ export class RepositoryBranch {
   /** this is a mapping of Directories, not files.*/
   public filelistCache: Record<string, GitFile>;
 
-  /** 
-   * list of commits this branch has received. 
+  /**
+   * list of commits this branch has received.
    * Has a maximum of loader.ts#MAXIMUM_COMMIT_COUNT_TO_LOAD, which is why
    * it's length is not the same as RepositoryBranch#commitCount.
    */
   public commits: Record<string, Commit>;
 
-  constructor(repository: RepositoryInfo, branchName: string, commitCount: number) {
+  constructor(
+    repository: RepositoryInfo,
+    branchName: string,
+    commitCount: number,
+  ) {
     this.repository = repository;
     this.branchName = branchName;
     this.commitCount = commitCount;
     this.commits = {};
     this.filelistCache = {
-      '.': {
+      ".": {
         children: [],
         filename: "<root>",
         filepath: ".",
         hash: "NULL",
         isFile: false,
         mode: "NULL",
-        size: 0
-      }
+        size: 0,
+      },
     };
   }
 
-  public async getFileList(pathname: string = '.'): Promise<GitFile | null> {
+  public async getFileList(pathname: string = "."): Promise<GitFile | null> {
     let maxRecursions = 4;
 
     // maybe this should be computed in loader.ts?
     const getfilelist = (pathname: string, recursionCount = 0) => {
-      const normalizedPath = path.normalize(pathname).replace(/\/+$/, '');
+      const normalizedPath = path.normalize(pathname).replace(/\/+$/, "");
       const cache = this.filelistCache[normalizedPath];
       if (!cache) {
         return null;
@@ -85,23 +90,29 @@ export class RepositoryBranch {
           if (file.isFile) {
             filelist.push(file);
             continue;
-          };
+          }
 
           const sublist = getfilelist(file.filepath, recursionCount + 1);
-          if (sublist && sublist.children.length == 1 && !sublist.children[0].isFile) {
+          if (
+            sublist &&
+            sublist.children.length == 1 &&
+            !sublist.children[0].isFile
+          ) {
             filelist.push({
               ...file,
               filename: file.filename + "/" + sublist.children[0].filename,
-              filepath: sublist.children[0].filepath
+              filepath: sublist.children[0].filepath,
             });
           } else {
             filelist.push(file);
           }
         }
-      } else { filelist = cache.children; }
+      } else {
+        filelist = cache.children;
+      }
       return {
         ...cache,
-        children: filelist
+        children: filelist,
       };
     };
 
@@ -116,7 +127,31 @@ export class RepositoryBranch {
     }
 
     const filename = path.basename(pathname);
-    return parentFolderCache.children.find(v => v.filename == filename);
+    return parentFolderCache.children.find((v) => v.filename == filename);
+  }
+
+  public async cloneFilesOnlyInto(destination: string) {
+    try {
+      const location = path.resolve(
+        getPhysicalProjectLocation(this.repository.repository),
+      );
+      mkdirSync(location, { recursive: true });
+      //      git clone --branch <branch-name> --single-branch --depth 1 <repo-url> <target-directory>
+      await bridge.runImmediate(
+        "/",
+        "clone",
+        `--branch`,
+        this.branchName,
+        "--single-branch",
+        "--",
+        "file://" + location,
+        path.resolve(destination),
+      );
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
   }
 
   public async createReadStream(file: GitFile) {
@@ -129,7 +164,7 @@ export class RepositoryBranch {
         "show",
         "--no-notes",
         "--encoding=UTF-8",
-        `${this.branchName}:${file.filepath}`
+        `${this.branchName}:${file.filepath}`,
       );
     } catch (err) {
       console.error(err);

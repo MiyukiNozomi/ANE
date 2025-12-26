@@ -1,0 +1,14 @@
+image gitsystem
+
+build : root {
+    pkg install -y node24 npm-node24 pkgconf sqlite3
+    npm i -g pnpm typescript
+    pnpm i
+    pnpm approve-builds
+    pnpm build
+}
+
+run : azki {
+    export PORT=2000
+    cd /service/bin && /usr/local/bin/node build/
+}

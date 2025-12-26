@@ -28,7 +28,7 @@
         >
           <img
             class="rounded-full"
-            src="https://auth.ane.jp.net/home/u/{data.profile.name}/picture"
+            src="https://auth.ane.jp.net/u/{data.profile.name}/picture"
             alt=""
           />
           <p class="font-baskervville italic text-xl">
@@ -36,7 +36,7 @@
           </p>
           <a
             class="font-mplus2 text-sm text-orange-100 hover:underline"
-            href="https://auth.ane.jp.net/home/u/{data.profile.name}"
+            href="https://auth.ane.jp.net/u/{data.profile.name}"
             >{data.profile.name}@ane.jp.net</a
           >
         </div>

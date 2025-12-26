@@ -6,6 +6,11 @@
   let { data }: PageProps = $props();
 </script>
 
+<svelte:head>
+  <title>Commits of {data.project.displayName ?? data.project.name}</title>
+  <meta name="description" content="Has {data.commits.length} commits." />
+</svelte:head>
+
 <PageBody>
   <div class="flex flex-col gap-8">
     <div class="flex flex-row">
@@ -13,7 +18,7 @@
         class="px-8 mx-auto italic text-xl font-baskervville text-orange-300 flex flex-row items-center gap-2"
       >
         <span class="text-3xl">&quot;</span>
-        Constelations of {data.project.displayName ?? data.project.name}
+        Constellations of {data.project.displayName ?? data.project.name}
         <span class="text-3xl transform rotate-180">&quot;</span>
       </p>
     </div>

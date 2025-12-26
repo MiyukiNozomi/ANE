@@ -1,4 +1,4 @@
-import { getUserProject } from "$lib/server/db";
+import { getReleasesOf, getUserProject } from "$lib/server/db";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { RepositoryInfo } from "$lib/server/git";
@@ -28,9 +28,11 @@ export const load = (async ({ params, url }) => {
     return error(404);
   }
 
+  const releases = await getReleasesOf(project.id);
   return {
     profile,
     project,
+    releaseCount: releases.length,
     activeBranch: activeBranch,
     branchlist: Object.keys(repo!.branches).filter((v) => v != activeBranch),
     filelist: await branchInfo.getFileList(),

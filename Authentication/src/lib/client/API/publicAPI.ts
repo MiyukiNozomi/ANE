@@ -5,47 +5,74 @@ import type {
   AuthorizationRequest,
   AuthorizationRequestStatus,
 } from "./apiTypes";
-export function invokeAuthAPI<T>(
+
+function invokeAuthAPI<T>(
   endpoint: string,
   payload: any | FormData,
   sessionToken?: string,
-  requestMethod: "POST" | "PUT" = "POST",
-): Promise<APIResponse<T> | null> {
-  return new Promise((resolve) => {
-    const data = JSON.stringify(payload);
+  requestMethod: "POST" | "PUT" | "GET" = "POST",
+) {
+  return new Promise<APIResponse<T>>((resolve, reject) => {
+    let headers: Record<string, string> = {};
+    if (payload) headers["content-type"] = "application/json";
+    if (sessionToken) headers["authorization"] = "Bearer " + sessionToken;
 
     const req = https.request(
       {
         hostname: "auth.ane.jp.net",
         path: `/api/${endpoint}`,
+        headers,
         method: requestMethod,
-        headers: {
-          Authorization: sessionToken ? `Bearer ${sessionToken}` : "",
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(data),
-        },
       },
       (res) => {
-        let body = "";
-        res.on("data", (chunk) => (body += chunk));
+        let data = new Array<Buffer>();
+
+        res.on("data", (chunk) => {
+          data.push(chunk);
+        });
+
+        res.on("error", (err) => {
+          reject(
+            new Error(
+              "Got an error: " +
+                JSON.stringify(err) +
+                " when contacting " +
+                endpoint,
+            ),
+          );
+        });
+
         res.on("end", () => {
-          if (res.statusCode !== 200) {
-            resolve(null);
-            return;
-          }
-          resolve(JSON.parse(body));
+          const buffStr = Buffer.concat(data).toString();
+          if (res.statusCode != 200)
+            reject(
+              new Error(
+                "Got a Non-200 status code: " +
+                  res.statusCode +
+                  " when contacting " +
+                  endpoint +
+                  "\n " +
+                  buffStr,
+              ),
+            );
+          else resolve(JSON.parse(buffStr));
         });
       },
     );
 
-    req.on("error", () => resolve(null));
-    req.write(data);
+    if (payload) req.write(JSON.stringify(payload));
+
     req.end();
   });
 }
 
 export async function getSignedAccount(authToken: string) {
-  return await invokeAuthAPI<ClientSideAccount>("accounts/me", {}, authToken);
+  return await invokeAuthAPI<ClientSideAccount>(
+    "accounts/me",
+    undefined,
+    authToken,
+    "GET",
+  );
 }
 
 export async function getAccountByName(username: string) {

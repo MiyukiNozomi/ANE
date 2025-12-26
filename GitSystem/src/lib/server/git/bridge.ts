@@ -28,14 +28,14 @@ class GitBridge {
     if (dev) console.log("Found Git Services: ", this.gitServices);
   }
 
-
-  /** 
-   * Use this for generic git commands, like ls-tree 
+  /**
+   * Use this for generic git commands, like ls-tree
    * Don't use this function for user-defined values, please.
    */
   public async runImmediate(
     executionDirectory: string,
-    ...params: Array<string>) {
+    ...params: Array<string>
+  ) {
     return this.runImmediateUnsafe(false, executionDirectory, ...params);
   }
 
@@ -77,7 +77,10 @@ class GitBridge {
       gitProcess.stderr.on("data", (d) => (errors += d));
 
       gitProcess.on("close", (code) => {
-        if (errors.length > 0)
+        if (
+          errors.length > 0 &&
+          (gitProcess.exitCode == null || gitProcess.exitCode != 0)
+        )
           reject(new Error(`Error! git has said on its stderr: ${errors}`));
         if (code != 0) {
           reject(new Error(`Error! git has returned exit code: ${code}`));
@@ -103,7 +106,7 @@ class GitBridge {
         this.gitServices[service],
         params,
         " on ",
-        executionDirectory
+        executionDirectory,
       );
 
       const gitProcess = spawn(this.gitServices[service], params, {
@@ -119,11 +122,11 @@ class GitBridge {
       gitProcess.on("close", (code) => {
         if (errors.length > 0)
           reject(
-            new Error(`Error! ${service} has said on its stderr: ${errors}`)
+            new Error(`Error! ${service} has said on its stderr: ${errors}`),
           );
         if (code != 0) {
           reject(
-            new Error(`Error! ${service} has returned exit code: ${code}`)
+            new Error(`Error! ${service} has returned exit code: ${code}`),
           );
         } else if (dev) {
           console.log("Exit-Code: 0!!!!");

@@ -8,7 +8,7 @@
   }: {
     text: string;
     placeholder: string;
-    type: "password" | "text";
+    type: "password" | "text" | "textarea";
     maxlength: number;
     isMultiline: boolean;
   } = $props();
@@ -17,21 +17,30 @@
 <!-- Here the hexagon code is different because Input elements break it for some reason.-->
 <div class="px-4">
   <div class="flex flex-row items-center relative gap-0">
-    <div class="border-orange-200 border-y w-full h-auto">
-      <input
-        class="outline-0 font-mplus2 p-1 w-full"
-        bind:value={text}
-        {type}
-        max={maxlength}
-        {placeholder}
-      />
-    </div>
+    {#if type == "textarea"}
+      <div class="bg-gold-100 p-pxrelative bg-orange-200 p-px">
+        <textarea
+          class="outline-none bg-black min-h-90 resize-none"
+          bind:value={text}
+        ></textarea>
+      </div>
+    {:else}
+      <div class="border-orange-200 border-y w-full h-auto">
+        <input
+          class="outline-0 font-mplus2 p-1 w-full"
+          bind:value={text}
+          {type}
+          max={maxlength}
+          {placeholder}
+        />
+      </div>
 
-    <div
-      class="absolute -left-3 bg-none rotate-45 border-orange-200 border-l border-b aspect-square h-6"
-    ></div>
-    <div
-      class="absolute -right-3 bg-none rotate-45 border-orange-200 border-r border-t aspect-square h-6"
-    ></div>
+      <div
+        class="absolute -left-3 bg-none rotate-45 border-orange-200 border-l border-b aspect-square h-6"
+      ></div>
+      <div
+        class="absolute -right-3 bg-none rotate-45 border-orange-200 border-r border-t aspect-square h-6"
+      ></div>
+    {/if}
   </div>
 </div>

@@ -9,6 +9,10 @@
   let { data }: PageProps = $props();
 </script>
 
+<svelte:head>
+  <title>{data.project.name}</title>
+</svelte:head>
+
 <PageBody>
   <div class="flex flex-row">
     <p
@@ -57,7 +61,9 @@
         >
           S T A T I S T I C S
         </h2>
-        <h1 class="font-baskervville text-gray-300 font-light text-lg">
+        <h1
+          class="font-baskervville text-gray-300 font-light text-lg flex flex-col gap-1"
+        >
           <a
             href="/u/{data.profile.name}/projects/{data.project.name}/commits"
             class="hover:text-orange-200 hover:underline group"
@@ -65,6 +71,14 @@
             <span class="group-hover:text-orange-300 text-white"
               >{data.commitCount}</span
             > COMMITS
+          </a>
+          <a
+            href="/u/{data.profile.name}/projects/{data.project.name}/releases"
+            class="hover:text-orange-200 hover:underline group"
+          >
+            <span class="group-hover:text-orange-300 text-white"
+              >{data.releaseCount}</span
+            > RELEASES
           </a>
         </h1>
 
@@ -111,7 +125,7 @@
               {/if}
               <img
                 class="w-4/5 h-4/5 mx-auto rounded-full p-1"
-                src="https://auth.ane.jp.net/home/u/{contributor.contributorUsername}/picture"
+                src="https://auth.ane.jp.net/u/{contributor.contributorUsername}/picture"
                 alt=""
               />
             </a>

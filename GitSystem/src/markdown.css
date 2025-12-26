@@ -2,6 +2,10 @@
   @apply flex flex-col gap-1;
 }
 
+#markdown-ctn h1 {
+  @apply text-orange-200 font-baskervville text-3xl pt-2;
+}
+
 #markdown-ctn h2 {
   @apply text-orange-200 font-baskervville text-xl pt-2;
 }

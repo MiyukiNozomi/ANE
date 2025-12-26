@@ -27,7 +27,7 @@
       >
         {#if accountInfo}
           <a class="hover:underline" href="/u/{accountInfo.name}"
-            >{accountInfo.displayName}
+            >{accountInfo.displayName ?? accountInfo.name}
           </a>
         {:else}
           <a class="hover:underline" href="/sign/redirect"> Sign In </a>
