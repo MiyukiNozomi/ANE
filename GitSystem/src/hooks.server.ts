@@ -19,6 +19,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     authtoken = event.cookies.get("AuthToken");
   }
 
+  console.log(authtoken);
   if (authtoken) {
     try {
       const accountInfo = await getSignedAccount(authtoken);

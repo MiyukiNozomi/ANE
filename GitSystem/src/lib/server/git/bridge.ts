@@ -82,7 +82,7 @@ class GitBridge {
           (gitProcess.exitCode == null || gitProcess.exitCode != 0)
         )
           reject(new Error(`Error! git has said on its stderr: ${errors}`));
-        if (code != 0) {
+        if (code != 0 && code != null) {
           reject(new Error(`Error! git has returned exit code: ${code}`));
         } else {
           resolve(Buffer.concat(output));
@@ -120,11 +120,11 @@ class GitBridge {
       gitProcess.stderr.on("data", (d) => (errors += d));
 
       gitProcess.on("close", (code) => {
-        if (errors.length > 0)
+        if (errors.length > 0 && code != 0 && code != null)
           reject(
             new Error(`Error! ${service} has said on its stderr: ${errors}`),
           );
-        if (code != 0) {
+        if (code != 0 && code != null) {
           reject(
             new Error(`Error! ${service} has returned exit code: ${code}`),
           );

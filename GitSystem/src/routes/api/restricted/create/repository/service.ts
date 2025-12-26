@@ -1,6 +1,6 @@
 import type { ClientSideAccount } from "$lib/ANEAuthAPI/apiTypes";
-import { registerRepository } from "$lib/server/db";
-import { getPhysicalProjectLocation } from "$lib/server/git";
+import { getUserProject, registerRepository } from "$lib/server/db";
+import { getPhysicalProjectLocation, RepositoryInfo } from "$lib/server/git";
 import bridge from "$lib/server/git/bridge";
 import { existsSync, mkdirSync } from "fs";
 
@@ -16,6 +16,10 @@ export async function createNewRepositoryService(
     return "Invalid repository name.";
   }
 
+  if (await getUserProject(author.name, name)) {
+    return "Repository already exists";
+  }
+
   const outputPath = getPhysicalProjectLocation({
     name: name,
     authorUsername: author.name,
@@ -29,4 +33,7 @@ export async function createNewRepositoryService(
   await registerRepository(name, description, author.name);
 
   bridge.runImmediate(outputPath, "init", "--bare", "--initial-branch=master");
+  bridge.runImmediate(outputPath, "symbolic-ref", "HEAD", "refs/heads/master");
+
+  await RepositoryInfo.onServerInit();
 }

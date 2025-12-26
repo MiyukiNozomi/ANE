@@ -5,6 +5,7 @@ import type {
   AuthorizationRequest,
   AuthorizationRequestStatus,
 } from "./apiTypes";
+import { dev } from "$app/environment";
 
 function invokeAuthAPI<T>(
   endpoint: string,
@@ -12,7 +13,7 @@ function invokeAuthAPI<T>(
   sessionToken?: string,
   requestMethod: "POST" | "PUT" | "GET" = "POST",
 ) {
-  return new Promise<APIResponse<T>>((resolve, reject) => {
+  return new Promise<APIResponse<T> | null>((resolve, reject) => {
     let headers: Record<string, string> = {};
     if (payload) headers["content-type"] = "application/json";
     if (sessionToken) headers["authorization"] = "Bearer " + sessionToken;
@@ -25,14 +26,8 @@ function invokeAuthAPI<T>(
         method: requestMethod,
       },
       (res) => {
-        let data = new Array<Buffer>();
-
-        res.on("data", (chunk) => {
-          data.push(chunk);
-        });
-
-        res.on("error", (err) => {
-          reject(
+        const errorOrResolve = (err: any) => {
+          console.log(
             new Error(
               "Got an error: " +
                 JSON.stringify(err) +
@@ -40,21 +35,19 @@ function invokeAuthAPI<T>(
                 endpoint,
             ),
           );
+          return resolve(null);
+        };
+        let data = new Array<Buffer>();
+
+        res.on("data", (chunk) => {
+          data.push(chunk);
         });
+
+        res.on("error", errorOrResolve);
 
         res.on("end", () => {
           const buffStr = Buffer.concat(data).toString();
-          if (res.statusCode != 200)
-            reject(
-              new Error(
-                "Got a Non-200 status code: " +
-                  res.statusCode +
-                  " when contacting " +
-                  endpoint +
-                  "\n " +
-                  buffStr,
-              ),
-            );
+          if (res.statusCode != 200) errorOrResolve(res.statusCode);
           else resolve(JSON.parse(buffStr));
         });
       },

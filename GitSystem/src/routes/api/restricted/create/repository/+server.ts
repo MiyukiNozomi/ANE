@@ -37,8 +37,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       message: gitError,
     });
 
-  await registerRepository(name, description, locals.session.accountInfo.name);
-
   return json({
     ok: true,
   });
