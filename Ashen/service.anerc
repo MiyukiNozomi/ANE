@@ -2,7 +2,7 @@ image ashensv
 
 build : root {
     pkg install -y node24 npm-node24 pkgconf
-    npm i -g pnpm typescript
+    cd / && npm i -g pnpm typescript
     pnpm i
     pnpm approve-builds
     pnpm build
