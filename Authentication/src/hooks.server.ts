@@ -8,6 +8,11 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (authorizationHeader) {
     let tokens = authorizationHeader.split(" ");
     if (tokens[0] == "Bearer") authtoken = tokens[1];
+    else if (tokens[0] == "Basic") {
+      const pairs = Buffer.from(tokens[1], "base64").toString().split(":");
+      // there's no point in validating the username, really.
+      authtoken = pairs[1];
+    }
   } else {
     authtoken = event.cookies.get("AuthToken");
   }

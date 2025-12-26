@@ -31,7 +31,10 @@ export async function createSessionWithAccountInfo(
 }
 
 export async function createSession(userId: number, sessionType: SessionTypes) {
-  let token = base32Encode(randomBytes(SESSION_TOKEN_LENGTH));
+  let token = base32Encode(randomBytes(SESSION_TOKEN_LENGTH)).replaceAll(
+    "\=",
+    "",
+  );
 
   await db.sessions.insert({
     id: token,
@@ -56,7 +59,7 @@ export function genSharedSecretForThirdParty() {
 }
 
 export function genThirdPartyIDTicket() {
-  return base32Encode(randomBytes(16)).replaceAll("=", "");
+  return base32Encode(randomBytes(16)).replaceAll("\=", "");
 }
 
 export function genRecoveryKey() {

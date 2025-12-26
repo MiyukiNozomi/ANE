@@ -27,14 +27,7 @@ function invokeAuthAPI<T>(
       },
       (res) => {
         const errorOrResolve = (err: any) => {
-          console.log(
-            new Error(
-              "Got an error: " +
-                JSON.stringify(err) +
-                " when contacting " +
-                endpoint,
-            ),
-          );
+          console.log("Error: ", err);
           return resolve(null);
         };
         let data = new Array<Buffer>();
@@ -47,7 +40,11 @@ function invokeAuthAPI<T>(
 
         res.on("end", () => {
           const buffStr = Buffer.concat(data).toString();
-          if (res.statusCode != 200) errorOrResolve(res.statusCode);
+          if (res.statusCode != 200)
+            errorOrResolve({
+              status: res.statusCode,
+              message: Buffer.concat(data).toString(),
+            });
           else resolve(JSON.parse(buffStr));
         });
       },
