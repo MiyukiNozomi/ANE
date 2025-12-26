@@ -1,7 +1,7 @@
 image gitsystem
 
 build : root {
-    pkg install -y node24 npm-node24 pkgconf sqlite3
+    pkg install -y node24 npm-node24 pkgconf git
     npm i -g pnpm typescript
     pnpm i
     pnpm approve-builds
