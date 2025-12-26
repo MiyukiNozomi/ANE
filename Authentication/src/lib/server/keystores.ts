@@ -21,7 +21,7 @@ export async function createSessionWithAccountInfo(
   userId: number,
   sessionType: SessionTypes,
 ) {
-  let account = await db.accounts.ofId(userId);
+  let account = await db.accounts.whereFirst({ id: userId });
   if (!account) return null;
 
   return {

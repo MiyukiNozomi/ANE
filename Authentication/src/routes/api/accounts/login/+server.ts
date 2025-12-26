@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const { username, password, totpCode } = parsedData.data;
 
-  let account = await db.accounts.ofName(username);
+  let account = await db.accounts.whereFirst({ username });
   if (!account)
     return json({
       error: "ERR_ACCOUNT_DOES_NOT_EXIST",

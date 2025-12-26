@@ -27,13 +27,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const { username, password } = parsedData.data;
 
-  if (Boolean(await db.accounts.ofName(username)))
+  if (Boolean(await db.accounts.whereFirst({ username })))
     return json({ error: "ERR_ACCOUNT_EXISTS" } satisfies APIResponse<any>);
 
-  let userId = await db.accounts.insert({
+  let userId = (await db.accounts.insert({
     username,
     passwordHash: await hash(password, { type: argon2id }),
-  });
+  })) as number;
 
   let sessionInfo = await createSessionWithAccountInfo(userId, "ROOT");
 

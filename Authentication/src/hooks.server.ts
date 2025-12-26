@@ -13,8 +13,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   if (authtoken) {
-    const session = await db.sessions.ofId(authtoken);
-    const account = session ? await db.accounts.ofId(session.userId) : null;
+    const session = await db.sessions.whereFirst({ id: authtoken });
+    const account = session
+      ? await db.accounts.whereFirst({ id: session.userId })
+      : null;
 
     if (session && account) {
       event.locals.session = {

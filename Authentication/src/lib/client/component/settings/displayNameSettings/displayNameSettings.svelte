@@ -36,7 +36,7 @@
     if (!isValid) return;
 
     const res = await progressAPI?.invokeAPIWithStatus<APIOk>(
-      "Sending your cute image..",
+      "Sending your name..",
       "accounts/cfg/update-displayname",
       {
         displayName,
@@ -52,9 +52,7 @@
       displayName,
     });
 
-    setSuccessful(
-      "Successfully defined your new profile picture! you should see it update accross ANE.",
-    );
+    setSuccessful("Successfully set your display name!");
   }
 </script>
 
@@ -67,12 +65,12 @@
   </div>
 
   <div class="flex flex-col gap-2">
+    <h1 class="text-4xl font-kumbh font-bold">Display Name</h1>
+
+    <p class="text-gray-200">The public version of your username.</p>
     <div class="" transition:slide>
       <ProgressAPI bind:this={progressAPI} />
     </div>
-
-    <h1 class="text-4xl font-kumbh font-bold">Display Name</h1>
-    <p class="text-gray-200">The public version of your username.</p>
 
     <div class="flex flex-col gap-4 w-full lg:max-w-2/4">
       <Input

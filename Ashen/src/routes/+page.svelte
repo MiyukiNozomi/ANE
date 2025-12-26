@@ -102,6 +102,11 @@ proc main(args : String[]) {
 >
   <div class="flex flex-row items-center h-screen">
     <div class="relative flex flex-col items-center max-w-2/5 mx-auto">
+      <div
+        class="absolute w-[108%] aspect-square rounded-full border-b-[#ffffff00] border-indigo-600 border-4
+        transform -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4"
+        style="animation: spin 1s linear infinite;"
+      ></div>
       <img
         src="https://galatea.ane.jp.net/dl/images/logos/ashen-logo-full.webp"
         alt=""
@@ -139,7 +144,8 @@ proc main(args : String[]) {
     class="relative flex flex-col bg-linear-to-br from-indigo-400/60 to-purple-950 p-16 text-white text-center gap-8"
   >
     <div class="font-kumbh text-xl">
-      *only UNIX systems, Microsoft Windows(R) are unsupported.
+      *only POSIX-compliant systems, Microsoft Windows(R) and Apple MacOS are
+      unsupported.
     </div>
     <a
       href="https://git.ane.jp.net/u/miyuki/projects/ashen/releases"
@@ -157,3 +163,14 @@ proc main(args : String[]) {
 </div>
 
 <Footer></Footer>
+
+<style>
+  @keyframes spin {
+    0% {
+      rotate: 0deg;
+    }
+    100% {
+      rotate: 360deg;
+    }
+  }
+</style>

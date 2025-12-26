@@ -27,8 +27,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
   let authRequest =
     "id" in data.data
-      ? await db.thirdPartyRequests.ofId(data.data.id)
-      : await db.thirdPartyRequests.ofSecret(data.data.sharedSecret);
+      ? await db.thirdPartyRequests.whereFirst({ id: data.data.id })
+      : await db.thirdPartyRequests.whereFirst({
+          sharedSecret: data.data.sharedSecret,
+        });
 
   if (!authRequest) {
     return json({
@@ -38,7 +40,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
   let session: Session | null =
     authRequest.sessionId != null
-      ? await db.sessions.ofId(authRequest.sessionId)
+      ? await db.sessions.whereFirst({ id: authRequest.sessionId })
       : null;
 
   let status: AuthorizationRequestStatusString = Boolean(session)

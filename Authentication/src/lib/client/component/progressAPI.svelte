@@ -44,7 +44,9 @@
 {#if isActive()}
   <div class="flex flex-row items-center gap-2">
     {#if errorMessage}
-      <p class="text-xl text-red-900">{errorMessage}</p>
+      <p class="text-xl text-red-900 max-w-full wrap-break-word">
+        {errorMessage}
+      </p>
     {:else}
       <div
         class="w-10 h-10 border-4 border-t-blue-500 border-[#00000000] rounded-full animate-spin"

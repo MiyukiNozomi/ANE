@@ -1,7 +1,9 @@
 import Database from "better-sqlite3";
 
 export type DatabaseHooks<T> = Partial<{
-  onQueryResult: (result: T) => T | undefined;
+  onQueryResult: (
+    result: T,
+  ) => Promise<T | undefined | null> | (T | undefined | null);
 }>;
 
 export type DatabaseSchema = {
@@ -46,18 +48,29 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
 
   public async where(query: Partial<T>) {
     const qO = this.queryObject2SQLite(query, "SELECT * FROM");
-    return (<T[]>qO.statement.all(...qO.values))
-      .map((v) =>
-        this.hooks["onQueryResult"] ? this.hooks["onQueryResult"](v) : v,
-      )
-      .filter((v) => v != undefined);
+    let rawResults = <T[]>qO.statement.all(...qO.values);
+
+    let hookFunc = this.hooks["onQueryResult"];
+    if (hookFunc) {
+      let results = new Array<T>();
+
+      for (const re of rawResults) {
+        const l = await hookFunc(re);
+        if (l) results.push(l);
+      }
+      return results;
+    }
+
+    return rawResults;
   }
 
   public async whereFirst(query: Partial<T>) {
     const qO = this.queryObject2SQLite(query, "SELECT * FROM");
     let v = <T>qO.statement.get(...qO.values);
     return (
-      (this.hooks["onQueryResult"] ? this.hooks["onQueryResult"](v) : v) ?? null
+      (this.hooks["onQueryResult"]
+        ? await this.hooks["onQueryResult"](v)
+        : v) ?? null
     );
   }
 
@@ -84,9 +97,7 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
 
     return {
       statement,
-      values: keys.map(
-        (v) => (query as any)[v] ?? null /** undefined = shit */,
-      ),
+      values: this.object2Values(query),
     };
   }
 
@@ -103,9 +114,7 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
 
     return {
       statement,
-      values: keys.map(
-        (v) => (query as any)[v] ?? null /** undefined = shit */,
-      ),
+      values: this.object2Values(query),
     };
   }
 
@@ -119,18 +128,20 @@ CREATE TABLE IF NOT EXISTS ${tableName} (
       this.cachedStatements.set(queryStr, statement);
     }
 
-    let values = Object.keys(data)
-      .map((v) => (data as any)[v] ?? null /** undefined = shit */)
-      .concat(
-        Object.keys(query).map(
-          (v) => (query as any)[v] ?? null /** undefined = shit */,
-        ),
-      );
+    let values = this.object2Values(data).concat(this.object2Values(query));
 
     return {
       statement,
       values,
     };
+  }
+
+  private object2Values(obj: Partial<T>) {
+    return Object.keys(obj).map((v) => {
+      let value = (obj as any)[v] ?? null;
+      if (typeof value == `boolean`) return value ? 1 : 0;
+      return value;
+    });
   }
 
   private object2Query(obj: Partial<T>, prefix = "WHERE") {

@@ -29,8 +29,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   let account =
     "accountId" in data
-      ? await db.accounts.ofId(data.accountId)
-      : await db.accounts.ofName(data.username);
+      ? await db.accounts.whereFirst({ id: data.accountId })
+      : await db.accounts.whereFirst({ username: data.username });
 
   return json({
     error: Boolean(account) ? undefined : "ERR_ACCOUNT_DOES_NOT_EXIST",

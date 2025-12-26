@@ -21,10 +21,14 @@ export const POST: RequestHandler = async ({ locals, request }) => {
   let data = requestData.safeParse(await request.json());
   if (data.error) return error(400);
 
-  db.accounts.updateDisplayName(
-    locals.session.account.id,
-    data.data.displayName,
-  );
+  db.accounts.update({
+    where: {
+      id: locals.session.account.id,
+    },
+    data: {
+      displayName: data.data.displayName,
+    },
+  });
 
   return json({ data: true } satisfies APIOk);
 };

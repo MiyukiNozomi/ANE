@@ -29,12 +29,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
   const { realm, webhookURL } = data.data;
 
-  await db.thirdPartyRequests.insert(
-    token,
+  await db.thirdPartyRequests.insert({
+    id: token,
     sharedSecret,
     realm,
-    webhookURL ?? null,
-  );
+    webhookURL: webhookURL ?? null,
+  });
 
   return json({
     data: {

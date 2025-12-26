@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
 
   const { ticketId, rememberMe } = data.data;
 
-  let authRequest = await db.thirdPartyRequests.ofId(ticketId);
+  let authRequest = await db.thirdPartyRequests.whereFirst({ id: ticketId });
   if (!authRequest)
     return json({
       error: "ERR_THIRD_PARTY_REQUEST_MISSING_OR_DENIED",
@@ -35,6 +35,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     rememberMe ? "REMEMBER_ME_READONLY" : "READONLY",
   );
 
-  await db.thirdPartyRequests.updateSession(ticketId, session.id);
+  await db.thirdPartyRequests.update({
+    where: { id: ticketId },
+    data: { sessionId: session.id },
+  });
   return json({ data: true } satisfies APIOk);
 };
