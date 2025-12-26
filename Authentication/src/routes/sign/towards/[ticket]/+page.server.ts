@@ -4,7 +4,10 @@ import { error, redirect } from "@sveltejs/kit";
 
 export const load = (async ({ locals, request, params }) => {
   if (!locals.session)
-    return redirect(302, "/sign?for=" + encodeURIComponent(request.url));
+    return redirect(
+      302,
+      "/sign?for=" + encodeURIComponent(new URL(request.url).pathname),
+    );
 
   const authRequest = await db.thirdPartyRequests.whereFirst({
     id: params.ticket,
