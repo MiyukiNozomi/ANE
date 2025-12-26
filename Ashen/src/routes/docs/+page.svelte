@@ -43,8 +43,8 @@
     The composer allows the creator to define structured entities that arent
     basic arithmetic concepts
     <br />
-    In human language, you can define structures like in C++ or D, and even copy
-    fields of said structures
+    In human language, The compiler allows you to define structures like in C++ or
+    D, and even copy fields of said structures through the &lt; operator:
   </p>
   <CodeBlock
     code={`
@@ -91,8 +91,8 @@ you can add the 'extern' keyword before a 'struct' keyword to disable RTTI, be a
   <h1 class="text-3xl font-metal font-bold">Enumerators</h1>
   <p class="font-mplus2">
     Need concrete categorization of data? hence, Enumerators in ashen! Be aware
-    these are not the same as enumerators in rust (Rust-like unions are coming
-    in Ashen 2)
+    these are not the same as enumerators in Rust (which are more like tagged
+    unions, either way: Rust-like unions are coming in Ashen 2)
   </p>
   <CodeBlock
     code={`
@@ -109,7 +109,7 @@ enum Bad {
     AString = "54" // Incompatible!
 }
 
-// Now you can get their value, for example: 
+// Now you can access these members like this, for example: 
 CardType:Debit
 `}
   ></CodeBlock>
@@ -138,8 +138,9 @@ Int[]? = A integer array, but can be null
 Int&   = Reference to an integer
 Int&?  = Nullable Integer Reference
 
-// You can also combine them:
+// You can also combine them, here is a few examples:
 
+Int&[] = This holds an array of references to integers
 Int&?[]? = A Nullable array of nullable integer references.
 
 // It is possible to define types for function pointers like this

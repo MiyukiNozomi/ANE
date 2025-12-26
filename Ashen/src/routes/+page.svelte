@@ -62,8 +62,23 @@ proc main(args : String[]) {
     if (aFile then gotAFile) {
         printString(gotAFile);
     } else {
-        printString("aFile is null!\n");
+        printString("aFile is null!\\n");
     }
+} 
+`,
+    },
+    {
+      title: "with built in multiline strings",
+      snippet: `
+import ashen.io;
+      
+@Export
+proc main(args : String[]) {
+  printString("Want to know something?
+      
+  Neuroplasticity rocks!
+
+");
 } 
 `,
     },
@@ -100,12 +115,21 @@ proc main(args : String[]) {
 <div
   class="relative min-h-screen bg-linear-to-b from-gray-200 to-indigo-400/60"
 >
-  <div class="flex flex-row items-center h-screen">
-    <div class="relative flex flex-col items-center max-w-2/5 mx-auto">
+  <div class="flex not-lg:flex-col lg:flex-row items-center h-screen">
+    <div
+      class="relative flex flex-col items-center max-w-2/5 not-lg:mt-20 lg:mx-auto"
+    >
       <div
-        class="absolute w-[108%] aspect-square rounded-full border-b-[#ffffff00] border-indigo-600 border-4
-        transform -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4"
-        style="animation: spin 1s linear infinite;"
+        class="absolute w-[108%] aspect-square rounded-full border-b-[#ffffff00] border-r-[#00000000] border-indigo-600 not-lg:border-2 lg:border-6
+        transform -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4 motion-safe:animate-[spin_4s_linear_infinite]"
+      ></div>
+      <div
+        class="absolute w-[112%] aspect-square rounded-full border-b-[#ffffff00] border-r-[#00000000] border-indigo-600 not-lg:border-2 lg:border-6
+        transform -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4 motion-safe:animate-[spin_3.5s_linear_infinite]"
+      ></div>
+      <div
+        class="absolute w-[116%] aspect-square rounded-full border-b-[#ffffff00] border-r-[#00000000] border-indigo-600 not-lg:border-2 lg:border-6
+        transform -translate-x-2/4 -translate-y-2/4 top-2/4 left-2/4 motion-safe:animate-[spin_3.2s_linear_infinite]"
       ></div>
       <img
         src="https://galatea.ane.jp.net/dl/images/logos/ashen-logo-full.webp"
@@ -113,8 +137,12 @@ proc main(args : String[]) {
         class="w-full"
       />
     </div>
-    <div class="ml-auto flex flex-col gap-4 mr-24 place-items-end w-2/5">
-      <h1 class="font-metal font-light text-6xl text-indigo-600 h-2/4 w-3/4">
+    <div
+      class="lg:ml-auto flex flex-col not-lg:gap-2 lg:gap-4 mr-24 place-items-end not-lg:my-auto not-lg:w-full not-lg:px-8 not-lg:mx-auto lg:w-2/5"
+    >
+      <h1
+        class="font-metal font-light not-lg:text-4xl lg:text-6xl text-indigo-600 lg:h-2/4 lg:w-3/4"
+      >
         Imagine a world...
       </h1>
 
@@ -123,7 +151,7 @@ proc main(args : String[]) {
           <div class="flex flex-col gap-4" transition:slide={{ duration: 500 }}>
             {#if currentMessage}
               <p
-                class="font-kumbh font-bold text-4xl px-2 py-1 bg-indigo-500/30"
+                class="font-kumbh font-bold not-lg:text-1xl lg:text-4xl px-2 py-1 bg-indigo-500/30"
               >
                 {currentMessage.title}
               </p>
@@ -135,7 +163,7 @@ proc main(args : String[]) {
     </div>
   </div>
   <p
-    class="absolute top-[90vh] -translate-x-2/4 left-2/4 font-metal text-indigo-800 text-3xl"
+    class="absolute top-[90vh] -translate-x-2/4 left-2/4 font-metal text-indigo-800 not-lg:text-xl lg:text-3xl"
   >
     Try it out &DownArrow;
   </p>
@@ -151,7 +179,7 @@ proc main(args : String[]) {
       href="https://git.ane.jp.net/u/miyuki/projects/ashen/releases"
       class="cursor-pointer mx-auto bg-linear-to-br from-black/20 to-black/40 hover:bg-indigo-200 transition-colors duration-300 ease-in-out p-6 py-3 rounded-xl font-kumbh"
     >
-      Ashen Releases on ANE Git
+      Ashen Releases
     </a>
     <a
       href="/docs"

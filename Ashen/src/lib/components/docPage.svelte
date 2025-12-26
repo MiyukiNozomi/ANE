@@ -11,14 +11,16 @@
 </svelte:head>
 
 <div
-  class="flex flex-col bg-linear-to-b from-indigo-200 to-purple-950/40 min-h-screen"
+  class="flex flex-col bg-linear-to-b from-indigo-200 not-lg:to-indigo-400/90 lg:to-purple-950/40 min-h-screen"
 >
   <Header />
-  <div class="flex flex-row h-full">
+  <div class="flex not-lg:flex-col lg:flex-row h-full">
     <TableOfContents></TableOfContents>
-    <div class="flex flex-col gap-6 p-8 w-full font-mplus2">
-      <h1 class="font-kumbh text-4xl pb-2">{title}</h1>
-      <p class="text-2xl font-light">{description}</p>
+    <div
+      class="flex flex-col not-lg:gap-2 lg:gap-6 p-8 w-full lg:max-w-5/6 font-mplus2"
+    >
+      <h1 class="font-kumbh not-lg:text-2xl lg:text-4xl pb-2">{title}</h1>
+      <p class="lg:text-2xl not-lg:text-xl font-light">{description}</p>
       {@render children()}
     </div>
   </div>
