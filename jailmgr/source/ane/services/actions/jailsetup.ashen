@@ -200,9 +200,8 @@ load_rc_config $name
 # Default enable if not set
 : ${aneservice_enable:=\"NO\"}
 
-stop_postcmd=\"${name}_stop_post\"
-${name}_stop_post() {
-    # Clean up supervisor if it lingers
+stop_postcmd=\"aneservice_stop_post\"
+aneservice_stop_post() {
     if [ -e \"${supervisor_pidfile}\" ]; then
         kill -TERM $(cat ${supervisor_pidfile}) 2>/dev/null
         rm -f ${supervisor_pidfile}
