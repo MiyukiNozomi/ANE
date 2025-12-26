@@ -81,6 +81,7 @@ nameserver 2001:4860:4860::8844
     }
 
     recipe.runCommand("root", "rm -rf /service/bin && mkdir -p /service/bin", false);
+    recipe.runCommand("root", "chown -R azki:azki /service/storage", false);
 
     var serviceFileLocation = "./";
     if (aneRCFileLoc.contains('/')) {
@@ -103,8 +104,11 @@ nameserver 2001:4860:4860::8844
 
     var runTaskOrNull = recipe.getTask("run");
 
+    recipe.runCommand("root", "chown -R azki:azki /service/storage", false);
     if (runTaskOrNull then runTask) {
         var script = "#!/bin/sh\ncd /service/bin\n";
+        recipe.runCommand("root", "chown -R azki:azki /service/storage", false);
+        
         for (command in runTask.commands) {
             command.trim();
             if (command.startsWith("@ANE:")) {
@@ -129,6 +133,7 @@ nameserver 2001:4860:4860::8844
         printString("Run script and RC script are done, but require manual startup.\n");
     }
 
+    recipe.runCommand("root", "chown -R azki:azki /service/storage", false);
     printString("Container has been built!\n");
     return true;
 }
