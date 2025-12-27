@@ -1,21 +1,32 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
   import { fade } from "svelte/transition";
+  import { Constelations } from "./constelations.svelte";
 
   let props: {} = $props();
 
   let readyCounter = $state(0);
+  let totalElementsToLoad = 3;
 
+  let nebulosaCanvas: HTMLCanvasElement | undefined = $state();
   let canvas: HTMLCanvasElement | undefined = $state();
 
   let backgroundImage: HTMLImageElement | undefined;
   let compassImage: HTMLImageElement | undefined;
 
+  let nebulosaRendererWorker: Worker | null = null;
+
   let bgStarted = false;
   function startBg() {
-    if (bgStarted) return;
+    if (readyCounter < totalElementsToLoad)
+      return console.log(
+        "Ready counter is ",
+        readyCounter,
+        " (still not ready)",
+      );
+    if (bgStarted || !canvas) return;
     bgStarted = true;
-    if (!canvas) return;
+
     let ctx = canvas.getContext("2d");
 
     // background
@@ -31,12 +42,15 @@
     let compassRotation = 0.0;
     let compassRotationSpeed = 0.0;
 
+    let constellations = new Constelations(canvas, ctx!);
+
     const bgFunc = () => {
       if (!canvas) return console.error("Missing canvas!");
       if (!ctx) return console.error("Browser not supported!");
       if (!backgroundImage || !compassImage)
         return console.error("Not fully loaded!");
 
+      console.log("Background started.");
       const drawRotatedImage = (
         image: HTMLImageElement,
         x: number,
@@ -62,8 +76,9 @@
       canvas!.width = window.screen.width;
       canvas!.height = window.screen.height;
 
-      ctx.fillStyle = "#1A1F21";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      constellations.render();
 
       const centerX = canvas!.width / 2;
       const centerY = canvas!.height / 2;
@@ -118,6 +133,41 @@
     bgFunc();
   }
 
+  function runNebulosaRendererWorker() {
+    return new Promise(async (resolve, reject) => {
+      const nebulosaWorker = await import(
+        "$lib/components/compass/nebulosaworker?worker"
+      );
+      nebulosaRendererWorker = new nebulosaWorker.default();
+
+      nebulosaRendererWorker.onmessage = (r) => {
+        if (r.data.ok) {
+          readyCounter++;
+          resolve({});
+        }
+      };
+      nebulosaRendererWorker.onerror = (err) => reject(err);
+
+      nebulosaCanvas!.width = window.screen.width;
+      nebulosaCanvas!.height = window.screen.height;
+      const offscreen = nebulosaCanvas!.transferControlToOffscreen();
+      nebulosaRendererWorker.postMessage({ canvas: offscreen }, [offscreen]);
+    });
+  }
+
+  function tryLoadImage(imageObject: HTMLImageElement, src: string) {
+    const imageOnLoad = () => {
+      readyCounter++;
+      console.log("Image loaded from " + src + " successfully.");
+    };
+
+    if (imageObject.complete && imageObject.naturalWidth !== 0) {
+      imageOnLoad();
+    } else imageObject.onload = imageOnLoad;
+
+    imageObject.src = src;
+  }
+
   onMount(() => {
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
@@ -133,33 +183,46 @@
     backgroundImage = new Image();
     compassImage = new Image();
 
-    backgroundImage.src =
+    tryLoadImage(
+      backgroundImage,
       "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-static.webp" +
-      backgroundSize;
-    compassImage.src =
+        backgroundSize,
+    );
+    tryLoadImage(
+      compassImage,
       "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-main.webp" +
-      compassSize;
+        compassSize,
+    );
 
-    backgroundImage.onload = () => {
-      readyCounter++;
-      if (readyCounter >= 2) startBg();
-    };
-    compassImage.onload = () => {
-      readyCounter++;
+    runNebulosaRendererWorker();
+  });
 
-      if (readyCounter >= 2) startBg();
-    };
+  onDestroy(() => {
+    if (nebulosaRendererWorker) nebulosaRendererWorker!.terminate();
+  });
+
+  $effect(() => {
+    if (readyCounter >= totalElementsToLoad) startBg();
   });
 </script>
 
 <div class="absolute inset-0 overflow-hidden z-0">
-  <canvas
-    bind:this={canvas}
-    transition:fade
-    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-  ></canvas>
+  <div
+    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#1A1F21] w-full h-full"
+  >
+    <canvas
+      bind:this={canvas}
+      transition:fade
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
+    ></canvas>
+    <canvas
+      bind:this={nebulosaCanvas}
+      transition:fade
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
+    ></canvas>
+  </div>
 
-  {#if readyCounter < 2}
+  {#if readyCounter < totalElementsToLoad}
     <div
       transition:fade
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"

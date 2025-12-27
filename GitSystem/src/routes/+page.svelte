@@ -1,10 +1,10 @@
 <script lang="ts">
   import Footer from "$lib/components/footer.svelte";
   import Header from "$lib/components/header.svelte";
-  import MainPageBackground from "$lib/components/mainPageBackground.svelte";
   import SplitPanel from "$lib/components/stellar/splitPanel.svelte";
   import { onMount } from "svelte";
   import type { PageProps } from "./$types";
+  import Compass from "$lib/components/compass/compass.svelte";
 
   let data: PageProps = $props();
 
@@ -36,7 +36,7 @@
 >
   <div class="relative flex flex-col h-[93vh] z-20">
     <Header />
-    <MainPageBackground />
+    <Compass />
   </div>
 
   <div class="flex flex-col gap-8 bg-black pb-8">
