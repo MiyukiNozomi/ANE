@@ -2,8 +2,7 @@
 
 #
 
-Anemachi is my website, and this repository holds every micro service used in it
-This github repository is purely temporary as git.ane.jp.net is still missing
+Anemachi is my website, and this repository holds every micro service used on it.
 
 # Should I run anything on this?
 
@@ -37,6 +36,7 @@ source code is at [ANEDB](ANE/fs/jailmgr).
 
 - [ ] Add Embbed support in all pages (partial)
   - [ ] git.ane.jp.net
+  - [ ] Finish custom styles for markdown
 
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
   - [ ] Make a main page
