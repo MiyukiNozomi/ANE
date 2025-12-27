@@ -1,5 +1,6 @@
 import { SimplexNoise2D } from "./simplexNoise";
 
+// TODO
 export class Constelations {
   private canvas: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;

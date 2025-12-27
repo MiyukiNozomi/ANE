@@ -72,9 +72,11 @@ self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
     "pixels.",
   );
 
+  let startTime = Date.now();
+
   for (let i = 0; i < canvas.width; i++) {
     for (let j = 0; j < canvas.height; j++) {
-      let n = simpleFilter(i, j, 4, 0.05, 0.002, 0.32, 0.25);
+      let n = simpleFilter(i, j, 4, 0.05, 0.002, 0.25, 0.25);
 
       let currentColor = [255, 255, 255];
 
@@ -85,7 +87,6 @@ self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
         let pColor = p.color;
 
         let magnitude = 1 / Math.sqrt(i * i + j * j);
-        if (magnitude == 0) continue;
 
         let ni = i * magnitude;
         let nj = j * magnitude;
@@ -93,7 +94,7 @@ self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
         let dx = (px - ni) * (px - ni);
         let dy = (py - nj) * (py - nj);
 
-        let distance = Math.sqrt(dx * dx + dy * dy) * 0.4;
+        let distance = Math.sqrt(dx * dx + dy * dy) * 0.02;
         if (isNaN(distance)) continue;
 
         currentColor[0] = alphaBlend(distance, currentColor[0], pColor[0]);
@@ -101,12 +102,16 @@ self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
         currentColor[2] = alphaBlend(distance, currentColor[2], pColor[2]);
       }
 
-      ctx.fillStyle = `rgb(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]}, ${n})`;
+      ctx.fillStyle = `rgba(${currentColor[0]}, ${currentColor[1]}, ${currentColor[2]}, ${n})`;
       ctx.fillRect(i, j, 1, 1);
     }
   }
 
-  console.log("[NebulosaRenderer] Work is complete.");
+  console.log(
+    "[NebulosaRenderer] Work is complete after",
+    Date.now() - startTime,
+    " ms.",
+  );
   self.postMessage({ ok: true });
 };
 

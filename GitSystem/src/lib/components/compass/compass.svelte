@@ -44,13 +44,13 @@
 
     let constellations = new Constelations(canvas, ctx!);
 
+    console.log("Background started.");
     const bgFunc = () => {
       if (!canvas) return console.error("Missing canvas!");
       if (!ctx) return console.error("Browser not supported!");
       if (!backgroundImage || !compassImage)
         return console.error("Not fully loaded!");
 
-      console.log("Background started.");
       const drawRotatedImage = (
         image: HTMLImageElement,
         x: number,
