@@ -1,4 +1,4 @@
-![ANE Logo](GalateaCDN/default/images/logos/ane-logo-final.png)
+![ANE Logo](fs-raw/GalateaCDN/default/images/logos/ane-logo-final.png)
 
 #
 
@@ -30,16 +30,13 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
 # TODO
 
 - [ ] Change the rule configuration format of the reverse proxy to allow for things such as:
-
   - [ ] Rate limit some regions differently (for example, limit to 2r/s in countries like China due to bots)
   - [ ] Rate limit pathnames differently, like Auth's /api/signed/update-picture
 
 - [ ] Add Embbed support in all pages (partial)
-
   - [ ] git.ane.jp.net
 
 - [ ] Finish auth.ane.jp.net (Functional, but missing features)
-
   - [ ] Restyle Auth
 
 - [ ] Finish git.ane.jp.net
@@ -47,32 +44,32 @@ Run `cat ExampleRCService | sed "s/%NAME/INSERT NAME HERE/"` to create a service
   - [ ] Main Page
   - [ ] Refactor database handling code (it sucks)
   - [-] Use Git's C api instead of the CLI -- wont happen unless i change the backend into Java or my own language
-  - [X] Contributor Support
-  - [X] File Explorer
+  - [x] Contributor Support
+  - [x] File Explorer
     - [-] Code Reader
       - [ ] Support Ashen
       - [ ] Support SQL
       - [ ] Support C and others....
-    - [X] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
+    - [x] Join empty directories (like github does with javaprojects, example: src/com/miyuki/blabla)
     - [N] Explore by commit history -- this has problems, likely wont do it until i can afford that supercomputer
-    - [X] Branch support
-    - [X] Visible README.mds on active directory
+    - [x] Branch support
+    - [x] Visible README.mds on active directory
 - [ ] Finish root.ane.jp.net (aka ane.jp.net)
 
 # Future things for next code review...
 
 - [ ] Modernize the Database of AuthDaemon. (Stop using SQLite)
 - [ ] Recode AuthDaemon to no longer use D.....
-  For context, this decision is one that... I did not want to do.
-  Mostly due to the fact that D is a language I love, but recently there's been a lot of 
-  trouble with basic libraries and even a.. divide in the comunity? now OpenD also exists..
-  which makes the environment overrall harder to be understood and divided.
+      For context, this decision is one that... I did not want to do.
+      Mostly due to the fact that D is a language I love, but recently there's been a lot of
+      trouble with basic libraries and even a.. divide in the comunity? now OpenD also exists..
+      which makes the environment overrall harder to be understood and divided.
 
   ARSD, one of the most popular libraries for D which is a port of many libraries has recently
   adopted OpenD instead of Walter Bright's D, they're syntatically simillar but OpenD has a few
   more "javascripty" features.
 
-  I really like D, I've met many people through the D community, but now.. i find it hard to 
+  I really like D, I've met many people through the D community, but now.. i find it hard to
   see a real future with me coding in the D programming language.
 
   I'll re-code the authdaemon using my own programming language.
