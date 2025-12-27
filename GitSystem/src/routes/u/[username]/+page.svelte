@@ -19,9 +19,11 @@
 </svelte:head>
 
 <PageBody>
-  <div class="flex flex-row text-center md:text-start relative pt-0 p-6 gap-6">
+  <div
+    class="flex not-md:flex-col md:flex-row text-center md:text-start relative pt-0 p-6 gap-6"
+  >
     <!-- Profile Banner -->
-    <div class="clip-notch-tl-br flex flex-col bg-black">
+    <div class="clip-notch-tl-br flex flex-col bg-black w-fit not-md:mx-auto">
       <div class="clip-notch-tl-br p-px bg-orange-200 w-64">
         <div
           class="clip-notch-tl-br p-4 bg-black flex flex-col items-center gap-2"
@@ -78,7 +80,7 @@
           {/each}
         </div>
       {:else}
-        <p class="text-orange-200 font-baskervville text-2xl">
+        <p class="text-orange-200 font-baskervville md:text-2xl not-md:text-lg">
           {data.profile.displayName ?? data.profile.name} does not own any projects.
         </p>
       {/if}
@@ -108,7 +110,7 @@
           {/each}
         </div>
       {:else}
-        <p class="text-suisei-200 font-baskervville text-2xl">
+        <p class="text-suisei-200 font-baskervville md:text-2xl not-md:text-lg">
           {data.profile.displayName ?? data.profile.name} has not made contributions
           in third party projects.
         </p>

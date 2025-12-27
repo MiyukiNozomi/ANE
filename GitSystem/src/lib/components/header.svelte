@@ -37,7 +37,7 @@
       <div
         class="flex flex-row justify-end md:justify-center w-2/4 items-center px-4 text-xs"
       >
-        <a class="hover:underline m" href="/search">Search </a>
+        <a class="hover:underline m" href="#TODO">Search </a>
       </div>
     </div>
   </div>
