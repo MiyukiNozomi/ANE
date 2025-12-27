@@ -1,10 +1,11 @@
 import { dev } from "$app/environment";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
-import { getReleasesOf, getUserProject } from "$lib/server/db";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { readdirSync } from "fs";
 import { getPhysicalReleasesLocation } from "$lib/server/git";
+import { db } from "$lib/server/db";
+import { getUserProject } from "$lib/server/db/tools";
 
 export const load = (async ({ params, url }) => {
   const profileReq = await getAccountByName(params.username);
@@ -23,7 +24,7 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
-    releases: (await getReleasesOf(project.id)).map((v) => {
+    releases: (await db.releases.where({ id: project.id })).map((v) => {
       return {
         ...v,
         localFiles: readdirSync(getPhysicalReleasesLocation(project, v.id)),

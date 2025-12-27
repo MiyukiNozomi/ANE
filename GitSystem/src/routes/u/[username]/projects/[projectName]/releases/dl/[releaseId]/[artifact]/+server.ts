@@ -1,13 +1,13 @@
 import { getPhysicalReleasesLocation } from "$lib/server/git";
 import { join } from "path";
 import type { RequestHandler } from "./$types";
-import { getUserProject } from "$lib/server/db";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
 import { dev } from "$app/environment";
 import { createReadStream, existsSync } from "fs";
 import mime from "mime-types";
 import { Readable } from "stream";
 import { error } from "@sveltejs/kit";
+import { getUserProject } from "$lib/server/db/tools";
 
 export const GET: RequestHandler = async ({ params, locals }) => {
   const profileReq = await getAccountByName(params.username);

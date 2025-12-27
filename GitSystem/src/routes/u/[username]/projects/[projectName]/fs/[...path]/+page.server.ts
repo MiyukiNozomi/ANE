@@ -1,4 +1,3 @@
-import { getUserProject } from "$lib/server/db";
 import type { GitFile } from "$lib/server/git/fs/branch";
 import { error, redirect } from "@sveltejs/kit";
 import path from "path";
@@ -7,6 +6,7 @@ import { SUPPORTED_LANGUAGES_BY_EXTENSION } from "$lib/shared/constants";
 import { RepositoryInfo } from "$lib/server/git";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
 import { dev } from "$app/environment";
+import { getUserProject } from "$lib/server/db/tools";
 
 export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";

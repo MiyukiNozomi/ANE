@@ -1,8 +1,9 @@
 import type { PageServerLoad } from "./$types";
 import { error } from "@sveltejs/kit";
-import { getContributingProjects, getOwnedProjects } from "$lib/server/db";
+import { db } from "$lib/server/db";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
 import { dev } from "$app/environment";
+import { getContributingProjects } from "$lib/server/db/tools";
 
 export const load = (async ({ params, request }) => {
   const profileReq = await getAccountByName(params.username);
@@ -13,7 +14,9 @@ export const load = (async ({ params, request }) => {
 
   const profile = profileReq.data!;
 
-  const projects = await getOwnedProjects(profile.name);
+  const projects = await db.repositories.where({
+    authorUsername: profile.name,
+  });
   const involvedProjects = await getContributingProjects(profile.name);
 
   return {

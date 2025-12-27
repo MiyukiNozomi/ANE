@@ -1,4 +1,3 @@
-import { registerRepository } from "$lib/server/db";
 import {
   GIT_OBJECT_NAME_MAX,
   GIT_OBJECT_NAME_MIN,
@@ -24,20 +23,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
 
   const { name, description } = data.data;
-
-  const gitError = await createNewRepositoryService(
-    locals.session.accountInfo,
-    name,
-    description,
+  return json(
+    await createNewRepositoryService(
+      locals.session.accountInfo,
+      name,
+      description,
+    ),
   );
-
-  if (gitError)
-    return json({
-      ok: false,
-      message: gitError,
-    });
-
-  return json({
-    ok: true,
-  });
 };

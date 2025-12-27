@@ -7,7 +7,7 @@
   import { marked } from "marked";
   import PopupBase from "../stellar/popupBase.svelte";
   import StellarInput from "../stellar/stellarInput.svelte";
-  import type { Project } from "$lib/server/db";
+  import type { Project } from "$lib/server/db/db/db";
 
   let props: { project: Project } = $props();
 

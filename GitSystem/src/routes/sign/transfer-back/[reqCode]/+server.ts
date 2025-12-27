@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
     if (!signedAccountReq || signedAccountReq.error)
       return error(
         500,
-        signedAccountReq.error ?? "ANE AuthAPI may be out of order.",
+        signedAccountReq?.error ?? "ANE AuthAPI may be out of order.",
       );
 
     cookies.set("AuthToken", reqStatus.session!.id, {

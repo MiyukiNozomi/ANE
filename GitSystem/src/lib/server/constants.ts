@@ -62,4 +62,12 @@ Have fun!
     force: true,
   });
   rmSync(join(DEFAULT_REPOSITORY_INIT, ".git"), { recursive: true });
+
+  await bridge.runImmediate(DEFAULT_REPOSITORY_INIT, "update-server-info");
+  await bridge.runImmediate(
+    DEFAULT_REPOSITORY_INIT,
+    "config",
+    "http.receivepack",
+    "true",
+  );
 }

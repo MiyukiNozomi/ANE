@@ -1,25 +1,24 @@
 import type { ClientSideAccount } from "$lib/ANEAuthAPI/apiTypes";
+import type { GitAPIResponse } from "$lib/server/api/types";
 import { DEFAULT_REPOSITORY_INIT } from "$lib/server/constants";
-import { getUserProject, registerRepository } from "$lib/server/db";
+import { db } from "$lib/server/db";
+import { getUserProject } from "$lib/server/db/tools";
 import { getPhysicalProjectLocation, RepositoryInfo } from "$lib/server/git";
 import bridge from "$lib/server/git/bridge";
-import { cpSync, existsSync, mkdirSync } from "fs";
-import path from "path";
+import { cpSync, existsSync } from "fs";
 
 export async function createNewRepositoryService(
   author: ClientSideAccount,
   name: string,
   description: string,
-): Promise<string | undefined> {
+): Promise<GitAPIResponse<any> | undefined> {
   if (!author.isAdmin)
     throw new Error("Author is not an admin! this is a bug!");
 
   if (!bridge.isNameValid(name)) {
-    return "Invalid repository name.";
-  }
-
-  if (await getUserProject(author.name, name)) {
-    return "Repository already exists";
+    return {
+      error: "ERR_BAD_REPOSITORY_NAME",
+    };
   }
 
   const outputPath = getPhysicalProjectLocation({
@@ -27,10 +26,18 @@ export async function createNewRepositoryService(
     authorUsername: author.name,
   });
 
-  if (existsSync(outputPath)) return "This repository already exists.";
+  if ((await getUserProject(author.name, name)) || existsSync(outputPath)) {
+    return {
+      error: "ERR_REPOSITORY_ALREADY_EXISTS",
+    };
+  }
 
   cpSync(DEFAULT_REPOSITORY_INIT, outputPath, { recursive: true });
-  await registerRepository(name, description, author.name);
+  await db.repositories.insert({
+    name,
+    description,
+    authorUsername: author.name,
+  });
 
   await RepositoryInfo.onServerInit();
 }

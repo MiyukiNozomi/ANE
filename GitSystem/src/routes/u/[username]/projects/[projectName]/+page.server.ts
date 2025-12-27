@@ -1,9 +1,10 @@
-import { getReleasesOf, getUserProject } from "$lib/server/db";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { RepositoryInfo } from "$lib/server/git";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
 import { dev } from "$app/environment";
+import { db } from "$lib/server/db";
+import { getUserProject } from "$lib/server/db/tools";
 
 export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
@@ -30,7 +31,7 @@ export const load = (async ({ params, url }) => {
     return error(404);
   }
 
-  const releases = await getReleasesOf(project.id);
+  const releases = await db.releases.where({ repositoryId: project.id });
   return {
     profile,
     project,

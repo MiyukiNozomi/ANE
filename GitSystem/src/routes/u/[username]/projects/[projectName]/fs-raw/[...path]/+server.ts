@@ -1,5 +1,3 @@
-import { getUserProject } from "$lib/server/db";
-
 import { error } from "@sveltejs/kit";
 import mime from "mime-types";
 import { Readable } from "stream";
@@ -7,6 +5,7 @@ import type { RequestHandler } from "./$types";
 import { RepositoryInfo } from "$lib/server/git";
 import { dev } from "$app/environment";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
+import { getUserProject } from "$lib/server/db/tools";
 
 export const GET: RequestHandler = async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";

@@ -7,7 +7,7 @@
   import StellarButton from "$lib/components/stellar/stellarButton.svelte";
   import CreateRelease from "$lib/components/popups/createRelease.svelte";
   import PopupBase from "$lib/components/stellar/popupBase.svelte";
-  import type { ProjectRelease } from "$lib/server/db";
+  import type { ProjectRelease } from "$lib/server/db/db/db";
 
   let { data }: PageProps = $props();
 

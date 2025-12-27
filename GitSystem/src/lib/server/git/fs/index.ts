@@ -1,5 +1,6 @@
 import { dev } from "$app/environment";
-import { getAllProjects, type Project } from "../../db";
+import { loadContributors } from "$lib/server/db/tools";
+import { db, type Project } from "../../db";
 import { RepositoryBranch } from "./branch";
 import { loadRepository } from "./loader";
 
@@ -25,7 +26,12 @@ export class RepositoryInfo {
   private static infoCache: Record<number, RepositoryInfo> = {};
 
   public static async onServerInit() {
-    const projects = await getAllProjects();
+    const projects = await Promise.all(
+      (await db.repositories.where({})).map(async (v) => ({
+        ...v,
+        contributors: await loadContributors(v),
+      })),
+    );
     const loadPromises = projects.map((p) =>
       loadRepository(p).then((repo) => [p.id, repo] as const),
     );
