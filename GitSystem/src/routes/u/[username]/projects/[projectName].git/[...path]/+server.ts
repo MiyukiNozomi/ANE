@@ -2,7 +2,7 @@ import { getUserProject } from "$lib/server/db";
 import { error, redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { handleGitRequest } from "$lib/server/git/gitHttp";
-import { RepositoryInfo } from "$lib/server/git";
+import { RepositoriesBeingWritten, RepositoryInfo } from "$lib/server/git";
 
 const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
   // Prevent web browsers from... web browsing.
@@ -41,6 +41,10 @@ const GitHandler: RequestHandler = async ({ locals, params, request, url }) => {
   if (request.method == "POST" && request.body) {
     // invalidate cache on confirmed PUSH.. not so confirmed actually.
     // TODO: check if there really was a change in the repository's commit count before the update.
+    let count = RepositoriesBeingWritten[project.id.toString()] ?? 0;
+    count++;
+    RepositoriesBeingWritten[project.id.toString()] = count;
+
     RepositoryInfo.invalidateCache(project);
   }
 

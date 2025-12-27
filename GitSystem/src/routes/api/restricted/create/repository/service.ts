@@ -1,8 +1,10 @@
 import type { ClientSideAccount } from "$lib/ANEAuthAPI/apiTypes";
+import { DEFAULT_REPOSITORY_INIT } from "$lib/server/constants";
 import { getUserProject, registerRepository } from "$lib/server/db";
 import { getPhysicalProjectLocation, RepositoryInfo } from "$lib/server/git";
 import bridge from "$lib/server/git/bridge";
-import { existsSync, mkdirSync } from "fs";
+import { cpSync, existsSync, mkdirSync } from "fs";
+import path from "path";
 
 export async function createNewRepositoryService(
   author: ClientSideAccount,
@@ -27,13 +29,8 @@ export async function createNewRepositoryService(
 
   if (existsSync(outputPath)) return "This repository already exists.";
 
-  mkdirSync(outputPath, {
-    recursive: true,
-  });
+  cpSync(DEFAULT_REPOSITORY_INIT, outputPath, { recursive: true });
   await registerRepository(name, description, author.name);
-
-  bridge.runImmediate(outputPath, "init", "--bare", "--initial-branch=master");
-  bridge.runImmediate(outputPath, "symbolic-ref", "HEAD", "refs/heads/master");
 
   await RepositoryInfo.onServerInit();
 }

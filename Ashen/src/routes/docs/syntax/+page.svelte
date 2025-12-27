@@ -11,13 +11,13 @@
   title="Syntax"
   description="This page will go into the ashen's syntax."
 >
-  <h1 class="text-4xl font-metal font-bold">It is not that different!</h1>
+  <h2 class="text-4xl font-metal font-bold">It is not that different!</h2>
   <p class="font-mplus2">
     Ashen has C-style if-else statements, do-while loops, Haxe style switch
     statements (break not mandatory), but with a few caveats
   </p>
 
-  <h1 class="text-4xl font-metal font-bold">Ternaries are not C-like.</h1>
+  <h2 class="text-4xl font-metal font-bold">Ternaries are not C-like.</h2>
   <CodeBlock
     code={`
 var value = true ? 4 : 2; // Error!
@@ -25,7 +25,7 @@ var value = true ? 4 : 2; // Error!
 var value = if (true) then 4 else 2; // Okay!
 `}
   ></CodeBlock>
-  <h1 class="text-4xl font-metal font-bold">For-loops are unique.</h1>
+  <h2 class="text-4xl font-metal font-bold">For-loops are unique.</h2>
   <CodeBlock
     code={`
 var array = [4, 3, 2];
@@ -51,7 +51,7 @@ for (elm in array) {
 will generate nearly identical iteration code, it is just that Ashen for-each statements also index the array while iterating, you do not have to fear performance problems between a for-each and numeric range for-loops."
   ></Warning>
 
-  <h1 class="text-4xl font-metal font-bold">Variables</h1>
+  <h2 class="text-4xl font-metal font-bold">Variables</h2>
   <p>
     Through ashen's type inference, you can define variables in more than one
     way, you are not mandated to initialize or define the type of a variable
@@ -81,7 +81,7 @@ if (...) {
   <Warning
     code="If no explicit type is set (e.g defining the type directly), if assigned to null, will result in said variable having the next type being nullable, example: var r /* : B? */ = null; r = B &lbrace;...&rbrace;; /*r will be a B?*/"
   ></Warning>
-  <h1 class="text-4xl font-metal font-bold">About the other statements</h1>
+  <h2 class="text-4xl font-metal font-bold">About the other statements</h2>
   <p>
     Ashen if-statements are identical to C, with the exception of <a
       class="underline text-purple-800"
@@ -178,7 +178,7 @@ switch (name) {
 `}
   ></CodeBlock>
 
-  <h1 class="text-4xl font-metal font-bold">Arrays</h1>
+  <h2 class="text-4xl font-metal font-bold">Arrays</h2>
   <p>
     The syntax is a mixture of java and JS, you can either use a array literal,
     or instance an array by size:
@@ -198,7 +198,7 @@ var empty = new Int[40];
   <Warning
     code={"Note: ashen does not have fixed-size arrays, it is simillar in mechanic to arrays in JavaScript. Please do not use the type for C Nullterminated arrays (e.g Type[<size]) as fixed size arrays unless you are working with embedded or bare metal projects."}
   ></Warning>
-  <h1 class="text-4xl font-metal font-bold">About operator overloading</h1>
+  <h2 class="text-4xl font-metal font-bold">About operator overloading</h2>
   <p>
     Ashen does not provide any standard way for operator overloading, this
     feature is specifically reserved for the compiler and <a

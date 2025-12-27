@@ -3,6 +3,9 @@ import { getAllProjects, type Project } from "../../db";
 import { RepositoryBranch } from "./branch";
 import { loadRepository } from "./loader";
 
+// Holds a reference count of how many writes to the same repository.
+export let RepositoriesBeingWritten: Record<string, number> = {};
+
 export class RepositoryInfo {
   public repository: Project;
   public branches: Record<string, RepositoryBranch>;
@@ -23,7 +26,9 @@ export class RepositoryInfo {
 
   public static async onServerInit() {
     const projects = await getAllProjects();
-    const loadPromises = projects.map(p => loadRepository(p).then(repo => [p.id, repo] as const));
+    const loadPromises = projects.map((p) =>
+      loadRepository(p).then((repo) => [p.id, repo] as const),
+    );
     const loaded = await Promise.all(loadPromises);
     this.infoCache = Object.fromEntries(loaded);
   }
@@ -33,23 +38,39 @@ export class RepositoryInfo {
     if (dev)
       console.log(
         "Project " +
-        project.authorUsername +
-        "#" +
-        project.name +
-        " has had it's cache invalidated (RELOADING)."
+          project.authorUsername +
+          "#" +
+          project.name +
+          " has had it's cache invalidated (RELOADING).",
       );
-
-    this.infoCache[project.id] = await loadRepository(project);
   }
 
   public static async of(project: Project): Promise<RepositoryInfo | null> {
+    if (
+      RepositoriesBeingWritten[project.id.toString()] ||
+      RepositoriesBeingWritten[project.id.toString()] > 0
+    ) {
+      console.warn(
+        "Someone tried to read project " +
+          project.authorUsername +
+          "/" +
+          project.name +
+          " during a modification!",
+      );
+      return null;
+    }
+
     if (!this.infoCache[project.id]) {
       try {
-        console.warn(`${project.authorUsername}#${project.name}: Got a cache miss! likely a new repository`);
+        console.warn(
+          `${project.authorUsername}#${project.name}: Got a cache miss! likely a new repository (or it had changes.)`,
+        );
         this.infoCache[project.id] = await loadRepository(project);
       } catch (err) {
         console.error(err);
-        console.warn(`${project.authorUsername}#${project.name}: Oops, failed to load.`);
+        console.warn(
+          `${project.authorUsername}#${project.name}: Oops, failed to load.`,
+        );
       }
     }
 

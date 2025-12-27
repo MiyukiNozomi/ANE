@@ -14,7 +14,7 @@ export const GitServiceNames = [
 export type GitService = (typeof GitServiceNames)[number];
 
 class GitBridge {
-  private readonly gitServices: Record<GitService, string>;
+  public readonly gitServices: Record<GitService, string>;
 
   constructor() {
     // just so ts shuts up
@@ -118,6 +118,9 @@ class GitBridge {
 
       let errors = "";
       gitProcess.stderr.on("data", (d) => (errors += d));
+      gitProcess.on("error", (d) =>
+        reject(new Error(`Error! ${service} ${JSON.stringify(d)}`)),
+      );
 
       gitProcess.on("close", (code) => {
         if (errors.length > 0 && code != 0 && code != null)
@@ -131,16 +134,13 @@ class GitBridge {
         } else if (dev) {
           console.log("Exit-Code: 0!!!!");
         }
+        resolve(gitProcess.stdout);
       });
 
       // okay.. this is.. better i think?
       if (payloadStream) {
         const nodeReadable = Readable.fromWeb(payloadStream as any);
         nodeReadable.pipe(gitProcess.stdin);
-
-        nodeReadable.on("end", () => {
-          resolve(gitProcess.stdout);
-        });
       } else {
         resolve(gitProcess.stdout);
       }

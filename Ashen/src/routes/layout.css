@@ -28,6 +28,10 @@
     src: url(https://galatea.ane.jp.net/dl/fonts/Metal.ttf) format("truetype");
 }
 
+h2 {
+    @apply text-gray-200 text-5xl font-metal font-bold
+}
+
 @theme {
     --font-kumbh: "Kumbh", "sans-serif";
     --font-mplus2: "MPLUS2", "sans-serif";

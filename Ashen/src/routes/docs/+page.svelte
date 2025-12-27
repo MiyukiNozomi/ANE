@@ -12,7 +12,7 @@
   title="Welcome to Ashen!"
   description="This page will go into the basics of Ashen."
 >
-  <h1 class="text-4xl font-metal font-bold">Procedures</h1>
+  <h2>Procedures</h2>
   <p class="font-mplus2">
     Many call them functions, but the distinction of the Ashen Procedure is that
     its runes and sigils define rules to the constrained universe of a
@@ -21,8 +21,9 @@
 
   <p class="font-mplus2">
     In human language.. Procedures are contained to their own scopes, they can
-    only operate with what parameters are received, (they can mutate these if a
-    parameter is a reference). The syntax for procedures is as follows:
+    only operate with what parameters are received, as in, they are pure in the
+    meaning of not having side effects. (they can mutate these if a parameter is
+    a reference). The syntax for procedures is as follows:
   </p>
   <CodeBlock
     code={`proc name(param : Type) /* Optional return type as : <type */ {
