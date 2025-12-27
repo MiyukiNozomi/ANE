@@ -21,6 +21,7 @@ export type Commit = {
   date: string;
   message: string;
   age: string;
+  rawDate: number;
 };
 
 /**

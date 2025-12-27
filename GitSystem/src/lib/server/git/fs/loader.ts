@@ -1,12 +1,17 @@
 import path from "path";
 import { RepositoryInfo } from ".";
 import { getPhysicalProjectLocation } from "..";
-import { RepositoryBranch, type GitFile } from "./branch";
+import { type Commit, RepositoryBranch, type GitFile } from "./branch";
 import type { Project } from "$lib/server/db";
 import bridge from "../bridge";
 
 const MAXIMUM_COMMIT_COUNT_TO_LOAD = 2048;
 const COMMIT_INFO_MISSING = "[Missing or Failed to Load]";
+
+// This is for the homepage, mostly statistics.
+export let NEWEST_COMMITS = new Array<
+  Commit & { project: { authorUsername: string; name: string } }
+>();
 
 /***
  *  This is a function that you're really not supposed to call yourself.
@@ -160,7 +165,7 @@ async function loadCommitList(
     await bridge.runImmediateUnsafe(
       true,
       physicalPath,
-      `git --no-pager log --max-count=${MAXIMUM_COMMIT_COUNT_TO_LOAD} --pretty=format:%H | xargs -I {} sh -c 'git --no-pager show {} --quiet --pretty=format:"Commit: %H%nAuthor: %an%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n"; echo "==[SEPARATOR]=="' | sed '$d'`,
+      `git --no-pager log --max-count=${MAXIMUM_COMMIT_COUNT_TO_LOAD} --pretty=format:%H | xargs -I {} sh -c 'git --no-pager show {} --quiet --pretty=format:"Commit: %H%nAuthor: %an%nRawDate: %ct%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n"; echo "==[SEPARATOR]=="' | sed '$d'`,
     )
   )
     .toString()
@@ -196,14 +201,31 @@ async function loadCommitList(
       continue;
     }
 
-    branch.commits[hash] = {
+    const commit: Commit = {
       age: headers["Age"] ?? COMMIT_INFO_MISSING,
       author: headers["Author"] ?? COMMIT_INFO_MISSING,
       authorEmail: headers["E-Mail"] ?? COMMIT_INFO_MISSING,
       date: headers["Date"] ?? new Date().toDateString(),
       hash: hash,
       message: commitMessage.length == 0 ? "No commit message." : commitMessage,
+      rawDate: parseInt(headers["RawDate"]),
     };
+
+    if (
+      NEWEST_COMMITS.length == 0 ||
+      NEWEST_COMMITS[NEWEST_COMMITS.length - 1]!.rawDate < commit.rawDate
+    ) {
+      NEWEST_COMMITS.push({
+        ...commit,
+        project: {
+          authorUsername: repository.authorUsername,
+          name: repository.name,
+        },
+      });
+      if (NEWEST_COMMITS.length > 5) NEWEST_COMMITS.unshift();
+    }
+
+    branch.commits[hash] = commit;
   }
 
   console.log(

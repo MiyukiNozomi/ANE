@@ -2,7 +2,12 @@
   import SplitPanelHexagon from "./splitPanelHexagon.svelte";
   import Hexagon from "./splitPanelHexagon.svelte";
 
-  let { children, label }: { children: Function; label: string } = $props();
+  let {
+    children,
+    label,
+    extraContainerClasses,
+  }: { children: Function; label: string; extraContainerClasses?: string } =
+    $props();
 </script>
 
 <div
@@ -12,7 +17,7 @@
     extraClasses="absolute left-1/2 transform -translate-x-1/2  top-[-2.3rem] z-30"
     ><h1 class="font-baskervville text-lg px-2">{label}</h1></SplitPanelHexagon
   >
-  <div class="pt-10 pb-2 flex flex-col">
+  <div class="pt-10 pb-2 flex flex-col {extraContainerClasses}">
     {@render children()}
   </div>
 </div>

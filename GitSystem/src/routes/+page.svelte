@@ -4,6 +4,9 @@
   import MainPageBackground from "$lib/components/mainPageBackground.svelte";
   import SplitPanel from "$lib/components/stellar/splitPanel.svelte";
   import { onMount } from "svelte";
+  import type { PageProps } from "./$types";
+
+  let data: PageProps = $props();
 
   let backgroundImage: HTMLImageElement;
   let foregroundImage: HTMLImageElement;
@@ -52,11 +55,74 @@
         eyes that said idea cannot be executed in reality.
       </p>
     </SplitPanel>
-    <SplitPanel label="PROJECTS">
-      <h1>TODO</h1>
+    <SplitPanel label="PROJECTS" extraContainerClasses={"gap-4"}>
+      <h1 class="font-baskervville text-orange-200">Current active projects</h1>
+      {#each data.data.latestProjects as project}
+        <a
+          href="/u/{project.authorUsername}/projects/{project.name}"
+          class="cursor-pointer text-start flex flex-row gap-4 group items-center group hover:bg-orange-400/20 px-2"
+        >
+          <div class="self-start w-2 flex flex-row text-orange-200 gap-2">
+            <h2 class="mx-auto no-underline">⯌</h2>
+            <p
+              class="flex flex-col group-hover:text-md group-hover:text-orange-200"
+            >
+              <span class="group-hover:underline">{project.name}</span>
+              <span class="text-white font-kumbh text-md no-underline">
+                {project.description}
+              </span>
+            </p>
+          </div>
+        </a>
+      {/each}
     </SplitPanel>
-    <SplitPanel label="UPDATES">
-      <h1>TODO</h1>
+    <SplitPanel label="UPDATES" extraContainerClasses={"gap-4"}>
+      <h1 class="font-baskervville text-orange-200">List of recent changes</h1>
+      {#each data.data.newestCommits as commit}
+        <div
+          class="text-start flex flex-row gap-4 group items-center cursor-default group hover:bg-orange-400/20 px-2"
+        >
+          <div class="self-start w-2 flex flex-row text-orange-200">
+            <h2 class="mx-auto">⯌</h2>
+          </div>
+          <p
+            class="flex flex-col group-hover:text-md group-hover:text-orange-200"
+          >
+            <span class="font-baskervville italic text-orange-100"
+              >{commit.message}</span
+            >
+            <span class="flex flex-row gap-2 items-center">
+              <a
+                href="/u/{commit.project.authorUsername}/projects/{commit
+                  .project.name}"
+                class="font-kumbh hover:underline"
+              >
+                Commit on [{commit.project.authorUsername} / {commit.project
+                  .name}]
+              </a>
+              <a
+                href="/u/{commit.author}"
+                class="font-kumbh text-xs hover:underline"
+              >
+                by
+                {commit.author}
+                <span class="text-orange-200 opacity-60"
+                  >&lt;{commit.authorEmail}&gt;</span
+                ></a
+              >
+            </span>
+          </p>
+
+          <div class="ml-auto w-fit flex-col flex">
+            <p class="font-mplus2 text-xs">
+              {new Date(commit.date).toISOString()}
+            </p>
+            <p class="font-baskervville text-xs text-orange-200/80">
+              {commit.age}
+            </p>
+          </div>
+        </div>
+      {/each}
     </SplitPanel>
   </div>
 
