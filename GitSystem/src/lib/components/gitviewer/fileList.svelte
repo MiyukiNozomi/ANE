@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Project } from "$lib/server/db/db/db";
+  import type { Project } from "$lib/server/db";
   import type { GitFile } from "$lib/server/git/fs/branch";
   import { SUPPORTED_LANGUAGES_BY_EXTENSION } from "$lib/shared/constants";
   import BackArrow from "./backArrow.svelte";

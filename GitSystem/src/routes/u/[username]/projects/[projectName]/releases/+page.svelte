@@ -7,7 +7,7 @@
   import StellarButton from "$lib/components/stellar/stellarButton.svelte";
   import CreateRelease from "$lib/components/popups/createRelease.svelte";
   import PopupBase from "$lib/components/stellar/popupBase.svelte";
-  import type { ProjectRelease } from "$lib/server/db/db/db";
+  import type { ProjectRelease } from "$lib/server/db";
 
   let { data }: PageProps = $props();
 
@@ -34,7 +34,7 @@
     title={selectedRelease.markdownText.split("\n")[0].replaceAll("#", "")}
     buttons={{}}
   >
-    <div id="markdown-ctn" class="overflow-auto">
+    <div id="markdown-ctn" class="overflow-auto min-w-96">
       {@html marked(
         selectedRelease.markdownText.split("\n").slice(1).join("\n"),
       )}

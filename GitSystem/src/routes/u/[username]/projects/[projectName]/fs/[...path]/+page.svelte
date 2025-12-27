@@ -1,11 +1,18 @@
 <script lang="ts">
+  import BackArrow from "$lib/components/gitviewer/backArrow.svelte";
   import CodeView from "$lib/components/gitviewer/codeView.svelte";
   import FileList from "$lib/components/gitviewer/fileList.svelte";
+  import MarkdownViewer from "$lib/components/gitviewer/markdownViewer.svelte";
   import PageBody from "$lib/components/pageBody.svelte";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
 </script>
+
+<svelte:head>
+  <title>Index of {data.filename}</title>
+  <meta name="description" content={data.project.description} />
+</svelte:head>
 
 <PageBody>
   <div class="flex flex-col gap-8">
@@ -23,10 +30,19 @@
       <div class="bg-orange-200 clip-notch-tl-br p-px">
         <div class="bg-black clip-notch-tl-br p-6">
           {#if data.individualFile}
-            <CodeView
-              activeBranch={data.activeBranch}
-              sourceURL={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/${data.individualFile.filepath}`}
-            />
+            {#if data.isImage}
+              <BackArrow activeBranch={data.activeBranch}></BackArrow>
+              <img
+                src={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/${data.individualFile.filepath}`}
+                alt=""
+                class="max-w-full overflow-auto mx-auto"
+              />
+            {:else}
+              <CodeView
+                activeBranch={data.activeBranch}
+                sourceURL={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/${data.individualFile.filepath}`}
+              />
+            {/if}
           {:else}
             <FileList
               activeBranch={data.activeBranch}
@@ -36,6 +52,12 @@
           {/if}
         </div>
       </div>
+
+      {#if data.currentReadmeFile}
+        <MarkdownViewer
+          sourceURL={`/u/${data.profile.name}/projects/${data.project.name}/fs-raw/${data.currentReadmeFile.filepath}`}
+        ></MarkdownViewer>
+      {/if}
     </div>
   </div>
 </PageBody>

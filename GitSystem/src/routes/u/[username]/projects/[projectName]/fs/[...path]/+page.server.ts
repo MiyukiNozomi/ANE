@@ -7,6 +7,7 @@ import { RepositoryInfo } from "$lib/server/git";
 import { getAccountByName } from "$lib/ANEAuthAPI/publicAPI";
 import { dev } from "$app/environment";
 import { getUserProject } from "$lib/server/db/tools";
+import mime from "mime-types";
 
 export const load = (async ({ params, url }) => {
   const activeBranch = url.searchParams.get("branch") ?? "master";
@@ -36,6 +37,7 @@ export const load = (async ({ params, url }) => {
 
   let directoryEntry = await branchInfo?.getFileList(params.path);
   let individualFile: GitFile | undefined;
+  let isImage = false;
 
   if (!directoryEntry || !branchInfo) {
     directoryEntry = await branchInfo?.getFileList(path.dirname(params.path));
@@ -48,11 +50,17 @@ export const load = (async ({ params, url }) => {
 
     if (
       !(SUPPORTED_LANGUAGES_BY_EXTENSION as Record<string, string>)[extension]
-    )
-      return redirect(
-        308,
-        `/u/${project.authorUsername}/projects/${project.name}/fs-raw/${params.path}`,
-      );
+    ) {
+      const lMimeType = await mime.lookup(individualFile.filename);
+      if (typeof lMimeType == "string" && lMimeType.startsWith("image")) {
+        isImage = true;
+      } else {
+        return redirect(
+          308,
+          `/u/${project.authorUsername}/projects/${project.name}/fs-raw/${params.path}`,
+        );
+      }
+    }
   }
 
   return {
@@ -61,7 +69,12 @@ export const load = (async ({ params, url }) => {
     activeBranch,
     directoryEntry,
 
+    currentReadmeFile: directoryEntry.children.find(
+      (v) => v.filename == "README.md" && v.isFile,
+    ),
+
     filename: path.basename(params.path),
+    isImage,
     individualFile,
   };
 }) satisfies PageServerLoad;

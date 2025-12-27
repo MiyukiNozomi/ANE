@@ -136,13 +136,24 @@ export class RepositoryBranch {
         getPhysicalProjectLocation(this.repository.repository),
       );
       mkdirSync(location, { recursive: true });
-      //      git clone --branch <branch-name> --single-branch --depth 1 <repo-url> <target-directory>
+      // just to be sure, otherwise, we will have issues.
+      try {
+        await bridge.runImmediate(
+          location,
+          "config",
+          "--unset",
+          "init.templateDir",
+        );
+      } catch (_) {} // dont care about exceptions if this fails.
+
       await bridge.runImmediate(
         "/",
         "clone",
         `--branch`,
         this.branchName,
         "--single-branch",
+        "--depth",
+        "1",
         "--",
         "file://" + location,
         path.resolve(destination),

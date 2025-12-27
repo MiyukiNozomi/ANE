@@ -23,6 +23,8 @@ export const SUPPORTED_LANGUAGES_BY_EXTENSION = {
   ts: "ts", // done
   tsconfig: "js",
 
+  md: "text/plain",
+
   /** files that yes, we want to display, BUT as text. (no highlighting) */
   txt: "text/plain",
 } as const;

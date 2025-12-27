@@ -24,11 +24,13 @@ export const load = (async ({ params, url }) => {
   return {
     profile,
     project,
-    releases: (await db.releases.where({ id: project.id })).map((v) => {
-      return {
-        ...v,
-        localFiles: readdirSync(getPhysicalReleasesLocation(project, v.id)),
-      };
-    }),
+    releases: (await db.releases.where({ repositoryId: project.id })).map(
+      (v) => {
+        return {
+          ...v,
+          localFiles: readdirSync(getPhysicalReleasesLocation(project, v.id)),
+        };
+      },
+    ),
   };
 }) satisfies PageServerLoad;

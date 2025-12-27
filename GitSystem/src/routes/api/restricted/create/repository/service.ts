@@ -40,4 +40,8 @@ export async function createNewRepositoryService(
   });
 
   await RepositoryInfo.onServerInit();
+
+  return {
+    data: true,
+  };
 }

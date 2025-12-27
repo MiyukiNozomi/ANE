@@ -1,9 +1,9 @@
 <script lang="ts">
   import { getAccountInfo, invokeAPI } from "$lib/ANEAuthAPI/client";
+  import { type GitAPIResponse } from "$lib/server/api/types";
   import {
     REPOSITORY_DESCRIPTION_MAX,
     GIT_OBJECT_NAME_MAX,
-    GIT_OBJECT_NAME_MIN,
   } from "$lib/shared/constants";
   import PopupBase from "../stellar/popupBase.svelte";
   import StellarInput from "../stellar/stellarInput.svelte";
@@ -21,10 +21,13 @@
 
   async function createRepository() {
     base.setError("");
-    const res = await invokeAPI("restricted/create/repository", {
-      name: repoName,
-      description: repoDesc,
-    });
+    const res = await invokeAPI<GitAPIResponse<boolean>>(
+      "restricted/create/repository",
+      {
+        name: repoName,
+        description: repoDesc,
+      },
+    );
 
     if (!res || res.error) {
       return base.setError(

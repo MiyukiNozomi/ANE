@@ -27,7 +27,7 @@
           class="clip-notch-tl-br p-4 bg-black flex flex-col items-center gap-2"
         >
           <img
-            class="rounded-full"
+            class="rounded-full aspect-square bg-white/10 w-full"
             src="https://auth.ane.jp.net/u/{data.profile.name}/picture"
             alt=""
           />

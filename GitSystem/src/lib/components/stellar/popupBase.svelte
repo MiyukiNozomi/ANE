@@ -27,9 +27,15 @@
   }
 </script>
 
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key == "Escape") setVisible(false);
+  }}
+/>
+
 {#if visible}
   <div
-    transition:fade
+    transition:fade|global
     class="fixed left-0 top-0 w-screen h-screen bg-suisei-700/20 backdrop-blur-sm bg-opac z-50"
   >
     <div class="fixed right-8 top-8">
@@ -43,7 +49,7 @@
         </button>
       </div>
     </div>
-    <div transition:slide class="flex flex-row h-full items-center">
+    <div transition:slide|global class="flex flex-row h-full items-center">
       <div class="flex flex-col mx-auto">
         <div class="bg-orange-300 clip-notch-tl-br p-px w-full md:w-auto">
           <div

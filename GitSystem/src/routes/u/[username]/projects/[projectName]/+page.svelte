@@ -26,8 +26,8 @@
 
   <div class="flex flex-col gap-4 mb-8">
     <!-- Upper Half of Page -->
-    <div class="flex flex-col md:grid md:grid-cols-9 gap-8 px-8">
-      <div class="flex flex-col col-span-6 md:col-span-7 gap-8">
+    <div class="flex flex-col lg:grid lg:grid-cols-9 gap-8 px-8">
+      <div class="flex flex-col col-span-6 lg:col-span-7 gap-8">
         {#if data.filelist}
           <CollapsablePanel
             openLabel="Reveal File List"
