@@ -60,12 +60,12 @@
       {#each data.data.latestProjects as project}
         <a
           href="/u/{project.authorUsername}/projects/{project.name}"
-          class="cursor-pointer text-start flex flex-row gap-4 group items-center group hover:bg-orange-400/20 px-2"
+          class="cursor-pointer text-start flex flex-row gap-4 group items-center group hover:bg-orange-400/20 px-2 w-full"
         >
-          <div class="self-start w-2 flex flex-row text-orange-200 gap-2">
+          <div class="self-start w-2 flex flex-row text-orange-200 gap-2 grow">
             <h2 class="mx-auto no-underline">⯌</h2>
             <p
-              class="flex flex-col group-hover:text-md group-hover:text-orange-200"
+              class="flex flex-col group-hover:text-md group-hover:text-orange-200 w-full grow"
             >
               <span class="group-hover:underline">{project.name}</span>
               <span class="text-white font-kumbh text-md no-underline">
@@ -86,7 +86,7 @@
             <h2 class="mx-auto">⯌</h2>
           </div>
           <p
-            class="flex flex-col group-hover:text-md group-hover:text-orange-200"
+            class="flex flex-col group-hover:text-md group-hover:text-orange-200 w-full"
           >
             <span class="font-baskervville italic text-orange-100"
               >{commit.message}</span

@@ -1,6 +1,6 @@
 import { dev } from "$app/environment";
 import { loadContributors } from "$lib/server/db/tools";
-import { db, type Project } from "../../db";
+import { db, type Project, type Repository } from "../../db";
 import { RepositoryBranch } from "./branch";
 import { loadRepository } from "./loader";
 
@@ -24,6 +24,10 @@ export class RepositoryInfo {
    * Holds a global cache of repository information.
    */
   private static infoCache: Record<number, RepositoryInfo> = {};
+
+  public static async revalidate() {
+    (await db.repositories.where({})).forEach((v) => this.of(v));
+  }
 
   public static async onServerInit() {
     const projects = await Promise.all(
@@ -51,7 +55,7 @@ export class RepositoryInfo {
       );
   }
 
-  public static async of(project: Project): Promise<RepositoryInfo | null> {
+  public static async of(project: Repository): Promise<RepositoryInfo | null> {
     if (
       RepositoriesBeingWritten[project.id.toString()] ||
       RepositoriesBeingWritten[project.id.toString()] > 0
@@ -71,7 +75,10 @@ export class RepositoryInfo {
         console.warn(
           `${project.authorUsername}#${project.name}: Got a cache miss! likely a new repository (or it had changes.)`,
         );
-        this.infoCache[project.id] = await loadRepository(project);
+        this.infoCache[project.id] = await loadRepository({
+          ...project,
+          contributors: await loadContributors(project),
+        });
       } catch (err) {
         console.error(err);
         console.warn(
