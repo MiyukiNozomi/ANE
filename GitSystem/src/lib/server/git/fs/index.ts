@@ -25,8 +25,12 @@ export class RepositoryInfo {
    */
   private static infoCache: Record<number, RepositoryInfo> = {};
 
+  public static getLoadedRepositories() {
+    return Object.values(this.infoCache);
+  }
+
   public static async revalidate() {
-    (await db.repositories.where({})).forEach((v) => this.of(v));
+    await Promise.all((await db.repositories.where({})).map((v) => this.of(v)));
   }
 
   public static async onServerInit() {

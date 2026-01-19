@@ -8,12 +8,12 @@ import { createProjectReleaseService } from "./service";
 
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
   // Ensure we're actually signed in.
-  if (!locals.session) return error(404);
+  if (!locals.session) return error(401);
 
   const profileReq = await getAccountByName(params.author);
   if (!profileReq || profileReq.error) {
     if (dev) console.log(profileReq);
-    return error(404);
+    return error(401);
   }
 
   const profile = profileReq.data!;

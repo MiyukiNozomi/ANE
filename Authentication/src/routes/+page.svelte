@@ -12,6 +12,15 @@
   let activeTab: (typeof tabOptions)[number] = $state(tabOptions[0]);
 </script>
 
+<svelte:head>
+  <title>ANE Auth</title>
+  <meta name="title" content="ANE Auth" />
+  <meta
+    name="description"
+    content="ANE Authorization microservice for every website under ane.jp.net"
+  />
+</svelte:head>
+
 <div
   class="min-h-screen bg-linear-to-br from-red-950 to-blue-900 flex flex-col"
 >

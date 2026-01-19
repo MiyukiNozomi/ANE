@@ -1,10 +1,14 @@
-import { SimplexNoise2D } from "./simplexNoise";
+import { SimplexNoise2D } from "../simplexNoise";
 
 self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
   const { canvas } = event.data;
 
   let ctx = canvas.getContext("2d");
   if (!ctx || !canvas) return;
+
+  // heres a funny accidentall discovery.
+  // it actually makes a hellishly cool set of nebulosas if you make it run this entire rendering code more than once
+  // since the noise changes and ends up with a bunch of cool clouds
 
   let noise = new SimplexNoise2D();
 
@@ -47,6 +51,8 @@ self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
       array.push(val);
       maximumPower -= val;
     }
+
+    array[1] * 0.8; // avoid too much green
 
     return Math.random() < 0.5 ? array : array.reverse();
   };

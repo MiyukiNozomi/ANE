@@ -6,5 +6,6 @@
 
 <svelte:head>
   <meta name="darkreader-lock" />
+  <meta name="theme-color" content="#1d4ed8" />
 </svelte:head>
 {@render children()}

@@ -1,6 +1,11 @@
 <script lang="ts">
   import { getAccountInfo } from "$lib/ANEAuthAPI/client";
 
+  export type HeaderOptions = {
+    hideSearch: boolean;
+  };
+
+  const props: HeaderOptions | undefined = $props();
   const accountInfo = getAccountInfo();
 </script>
 
@@ -37,7 +42,18 @@
       <div
         class="flex flex-row justify-end md:justify-center w-2/4 items-center px-4 text-xs"
       >
-        <a class="hover:underline m" href="#TODO">Search </a>
+        {#if !props?.hideSearch}
+          <form action="/search" method="get">
+            <input
+              type="text"
+              id="s"
+              name="s"
+              class="hover:underline focus:placeholder:text-orange-200/60 placeholder:text-orange-200 outline-none
+          text-orange-200 focus:border-b border-orange-200 text-center not-lg:w-14"
+              placeholder="Search"
+            />
+          </form>
+        {/if}
       </div>
     </div>
   </div>

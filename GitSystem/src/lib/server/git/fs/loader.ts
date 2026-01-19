@@ -165,7 +165,7 @@ async function loadCommitList(
     await bridge.runImmediateUnsafe(
       true,
       physicalPath,
-      `git --no-pager log --max-count=${MAXIMUM_COMMIT_COUNT_TO_LOAD} --pretty=format:%H | xargs -I {} sh -c 'git --no-pager show {} --quiet --pretty=format:"Commit: %H%nAuthor: %an%nRawDate: %ct%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n"; echo "==[SEPARATOR]=="' | sed '$d'`,
+      `git --no-pager log --all --max-count=${MAXIMUM_COMMIT_COUNT_TO_LOAD} --pretty=format:%H | xargs -I {} sh -c 'git --no-pager show {} --quiet --pretty=format:"Commit: %H%nAuthor: %an%nRawDate: %ct%nE-Mail: %ae%nAge: %ar%nDate: %ad%nCR%nLF%n%s%n"; echo "==[SEPARATOR]=="' | sed '$d'`,
     )
   )
     .toString()

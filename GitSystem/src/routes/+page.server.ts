@@ -6,10 +6,12 @@ import type { PageServerLoad } from "./$types";
 export const load = (async () => {
   await RepositoryInfo.revalidate();
 
+  const sortedCommits = NEWEST_COMMITS.sort((a, b) => b.rawDate - a.rawDate);
+
   return {
     latestProjects: (
       await Promise.all(
-        NEWEST_COMMITS.map(
+        sortedCommits.map(
           async (v) =>
             await db.repositories.whereFirst({
               authorUsername: v.project.authorUsername,
@@ -20,6 +22,6 @@ export const load = (async () => {
     )
       .filter((v) => v != null)
       .filter((v, i, arr) => arr.indexOf(v) == i),
-    newestCommits: NEWEST_COMMITS,
+    newestCommits: sortedCommits,
   };
 }) satisfies PageServerLoad;

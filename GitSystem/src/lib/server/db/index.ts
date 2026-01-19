@@ -7,7 +7,7 @@ export const DOMAIN = dev ? "http://localhost:5173" : "https://git.ane.jp.net";
 
 export type Repository = {
   id: number;
-  displayName: string;
+  displayName: string | null;
   name: string;
   description: string;
   authorUsername: string;

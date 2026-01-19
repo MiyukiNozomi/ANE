@@ -1,30 +1,26 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
   import { fade } from "svelte/transition";
-  import { Constelations } from "./constelations.svelte";
-
-  let props: {} = $props();
-
-  let readyCounter = $state(0);
-  let totalElementsToLoad = 3;
+  import {
+    createRenderingWorkerPromise,
+    renderingWorkers,
+  } from "./renderingWorker.svelte";
 
   let nebulosaCanvas: HTMLCanvasElement | undefined = $state();
+  let constellationsCanvas: HTMLCanvasElement | undefined = $state();
   let canvas: HTMLCanvasElement | undefined = $state();
 
   let backgroundImage: HTMLImageElement | undefined;
   let compassImage: HTMLImageElement | undefined;
 
-  let nebulosaRendererWorker: Worker | null = null;
+  let bgStarted = $state(false);
 
-  let bgStarted = false;
   function startBg() {
-    if (readyCounter < totalElementsToLoad)
-      return console.log(
-        "Ready counter is ",
-        readyCounter,
-        " (still not ready)",
-      );
     if (bgStarted || !canvas) return;
+    [canvas, nebulosaCanvas, constellationsCanvas].forEach(
+      (v) => (v!.style.opacity = "1"),
+    );
+
     bgStarted = true;
 
     let ctx = canvas.getContext("2d");
@@ -41,8 +37,6 @@
 
     let compassRotation = 0.0;
     let compassRotationSpeed = 0.0;
-
-    let constellations = new Constelations(canvas, ctx!);
 
     console.log("Background started.");
     const bgFunc = () => {
@@ -77,8 +71,6 @@
       canvas!.height = window.screen.height;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      constellations.render();
 
       const centerX = canvas!.width / 2;
       const centerY = canvas!.height / 2;
@@ -133,42 +125,22 @@
     bgFunc();
   }
 
-  function runNebulosaRendererWorker() {
-    return new Promise(async (resolve, reject) => {
-      const nebulosaWorker = await import(
-        "$lib/components/compass/nebulosaworker?worker"
-      );
-      nebulosaRendererWorker = new nebulosaWorker.default();
-
-      nebulosaRendererWorker.onmessage = (r) => {
-        if (r.data.ok) {
-          readyCounter++;
-          resolve({});
-        }
+  function tryLoadImage(imageObject: HTMLImageElement, src: string) {
+    return new Promise<void>((resolve) => {
+      const imageOnLoad = () => {
+        resolve();
+        console.log("Image loaded from " + src + " successfully.");
       };
-      nebulosaRendererWorker.onerror = (err) => reject(err);
 
-      nebulosaCanvas!.width = window.screen.width;
-      nebulosaCanvas!.height = window.screen.height;
-      const offscreen = nebulosaCanvas!.transferControlToOffscreen();
-      nebulosaRendererWorker.postMessage({ canvas: offscreen }, [offscreen]);
+      if (imageObject.complete && imageObject.naturalWidth !== 0) {
+        imageOnLoad();
+      } else imageObject.onload = imageOnLoad;
+
+      imageObject.src = src;
     });
   }
 
-  function tryLoadImage(imageObject: HTMLImageElement, src: string) {
-    const imageOnLoad = () => {
-      readyCounter++;
-      console.log("Image loaded from " + src + " successfully.");
-    };
-
-    if (imageObject.complete && imageObject.naturalWidth !== 0) {
-      imageOnLoad();
-    } else imageObject.onload = imageOnLoad;
-
-    imageObject.src = src;
-  }
-
-  onMount(() => {
+  onMount(async () => {
     const screenWidth = window.screen.width;
     const screenHeight = window.screen.height;
     const backgroundSize =
@@ -183,27 +155,44 @@
     backgroundImage = new Image();
     compassImage = new Image();
 
-    tryLoadImage(
-      backgroundImage,
-      "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-static.webp" +
-        backgroundSize,
+    const nebulaWorkerModule = await import(
+      "$lib/components/compass/workers/nebulosaworker?worker"
     );
-    tryLoadImage(
-      compassImage,
-      "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-main.webp" +
-        compassSize,
+    const constellationsWorkerModule = await import(
+      "$lib/components/compass/workers/constellationsworker?worker"
     );
 
-    runNebulosaRendererWorker();
+    [canvas, nebulosaCanvas, constellationsCanvas].forEach(
+      (v) => (v!.style.opacity = "0"),
+    );
+
+    Promise.all([
+      tryLoadImage(
+        backgroundImage,
+        "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-static.webp" +
+          backgroundSize,
+      ),
+      tryLoadImage(
+        compassImage,
+        "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-main.webp" +
+          compassSize,
+      ),
+      createRenderingWorkerPromise(nebulaWorkerModule, nebulosaCanvas),
+      createRenderingWorkerPromise(
+        constellationsWorkerModule,
+        constellationsCanvas,
+        () => {
+          constellationsCanvas!.width = Math.max(
+            window.screen.width,
+            window.screen.height,
+          );
+          constellationsCanvas!.height = constellationsCanvas!.width;
+        },
+      ),
+    ]).then(startBg);
   });
 
-  onDestroy(() => {
-    if (nebulosaRendererWorker) nebulosaRendererWorker!.terminate();
-  });
-
-  $effect(() => {
-    if (readyCounter >= totalElementsToLoad) startBg();
-  });
+  onDestroy(() => renderingWorkers.forEach((v) => v.terminate()));
 </script>
 
 <div class="absolute inset-0 overflow-hidden z-0">
@@ -220,9 +209,14 @@
       transition:fade
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
     ></canvas>
+    <canvas
+      bind:this={constellationsCanvas}
+      transition:fade
+      class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 animate-spin-slow"
+    ></canvas>
   </div>
 
-  {#if readyCounter < totalElementsToLoad}
+  {#if !bgStarted}
     <div
       transition:fade
       class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"

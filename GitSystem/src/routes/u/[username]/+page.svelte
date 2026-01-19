@@ -16,6 +16,10 @@
 
 <svelte:head>
   <title>{data.profile.displayName ?? data.profile.name}'s Profile</title>
+  <meta
+    name="title"
+    content="{data.profile.displayName ?? data.profile.name}'s Profile"
+  />
 </svelte:head>
 
 <PageBody>

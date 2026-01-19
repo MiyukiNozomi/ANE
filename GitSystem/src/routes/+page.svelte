@@ -20,6 +20,21 @@
     foregroundImage.src =
       "https://galatea.ane.jp.net/dl/images/backgrounds/compass/compass-main.webp";
   });
+
+  export function gitAge(d: Date): string {
+    const s = Math.floor((Date.now() - d.getTime()) / 1000);
+    const v = (n: number, u: string) =>
+      (n === 1 ? `${n} ${u}` : `${n} ${u}s`) + " ago";
+
+    if (s < 60) return "just now";
+    if (s < 3600) return v(Math.floor(s / 60), "minute");
+    if (s < 86400) return v(Math.floor(s / 3600), "hour");
+    if (s < 604800) return v(Math.floor(s / 86400), "day");
+    if (s < 2592000) return v(Math.floor(s / 604800), "week");
+    if (s < 31536000) return v(Math.floor(s / 2592000), "month");
+
+    return v(Math.floor(s / 31536000), "year") + " ago";
+  }
 </script>
 
 <svelte:head>
@@ -86,7 +101,7 @@
             <h2 class="mx-auto">⯌</h2>
           </div>
           <p
-            class="flex flex-col group-hover:text-md group-hover:text-orange-200 w-full"
+            class="flex flex-col group-hover:text-md group-hover:text-orange-200 grow"
           >
             <span class="font-baskervville italic text-orange-100"
               >{commit.message}</span
@@ -115,10 +130,10 @@
 
           <div class="ml-auto w-fit flex-col flex">
             <p class="font-mplus2 text-xs">
-              {new Date(commit.date).toISOString()}
+              {new Date(commit.date).toDateString()}
             </p>
             <p class="font-baskervville text-xs text-orange-200/80">
-              {commit.age}
+              {gitAge(new Date(commit.date))}
             </p>
           </div>
         </div>
