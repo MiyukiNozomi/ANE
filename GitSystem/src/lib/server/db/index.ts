@@ -15,6 +15,8 @@ export type Repository = {
 
   /** 0 means == not forked. */
   parentRepositoryId: number;
+
+  isPrivateRepository: number;
 };
 
 export type Contributor = {
@@ -57,7 +59,12 @@ export const db = {
     parentRepositoryId INTEGER DEFAULT NULL,
     created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')) -- unix time (seconds)
 `,
-      extraRequiredColumns: [],
+      extraRequiredColumns: [
+        {
+          columnName: "isPrivateRepository",
+          creationStatement: "ADD COLUMN isPrivateRepository INTEGER DEFAULT 0"
+        }
+      ],
     },
   ),
   contributors: new GenericDatabaseTable<Contributor>(

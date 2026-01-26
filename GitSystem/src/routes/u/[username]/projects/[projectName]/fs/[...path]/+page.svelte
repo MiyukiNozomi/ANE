@@ -22,7 +22,16 @@
       >
         {data.individualFile ? "Viewing" : "Index of"}
         <span class="text-3xl">&quot;</span>
+
         {data.filename}
+        <span class="text-3xl transform rotate-180">&quot;</span>
+        in
+        <span class="text-3xl">&quot;</span>
+        <a
+          href="/u/{data.profile.name}/projects/{data.project.name}"
+          class="hover:text-white hover:underline"
+          >{data.project.displayName ?? data.project.name}</a
+        >
         <span class="text-3xl transform rotate-180">&quot;</span>
       </p>
     </div>

@@ -7,9 +7,8 @@ export const load = (async () => {
   await RepositoryInfo.revalidate();
 
   const sortedCommits = NEWEST_COMMITS.sort((a, b) => b.rawDate - a.rawDate);
-
-  return {
-    latestProjects: (
+  let existingElements = new Array<number>();
+  const latestProjects = (
       await Promise.all(
         sortedCommits.map(
           async (v) =>
@@ -20,8 +19,17 @@ export const load = (async () => {
         ),
       )
     )
-      .filter((v) => v != null)
-      .filter((v, i, arr) => arr.indexOf(v) == i),
+      .filter((v) => v != null);
+
+
+
+  return {
+    latestProjects: latestProjects.filter((v) => {
+      if (existingElements.includes(v.id))
+          return false;
+      existingElements.push(v.id);
+      return true;
+    }),
     newestCommits: sortedCommits,
   };
 }) satisfies PageServerLoad;

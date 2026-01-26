@@ -10,5 +10,6 @@ build : root {
 
 run : azki {
     export PORT=2000
+    export BODY_SIZE_LIMIT=1G
     cd /service/bin && /usr/local/bin/node build/
 }

@@ -45,6 +45,7 @@
     if (token.type == "String") return "text-sky-200";
     if (token.type == "Number") return "text-suisei-500";
     if (token.type == "Comment") return "text-suisei-300";
+    if (token.type == "Marker") return "text-indigo-400";
     if (token.type == "Type") return "text-blue-500";
     return "font-light";
   }

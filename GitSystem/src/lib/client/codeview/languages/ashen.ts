@@ -17,6 +17,20 @@ export const AshenLanguage: LanguageSupport = {
     }
     return tokens;
   },
+  runes: (lexer) => {
+    if (lexer.current() != '@') return null;
+    var txt = lexer.next();
+
+    while ((lexer.isAlpha() || lexer.isDigit() || lexer.current() == '_')&& !lexer.isEOF())
+      txt += lexer.next();
+    
+    return [
+      {
+        str: txt,
+        type: "Marker"
+      }
+    ];
+  },
   identifier: (lexer) => {
     let rt = DefaultLexerLanguage["identifier"](lexer);
     if (rt) {

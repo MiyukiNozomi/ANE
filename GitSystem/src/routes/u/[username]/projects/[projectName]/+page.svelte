@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getAccountInfo } from "$lib/ANEAuthAPI/client";
   import FileList from "$lib/components/gitviewer/fileList.svelte";
   import MarkdownViewer from "$lib/components/gitviewer/markdownViewer.svelte";
   import PageBody from "$lib/components/pageBody.svelte";
@@ -7,6 +8,8 @@
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
+
+  const signedAccount = getAccountInfo();
 </script>
 
 <svelte:head>
@@ -88,7 +91,9 @@
           >
             B R A N C H E S
           </h2>
-          <div class="flex flex-col">
+          <h1
+            class="flex flex-col font-baskervville text-gray-300 font-light text-lg gap-1"
+          >
             {#each data.branchlist as branch}
               <a
                 href="/u/{data.profile.name}/projects/{data.project
@@ -98,7 +103,7 @@
                 {branch}
               </a>
             {/each}
-          </div>
+          </h1>
         {/if}
         <h2
           class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b border-orange-200 border-dotted"
@@ -109,7 +114,7 @@
           {#each data.project.contributors as contributor}
             <a
               href="/u/{contributor.contributorUsername}"
-              class="flex flex-row items-center w-12 h-12 relative cursor-pointer"
+              class="flex flex-row items-center w-20 h-20 relative cursor-pointer"
               title={contributor.contributorUsername ==
               data.project.authorUsername
                 ? contributor.contributorUsername +
@@ -131,6 +136,24 @@
             </a>
           {/each}
         </div>
+
+        {#if data.project.authorUsername == signedAccount?.name}
+          <h2
+            class="font-baskervville text-xl text-orange-300 text-center pb-2 border-b border-orange-200 border-dotted"
+          >
+            C O N F I G U R A T I O N
+          </h2>
+          <h1
+            class="flex flex-col font-baskervville text-gray-300 font-light text-lg gap-1"
+          >
+            <a
+              href="/u/{data.profile.name}/projects/{data.project.name}/config"
+              class="hover:text-orange-200 hover:underline group font-baskervville"
+            >
+              Click me to see your repository configuration here
+            </a>
+          </h1>
+        {/if}
       </StellarSection>
     </div>
   </div>

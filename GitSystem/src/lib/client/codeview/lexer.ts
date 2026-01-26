@@ -2,6 +2,7 @@ export const TokenTypes = [
   "Comment",
   "Keyword",
   "Identifier",
+  "Marker",
   "Type",
   "Number",
   "String",

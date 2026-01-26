@@ -18,7 +18,12 @@
         class="px-8 mx-auto italic text-xl font-baskervville text-orange-300 flex flex-row items-center gap-2"
       >
         <span class="text-3xl">&quot;</span>
-        Constellations of {data.project.displayName ?? data.project.name}
+        Constellations of
+        <a
+          href="/u/{data.profile.name}/projects/{data.project.name}"
+          class="hover:text-white hover:underline"
+          >{data.project.displayName ?? data.project.name}</a
+        >
         <span class="text-3xl transform rotate-180">&quot;</span>
       </p>
     </div>

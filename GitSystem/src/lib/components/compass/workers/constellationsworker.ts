@@ -106,7 +106,7 @@ function drawRecursive(
   if (!star.wasDrawn) {
     drawStar(ctx, star);
 
-    ctx.strokeStyle = "#ffffff22";
+    ctx.strokeStyle = "#ffffff12";
     star.nextStars.forEach((v) => {
       ctx.beginPath();
       ctx.lineWidth = 1;
@@ -136,7 +136,7 @@ self.onmessage = (event: { data: { canvas: OffscreenCanvas } }) => {
 
   let startTime = Date.now();
 
-  const maxConstellations = 3 + Math.floor(Math.random() * 18);
+  const maxConstellations = 3 + Math.floor(Math.random() * 24);
 
   for (let i = 0; i < maxConstellations; i++) {
     const constellation = createConstellation(canvas);

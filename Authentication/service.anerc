@@ -12,7 +12,7 @@ build : root {
 run : azki {
     export DEVMODE=false
     export PORT=4000
-    export BODY_SIZE_LIMIT=8M
+    export BODY_SIZE_LIMIT=16M
     export SHARP_FORCE_GLOBAL_LIBVIPS=1
     cd /service/bin && /usr/local/bin/node build/
 }

@@ -9,7 +9,7 @@ export function CStyleComments(lexer: Lexer): Token[] | null {
 
   if (isMultiline) {
     while (!lexer.isEOF()) {
-      if (lexer.current() == "*" && lexer.current() == "/") {
+      if (lexer.current() == "*" && lexer.peek(1) == "/") {
         str += lexer.next() + lexer.next();
         break;
       }

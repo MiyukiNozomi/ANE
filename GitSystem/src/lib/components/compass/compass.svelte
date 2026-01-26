@@ -78,7 +78,7 @@
       // rendering the background
       ctx.globalAlpha = Math.min(1.0, bgFadeProgress);
 
-      const bgSize = Math.max(canvas!.width, canvas!.height);
+      const bgSize = Math.max(canvas!.width, canvas!.height) * 1.1;
 
       drawRotatedImage(
         backgroundImage,
@@ -182,10 +182,8 @@
         constellationsWorkerModule,
         constellationsCanvas,
         () => {
-          constellationsCanvas!.width = Math.max(
-            window.screen.width,
-            window.screen.height,
-          );
+          constellationsCanvas!.width =
+            Math.max(window.screen.width, window.screen.height) * 1;
           constellationsCanvas!.height = constellationsCanvas!.width;
         },
       ),
