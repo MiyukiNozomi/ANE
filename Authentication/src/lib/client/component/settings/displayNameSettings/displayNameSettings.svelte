@@ -56,7 +56,7 @@
   }
 </script>
 
-<div class="flex flex-col gap-4 py-4 text-white p-8 font-mplus2">
+<div class="flex flex-col gap-4 text-white font-mplus2">
   <div class="">
     <p class="text-red-600 text-xl" id="error-msg">{errorMessage}</p>
     <p class="text-green-600 text-xl" id="success-msg">

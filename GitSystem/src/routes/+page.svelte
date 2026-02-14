@@ -64,7 +64,7 @@
         ideas I've written and maintain.
         <br />
         For a long time, I have no longer seen my projects as just software, I see
-        them as an artistic mean.
+        them as an artistic medium.
         <br />
         The word "impossible" in my head has no meaning until I can see with my own
         eyes that said idea cannot be executed in reality.
