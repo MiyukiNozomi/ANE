@@ -13,7 +13,7 @@ proc downloadImage() {
 
     system("mkdir -p ~/.ANE/images"N);
 
-    if (system("fetch https://download.freebsd.org/ftp/releases/amd64/amd64/15.0-RELEASE/base.txz -o ~/.ANE/images/freebsd-base.tar.xz"N)) {
+    if (system("fetch https://download.freebsd.org/ftp/releases/amd64/amd64/15.1-RELEASE/base.txz -o ~/.ANE/images/freebsd-base.tar.xz"N)) {
         printString("Download Failed!\n");
         return false;
     }
@@ -157,12 +157,14 @@ builder.print(formatStrings(["host.hostname = \"ane-", recipe.name, "\"; "]));
 builder.print(formatStrings(["path = \"", recipe.jailDirectory(), "\"; "]));
 
 // network
-builder.print("
-
+    if (recipe.isFlagTruty("expose")) {
+        builder.print("
 ip4 = inherit;
+ip6 = inherit;
 ");
-    if (recipe.isFlagTruty("ipv6")) {
-        builder.print("ip6 = inherit;\n");
+    } else {
+        builder.print(formatStrings(["ip4.addr = ", recipe.getFlag("ip4"),"; "]));
+        builder.print(formatStrings(["interface = lo1; "]));
     }
 
     builder.prefix = "";
