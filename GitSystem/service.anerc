@@ -4,10 +4,10 @@ flag ip4 10.0.1.5
 
 build : root {
     pkg install -y node24 npm-node24 pkgconf git
-    npm i -g pnpm typescript
-    pnpm i
-    pnpm approve-builds
-    pnpm build
+    npm i -g typescript
+    npm i
+    npm approve-builds
+    npm build
 }
 
 run : azki {

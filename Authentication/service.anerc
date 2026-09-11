@@ -3,10 +3,10 @@ image authentication
 build : root {
     pkg install -y node24 npm-node24 vips pkgconf sqlite3
     echo "DEVMODE=false >> /service/bin/.env"
-    npm i -g pnpm typescript
-    pnpm i
-    pnpm approve-builds
-    SHARP_FORCE_GLOBAL_LIBVIPS=1 pnpm build
+    npm i -g typescript
+    npm i
+    npm approve-builds
+    SHARP_FORCE_GLOBAL_LIBVIPS=1 npm build
 }
 
 run : azki {

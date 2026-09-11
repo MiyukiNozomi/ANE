@@ -4,9 +4,9 @@ flag ip4 10.0.1.3
 
 build : root {
     pkg install -y node24 npm-node24 vips pkgconf
-    npm i -g pnpm typescript
-    pnpm i
-    pnpm rebuild sharp
+    npm i -g typescript
+    npm i
+    npm rebuild sharp
     tsc
     SHARP_FORCE_GLOBAL_LIBVIPS=1 node \
         --max-old-space-size=1400 --single-threaded-gc \
