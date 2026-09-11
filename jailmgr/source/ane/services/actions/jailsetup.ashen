@@ -163,7 +163,7 @@ ip4 = inherit;
 ip6 = inherit;
 ");
     } else {
-        builder.print(formatStrings(["ip4.addr = ", recipe.getFlag("ip4"),"; "]));
+        builder.print(formatStrings(["ip4.addr = ", recipe.getFlag("ip4").force().values[0], "; "]));
         builder.print(formatStrings(["interface = lo1; "]));
     }
 
