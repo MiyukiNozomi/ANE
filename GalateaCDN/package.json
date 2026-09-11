@@ -11,16 +11,16 @@
   "license": "ISC",
   "packageManager": "pnpm@10.8.0",
   "dependencies": {
-    "dotenv": "^17.2.1",
-    "mime-types": "^3.0.1",
-    "node-addon-api": "^8.5.0",
-    "node-gyp": "^11.4.1",
-    "sharp": "^0.34.3",
-    "typescript": "^5.8.3"
+    "dotenv": "^17.4.2",
+    "mime-types": "^3.0.2",
+    "node-addon-api": "^8.9.2",
+    "node-gyp": "^11.5.0",
+    "sharp": "^0.34.5",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/mime-types": "^3.0.1",
-    "@types/node": "^24.0.10"
+    "@types/node": "^24.13.4"
   },
   "pnpm": {
     "supportedArchitectures": {
