@@ -1,5 +1,7 @@
 image galatea
 
+flag ip4 10.0.1.3
+
 build : root {
     pkg install -y node24 npm-node24 vips pkgconf
     npm i -g pnpm typescript

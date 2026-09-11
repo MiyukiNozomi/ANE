@@ -1,5 +1,7 @@
 image gitsystem
 
+flag ip4 10.0.1.5
+
 build : root {
     pkg install -y node24 npm-node24 pkgconf git
     npm i -g pnpm typescript

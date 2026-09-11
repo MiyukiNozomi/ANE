@@ -1,5 +1,7 @@
 image ashensv
 
+flag ip4 10.0.1.4
+
 build : root {
     pkg install -y node24 npm-node24
     cd / && npm i -g pnpm typescript

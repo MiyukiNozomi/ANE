@@ -1,5 +1,6 @@
 image reverse-proxy
 
+flag ip4 10.0.1.2
 flag rootServiceInit true
 
 build : root {
