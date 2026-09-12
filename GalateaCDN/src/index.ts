@@ -46,8 +46,9 @@ async function init() {
   > = {};
 
   const readFilesRecursive = (pth: string) => {
-    const normalizedPath = CURRENT_STORAGE_FOLDER.startsWith("/")
-      ? pth.substring(CURRENT_STORAGE_FOLDER.length)
+    // please fix this hack.
+    const normalizedPath = IS_DEV_MODE
+      ? pth.substring(CURRENT_STORAGE_FOLDER.length + 1)
       : pth.substring(CURRENT_STORAGE_FOLDER.length - 1);
 
     if (statSync(pth).isDirectory()) {
