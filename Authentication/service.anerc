@@ -1,5 +1,7 @@
 image authentication
 
+flag ip4 10.0.1.2
+
 build : root {
     pkg install -y python node26 npm-node26 vips pkgconf sqlite3
     echo "DEVMODE=false >> /service/bin/.env"

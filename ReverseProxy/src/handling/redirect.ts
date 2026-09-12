@@ -6,7 +6,7 @@ export async function redirectTraffic(
   host: string,
   localPort: number,
   req: http.IncomingMessage,
-  res: http.ServerResponse
+  res: http.ServerResponse,
 ) {
   const promise = new Promise<number>((resolve) => {
     if (!req.url || !req.url.startsWith("/")) req.url = "/" + (req.url ?? "");
@@ -14,8 +14,8 @@ export async function redirectTraffic(
 
     const proxyReq = http.request(
       {
-        hostname: "127.0.0.1",
-        port: localPort,
+        hostname: "10.0.1." + localPort,
+        port: 3000,
         path: req.url,
         method: requestMethod,
         headers: req.headers,
@@ -29,14 +29,14 @@ export async function redirectTraffic(
             " " +
             req.url +
             " was " +
-            proxyRes.statusCode
+            proxyRes.statusCode,
         );
         proxyRes.headers["server"] = "Hoshimachi Anemachi";
         res.writeHead(proxyRes.statusCode ?? 500, proxyRes.headers);
         proxyRes.pipe(res, { end: true });
 
         resolve(proxyRes.statusCode ?? 500);
-      }
+      },
     );
     proxyReq.on("error", (err) => {
       Sys.error("[response-error] Got an error! " + err);
@@ -46,7 +46,7 @@ export async function redirectTraffic(
           host +
           "') did not reply or is non-existant",
         req,
-        res
+        res,
       );
     });
 
@@ -65,7 +65,7 @@ export async function redirectTraffic(
       500,
       "Internal error when contacting host '" + host + "' (exception thrown).",
       req,
-      res
+      res,
     );
   }
 }
