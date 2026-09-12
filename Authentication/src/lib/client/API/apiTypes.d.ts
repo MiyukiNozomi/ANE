@@ -28,11 +28,6 @@ export interface ClientSessionInfo {
   userId: number;
 }
 
-export interface AccountSession {
-  accountInfo: ClientSideAccount;
-  sessionInfo: ClientSessionInfo;
-}
-
 export interface AuthorizationRequest {
   id: string;
   sharedSecret: string;

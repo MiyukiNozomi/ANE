@@ -1,6 +1,6 @@
 import { dev } from "$app/environment";
-import { db } from "$lib/server/db";
-import { json, type Handle } from "@sveltejs/kit";
+import { db, hashSession } from "$lib/server/db";
+import { type Handle } from "@sveltejs/kit";
 
 export const handle: Handle = async ({ event, resolve }) => {
   let authtoken = null;
@@ -18,7 +18,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
 
   if (authtoken) {
-    const session = await db.sessions.whereFirst({ id: authtoken });
+    const session = await db.sessions.whereFirst({
+      id: hashSession(authtoken),
+    });
     const account = session
       ? await db.accounts.whereFirst({ id: session.userId })
       : null;

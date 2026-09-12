@@ -9,6 +9,7 @@ import {
 import { dirname } from "node:path";
 import { AUTHORIZATION_REQUEST_EXPIRATION } from "./keystores";
 import { GenericDatabaseTable } from "./ANEDB";
+import { createHash } from "node:crypto";
 
 mkdirSync(dirname(DATABASE_FILE), { recursive: true });
 const sqlite = Database(DATABASE_FILE);
@@ -115,3 +116,7 @@ export const db = {
     },
   ),
 };
+
+export function hashSession(sessionValue: string) {
+  return createHash("sha256").update(sessionValue).digest("base64");
+}

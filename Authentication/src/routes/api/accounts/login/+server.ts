@@ -1,7 +1,7 @@
 import type {
-  AccountSession,
   APIError,
   APIResponse,
+  ClientSideAccount,
 } from "$lib/client/API/apiTypes";
 import { db } from "$lib/server/db";
 import { createSessionWithAccountInfo } from "$lib/server/keystores";
@@ -24,7 +24,7 @@ const requestData = z.object({
   totpCode: z.string().max(32).optional(),
 });
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
   const jsonReq = await request.json();
   const parsedData = requestData.safeParse(jsonReq);
   if (parsedData.error) {
@@ -67,9 +67,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     return error(500);
   }
 
+  cookies.set("authorization", sessionInfo.sessionInfo.id, {
+    path: "/",
+    secure: !dev,
+    httpOnly: true,
+    sameSite: "lax",
+  });
+
   if (dev) console.log("Successful login: ", sessionInfo);
 
   return json({
-    data: sessionInfo,
-  } satisfies APIResponse<AccountSession>);
+    data: sessionInfo.accountInfo,
+  } satisfies APIResponse<ClientSideAccount>);
 };

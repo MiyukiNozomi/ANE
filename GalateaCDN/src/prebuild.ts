@@ -63,8 +63,8 @@ async function convertImage(fullPath: string, outputPath: string) {
 
   let list = new Array<ImageScales>();
 
-  let w = Math.min(MAX_SCALE, size.width * 1); // Used to be 2 but current servers dont handle it well, TODO better server
-  let h = Math.min(MAX_SCALE, size.height * 1); // Used to be 2 but current servers dont handle it well, TODO better server
+  let w = Math.min(MAX_SCALE, size.width * 2); // Used to be 2 but current servers dont handle it well, TODO better server
+  let h = Math.min(MAX_SCALE, size.height * 2); // Used to be 2 but current servers dont handle it well, TODO better server
 
   //mipmapping
   console.log("ℹ️  Generating mipmaps for " + fullPath);
@@ -85,6 +85,12 @@ async function convertImage(fullPath: string, outputPath: string) {
     const outPath = outputPath
       .replace(".webp", `-${w}x${h}.webp`)
       .replace("images/", "mipmaps/");
+
+    list.push({
+      path: outPath,
+      w,
+      h,
+    });
 
     if (existsSync(outPath) && !IS_FORCE_MODE) {
       console.log(
@@ -113,12 +119,6 @@ async function convertImage(fullPath: string, outputPath: string) {
         quality: 100,
       })
       .toFile(outPath);
-
-    list.push({
-      path: outPath,
-      w,
-      h,
-    });
   }
 
   mipmapInfo[outputPath] = list;
@@ -136,9 +136,13 @@ async function convertPngToWebpRecursively(dir: string) {
       await convertPngToWebpRecursively(fullPath);
     } else if (
       entry.isFile() &&
-      path.extname(entry.name).toLowerCase() === ".png"
+      [".png", ".jpg"].includes(path.extname(entry.name).toLowerCase())
     ) {
-      const outputFileName = path.basename(entry.name, ".png") + ".webp";
+      const outputFileName =
+        path.basename(
+          entry.name,
+          entry.name.substring(entry.name.lastIndexOf(".")),
+        ) + ".webp";
       const outputPath = path.join(dir, outputFileName);
 
       await convertImage(fullPath, outputPath);

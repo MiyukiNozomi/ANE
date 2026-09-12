@@ -35,7 +35,11 @@
   <div
     class="overflow-hidden absolute z-10 w-screen h-screen flex flex-col items-center grow"
   >
-    <div
+    <form
+      onsubmit={(e) => {
+        e.preventDefault();
+        if (allowNext) onNextStep();
+      }}
       class="font-kumbh flex flex-col border border-sky-950 bg-black/80 p-6 rounded-2xl my-auto w-96 not-lg:w-full"
     >
       <img
@@ -64,6 +68,6 @@
           >
         {/if}
       </div>
-    </div>
+    </form>
   </div>
 </div>

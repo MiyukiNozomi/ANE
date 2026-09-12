@@ -1,145 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="darkreader-lock" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="darkreader-lock" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galatea Storage</title>
 
-  <title>Galatea Storage</title>
+    <meta name="title" content="Galatea Storage" />
+    <meta name="theme-color" content="#d7514d" />
+    <meta
+      name="description"
+      content="A place where mostly immutable content is stored in ANE."
+    />
+    <meta
+      property="og:image"
+      content="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp"
+    />
 
-  <meta name="title" content="Galatea Storage" />
-  <meta name="theme-color" content="#d7514d" />
-  <meta name="description" content="A place where mostly immutable content is stored in ANE." />
-  <meta property="og:image" content="https://galatea.ane.jp.net/dl/images/logos/ane-logo-final.webp" />
+    <style>
+      @font-face {
+        font-family: IBMPlex;
+        src: url(/dl/fonts/IBMPlexMono.ttf);
+      }
 
-  <style>
-    @font-face {
-      font-family: IBMPlex;
-      src: url(/dl/fonts/IBMPlexMono.ttf);
-    }
+      body,
+      html {
+        min-height: 100%;
+      }
 
-    body,
-    html {
-      min-height: 100%;
-    }
+      body {
+        background-color: black;
+        color: white;
+        font-family: IBMPlex;
+      }
 
-    body {
-      background-color: black;
-      color: white;
-      font-family: IBMPlex;
-    }
+      #output {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
 
-    #output {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
+      #output img {
+        width: fit-content;
+        height: 7lh;
+      }
 
-    #output img {
-      width: fit-content;
-      height: 7lh
-    }
+      pre {
+        margin: 0;
+      }
 
-    pre {
-      margin: 0;
-    }
+      #output p {
+        margin: 0;
+      }
 
-    #output p {
-      margin: 0;
-    }
+      #output,
+      pre {
+        font-size: 1rem;
+      }
 
-    #output,
-    pre {
-      font-size: 1rem;
-    }
+      #blue {
+        color: #1ba4ff;
+      }
 
-    #blue {
-      color: #1ba4ff;
-    }
+      #blue-darker {
+        color: #3586ff;
+      }
 
-    #blue-darker {
-      color: #3586ff;
-    }
+      #lighter-gray {
+        color: #9f9f9f;
+      }
 
-    #lighter-gray {
-      color: #9f9f9f;
-    }
+      #pink {
+        color: rgb(226, 155, 167);
+      }
+      #red {
+        color: rgb(255, 73, 103);
+      }
 
-    #pink {
-      color: rgb(226, 155, 167);
-    }
+      .gray {
+        color: #8a8a8a;
+      }
 
-    .gray {
-      color: #8a8a8a;
-    }
+      a {
+        color: #3586ff;
+      }
+    </style>
 
-    a {
-      color: #3586ff;
-    }
-  </style>
+    {script-here}
+  </head>
 
-  {script-here}
-</head>
+  <body>
+    <div id="output"></div>
 
-<body>
-  <div id="output"></div>
+    <div id="logmsg" style="display: none">
+      <p></p>
+      <p></p>
+      <p><span id="pink">[GalateaOS]</span> Welcome!</p>
+      <p class="delay">
+        <span id="blue">[hypervisor]</span> System has booted from a
+        MHC1.4-capable controller &lt;Hellen Electronics Starway Chipset
+        B250EM&gt; at /var/dev/disks/d0.
+      </p>
+      <p><span id="pink">[GalateaOS]</span> Need to load:</p>
+      <p class="gray">/galatea/modules/kecid.kdll</p>
+      <p class="gray">/galatea/modules/ftx-h3-soc.kdll</p>
+      <p class="gray">/galatea/modules/ftx-europa.kdll</p>
+      <p class="gray">/galatea/modules/angelarc-h4le-serial.kdll</p>
+      <p class="gray">/galatea/modules/angelarc-h4le-simd.kdll</p>
+      <p class="gray">/galatea/modules/angelarc-h4le-expressci.kdll</p>
+      <p class="gray">/galatea/modules/hellengpu.kdll</p>
+      <p class="gray">/galatea/modules/kipnv8.kdll</p>
+      <p class="gray">/galatea/modules/kipnv8-router.kdll</p>
+      <p class="delay"><span id="pink">[GalateaOS]</span> Loading modules..</p>
+      <p><span id="pink">[GalateaOS]</span> Done!</p>
+      <p><span id="pink">[GalateaOS]</span> Launching init</p>
+      <p class="delay">
+        <span id="blue">[hypervisor]</span> Preparing services..
+      </p>
+      <p class="gray">/etc/hypervisor.d/ipnv8</p>
+      <p class="gray">/etc/hypervisor.d/mnsc/np-ntpd</p>
+      <p class="gray">/etc/hypervisor.d/mnsc/satcom</p>
+      <p class="lighter-gray">
+        ueci3.2: Hellen Electronics Express CI Controller B250EM
+      </p>
+      <p class="lighter-gray">
+        ueci3.2: &lt;FTX Europa Series 3320 Network Bridge&gt; at usecis0
+      </p>
+      <p class="lighter-gray">
+        ueci3.2: &lt;HAKU Solaris(R) Multidrive NAS Adapter&gt; at usecis0
+      </p>
+      <p class="delay">
+        <span id="blue">[hypervisor]</span> Signal DISKFOUND received from SID
+        1, verifying...
+      </p>
+      <p class="gray">
+        <span id="blue">[hypervisor]</span> Found 3 PCI-based disk entries:
+      </p>
+      <p class="gray">
+        <span id="blue">[hypervisor]</span> uecid1 -> /var/dev/disks/d1 (gOS
+        labels; 1 partition; [4TB; MpFS])
+      </p>
+      <p class="gray">
+        <span id="blue">[hypervisor]</span> uecid2 -> /var/dev/disks/d2 (gOS
+        labels; 1 partition; [4TB; MpFS])
+      </p>
+      <p class="gray">
+        <span id="blue">[hypervisor]</span> uecid3 -> /var/dev/disks/d3 (gOS
+        labels; 1 partition; [430 GB; UFS4.6])
+      </p>
+      <p class="delay lighter-gray">
+        ftx-europa: 4 Ethernet connections found, parallel mode active.
+      </p>
+      <p class="delay lighter-gray">
+        ftx-europa: Requesting IPNv8 addresses...
+      </p>
+      <p class="" id="red">
+        ftx-europa: WARN: You have disabled IPNv6 in the driver's configuration
+        file. please re-enable in case of requisition failures.
+      </p>
+      <p class="delay"></p>
+      <p class="delay lighter-gray">
+        ftx-europa: /var/dev/ftx0em-e1 ->
+        86/412642eb919011c3327a4e710dd1a374d6e2eb190c602fca12946ee813ae62f0
+      </p>
+      <p class="lighter-gray">
+        ftx-europa: /var/dev/ftx0em-e2 ->
+        86/7c356986490ad38337280a611034f0e77f2c535c1cb0530e1997f341b51caff8
+      </p>
+      <p class="delay lighter-gray">
+        ftx-europa: /var/dev/ftx0em-e3 ->
+        86/24279fca33cb12bbc84af9681bdf9b49e8f4f3339b57aafe43b7de113f058363
+      </p>
+      <p class="delay lighter-gray">
+        ftx-europa: /var/dev/ftx0em-e4 ->
+        86/c2d90cf7c487342de863200a9fd2854b06630a988595e53d5ecc7aba00b180af
+      </p>
+      <p class="delay">
+        <span id="pink">[GalateaOS]</span> Network ready on interface "FTX
+        Europa Series Network Bridge" (alloc file: /var/dev/ftx0em)
+      </p>
+      <p class="gray">/etc/hypervisor.d/sshd</p>
+      <p class="delay">
+        <span id="blue">[hypervisor]</span> Generating mipmaps..
+      </p>
 
-  <div id="logmsg" style="display: none">
-    <p></p>
-    <p></p>
-    <p><span id="pink">[GalateaOS]</span> Welcome!</p>
-    <p><span id="pink">[GalateaOS]</span> Need to load:</p>
-    <p class="gray">/galatea/modules/ftx-h3-soc.kdll</p>
-    <p class="gray">/galatea/modules/angelarc-h4le-serial.kdll</p>
-    <p class="gray">/galatea/modules/angelarc-h4le-simd.kdll</p>
-    <p class="gray">/galatea/modules/angelarc-h4le-expressci.kdll</p>
-    <p class="gray">/galatea/modules/hellengpu.kdll</p>
-    <p class="gray">/galatea/modules/kipnv8.kdll</p>
-    <p class="gray">/galatea/modules/kipnv8-router.kdll</p>
-    <p class="delay"><span id="pink">[GalateaOS]</span> Loading modules..</p>
-    <p><span id="pink">[GalateaOS]</span> Done!</p>
-    <p><span id="pink">[GalateaOS]</span> Launching init</p>
-    <p class="delay"><span id="blue">[hypervisor]</span> Preparing services..</p>
-    <p class="gray">/etc/hypervisor.d/ipnv8</p>
-    <p class="gray">/etc/hypervisor.d/mnsc/np-ntpd</p>
-    <p class="gray">/etc/hypervisor.d/mnsc/satcom</p>
-    <p class="delay"><span id="pink">[GalateaOS]</span> Network ready on interface "FTX Europa Series Network
-      Bridge" (alloc file:
-      /var/dev/ftx0em)</p>
-    <p class="gray">/etc/hypervisor.d/sshd</p>
-    <p class="delay"><span id="blue">[hypervisor]</span> Generating mipmaps..</p>
+      <p class="" id="red">
+        WARNING: No monitor found, or the /var/dev/gfxout/ directory has
+        incorrect permissions. (ignore if this PC is headless)
+      </p>
 
-    <p class=""><span id="pink">[GalateaOS]</span> === DEBUG INFORMATION === </p>
-    <pre><p id="lighter-gray"><span id="blue-darker">ProcessorName</span> FTX Europa A4-3200 @ 4.5 GHz (aarc-H4LE)</p></pre>
-    <pre><p id="lighter-gray"><span id="blue-darker">InstalledGPU </span> Hellen Electronics Starway Chipset B250EM</p></pre>
-    <pre><p id="lighter-gray"><span id="blue-darker">Memory       </span> 16 GiB (/var/dev/mmem02056 - /var/dev/mmem16e+10) </p></pre>
-    <pre><p id="lighter-gray"><span id="blue-darker">NetworkCard  </span> FTX Europa Series Network Bridge</p></pre>
-    <pre><p id="lighter-gray"><span id="blue-darker">MainDisk     </span> 470 GiB (/var/dev/disks/d0) 76% Free</p></pre>
-    <p class=""><span id="pink">[GalateaOS]</span> ========================= </p>
-    <p class="gray">System Ready!</p>
-    <p class="delay"><span id="blue">[hypervisor]</span> Launching user init script..</p>
-    <p class="delay"></p>
-    <p class="delay"></p>
-    <p class="clear-all"></p>
+      <p class="">
+        <span id="pink">[GalateaOS]</span> === DEBUG INFORMATION ===
+      </p>
+      <pre><p id="lighter-gray"><span id="blue-darker">ProcessorName</span> FTX Europa A4-3200 @ 4.5 GHz (aarc-H4LE)</p></pre>
+      <pre><p id="lighter-gray"><span id="blue-darker">InstalledGPU </span> Hellen Electronics Starway Chipset B250EM</p></pre>
+      <pre><p id="lighter-gray"><span id="blue-darker">Memory       </span> 16 GB (/var/dev/mmem02056 - /var/dev/mmem16e+10) </p></pre>
+      <pre><p id="lighter-gray"><span id="blue-darker">NetworkCard  </span> FTX Europa Series Network Bridge</p></pre>
+      <pre><p id="lighter-gray"><span id="blue-darker">MainDisk     </span> 470 GB (/var/dev/disks/d0) 76% Free</p></pre>
+      <p class="">
+        <span id="pink">[GalateaOS]</span> =========================
+      </p>
+      <p class="gray">System Ready!</p>
+      <p class="delay">
+        <span id="blue">[hypervisor]</span> Launching user init script..
+      </p>
+      <p class="delay"></p>
+      <p class="delay"></p>
+      <p class="clear-all"></p>
 
-    <p><span id="pink">[GalateaOS]</span> System ready!</p>
-    <p>&InvisibleComma;</p>
-    <p style="font-weight: bolder; text-decoration: underline; font-style: italic;">Welcome to Galatea! the foundation
-      of most of my websites!</p>
-    <p>&InvisibleComma;</p>
-    <p class="delay">This is a special place where all public files on my system are stored.</p>
-    <p>If you're looking for something that may have been removed, feel free to email me at
-      <a href="email:miyuki@ane.jp.net">miyuki@ane.jp.net</a>.
-    </p>
-    <p>&InvisibleComma;</p>
-    <a href="/dl/" class="btn">Public file list</a>
+      <p><span id="pink">[GalateaOS]</span> System ready!</p>
+      <p>&InvisibleComma;</p>
+      <p
+        style="
+          font-weight: bolder;
+          text-decoration: underline;
+          font-style: italic;
+        "
+      >
+        Welcome to Galatea! the foundation of most of my websites!
+      </p>
+      <p>&InvisibleComma;</p>
+      <p class="delay">
+        This is a special place where all public files on my system are stored.
+      </p>
+      <p>
+        If you're looking for something that may have been removed, feel free to
+        email me at <a href="email:miyuki@ane.jp.net">miyuki@ane.jp.net</a>.
+      </p>
+      <p>&InvisibleComma;</p>
+      <a href="/dl/" class="btn">Public file list</a>
 
-    <p>&InvisibleComma;</p>
-    <p>&InvisibleComma;</p>
-    <p>&InvisibleComma;</p>
-    <img src="/dl/images/logos/ane-logo-final.webp?height=512" alt="">
-  </div>
-</body>
-
+      <p>&InvisibleComma;</p>
+      <p>&InvisibleComma;</p>
+      <p>&InvisibleComma;</p>
+      <img src="/dl/images/logos/ane-logo-final.webp?height=512" alt="" />
+    </div>
+  </body>
 </html>

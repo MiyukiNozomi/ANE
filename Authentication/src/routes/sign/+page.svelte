@@ -1,8 +1,5 @@
 <script lang="ts">
-  import type {
-    AccountSession,
-    ClientSideAccount,
-  } from "$lib/client/API/apiTypes";
+  import type { ClientSideAccount } from "$lib/client/API/apiTypes";
   import {
     getAccountInfo,
     invalidateSession,
@@ -18,6 +15,7 @@
     MIN_USERNAME_LENGTH,
     USERNAME_SAFETY_REGEX,
   } from "$lib/shared/safetyConstants";
+  import { onMount } from "svelte";
   import type { PageData } from "./$types";
 
   let pageData: PageData = $props();
@@ -34,24 +32,26 @@
   ] as const;
   type Steps = (typeof StepsList)[number];
 
-  let currentStep: Steps = $state(
-    pageData.isSignedIn ? "ALREADY_SIGNED_IN" : "USERNAME_INPUT",
-  );
+  let currentStep = $state<Steps>("USERNAME_INPUT");
   let previousSteps = new Array<Steps>();
 
   let API: ProgressAPI | undefined = $state();
   let signPage: SignPage | undefined = $state();
   let repeatPasswordField: Input | undefined = $state();
 
-  let blockAdvances = $state(!pageData.isSignedIn);
+  let blockAdvances = $state(false);
 
-  let data = {
+  let data = $state({
     username: "",
     inputPassword: "",
     repeatPassword: "",
-
     totpCode: "",
-  };
+  });
+
+  onMount(() => {
+    currentStep = pageData.isSignedIn ? "ALREADY_SIGNED_IN" : "USERNAME_INPUT";
+    blockAdvances = !pageData.isSignedIn;
+  });
 
   async function onNextStep() {
     if (blockAdvances) return;
@@ -94,7 +94,7 @@
       }
 
       currentStep = "WAIT";
-      let sessionInfo = await API?.invokeAPIWithStatus<AccountSession>(
+      let sessionInfo = await API?.invokeAPIWithStatus<ClientSideAccount>(
         "Creating account...",
         "accounts/create",
         {
@@ -120,7 +120,7 @@
       let entranceStep = currentStep;
 
       currentStep = "WAIT";
-      let sessionInfo = await API?.invokeAPIWithStatus<AccountSession>(
+      let sessionInfo = await API?.invokeAPIWithStatus<ClientSideAccount>(
         "Signing In...",
         "accounts/login",
         {
@@ -153,17 +153,18 @@
       window.location.pathname = decodeURI(
         new URLSearchParams(window.location.search).get("for") ?? "/",
       );
-    } else {
+    } else if (currentStep != "WAIT") {
       currentStep = "WAIT";
       API?.setError(
-        "Apologies! you haved ended in a unimplemented authentication pathway.",
+        "Apologies! you haved ended in a unimplemented authentication pathway: " +
+          currentStep +
+          ".",
       );
     }
   }
 
-  async function installSession(authSession: AccountSession) {
-    document.cookie = `AuthToken=${authSession.sessionInfo.id}; SameSite=Lax; Path=/`;
-    setClientSideAccountInfo(authSession.accountInfo);
+  function installSession(authSession: ClientSideAccount) {
+    setClientSideAccountInfo(authSession);
   }
 
   async function onBackStep() {

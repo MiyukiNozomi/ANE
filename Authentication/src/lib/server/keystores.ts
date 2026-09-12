@@ -1,9 +1,6 @@
-import type {
-  AccountSession,
-  ClientSessionInfo,
-} from "$lib/client/API/apiTypes";
+import type { ClientSessionInfo } from "$lib/client/API/apiTypes";
 import { randomBytes } from "crypto";
-import { db } from "./db";
+import { db, hashSession } from "./db";
 import { accountToClientInfo } from "./schema";
 
 export const SESSION_TOKEN_LENGTH = 72;
@@ -27,7 +24,7 @@ export async function createSessionWithAccountInfo(
   return {
     accountInfo: accountToClientInfo(account),
     sessionInfo: await createSession(userId, sessionType),
-  } satisfies AccountSession;
+  };
 }
 
 export async function createSession(userId: number, sessionType: SessionTypes) {
@@ -37,7 +34,7 @@ export async function createSession(userId: number, sessionType: SessionTypes) {
   );
 
   await db.sessions.insert({
-    id: token,
+    id: hashSession(token),
     userId: userId,
     isThirdPartySession: sessionType != "ROOT",
     expiresIn:
