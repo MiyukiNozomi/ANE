@@ -46,6 +46,10 @@ async function init() {
   > = {};
 
   const readFilesRecursive = (pth: string) => {
+    const normalizedPath = CURRENT_STORAGE_FOLDER.startsWith("/")
+      ? pth.substring(CURRENT_STORAGE_FOLDER.length)
+      : pth.substring(CURRENT_STORAGE_FOLDER.length - 1);
+
     if (statSync(pth).isDirectory()) {
       let lst = new Array<(typeof availableFolders)[string][number]>();
       readdirSync(pth).forEach((v) => {
@@ -59,15 +63,11 @@ async function init() {
         });
         readFilesRecursive(vPath);
       });
-      availableFolders[
-        "/" +
-          (pth == CURRENT_STORAGE_FOLDER
-            ? ""
-            : pth.substring(CURRENT_STORAGE_FOLDER.length - 1))
-      ] = lst.sort((a, b) => +b.isDirectory - +a.isDirectory);
+      availableFolders["/" + normalizedPath] = lst.sort(
+        (a, b) => +b.isDirectory - +a.isDirectory,
+      );
     } else {
-      availableFiles["/" + pth.substring(CURRENT_STORAGE_FOLDER.length - 1)] =
-        readFileSync(pth);
+      availableFiles["/" + normalizedPath] = readFileSync(pth);
     }
   };
   readFilesRecursive(CURRENT_STORAGE_FOLDER);
