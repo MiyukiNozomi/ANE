@@ -4,7 +4,7 @@ flag expose true
 flag rootServiceInit true
 
 build : root {
-    pkg install -y security/py-certbot node24 npm-node24 sqlite3
+    pkg install -y security/py-certbot python node24 npm-node24 sqlite3
     npm i -g typescript
     npm i
     tsc
