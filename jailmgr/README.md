@@ -23,7 +23,7 @@ This gets run every time ane-service build is ran. It executes line by line, wit
 ```
 build : root {
     pkg install -y sqlite3 node24 npm-node24
-    npm i -g python311 npm
+    npm i -g python npm
     npm i
     SHARP_FORCE_GLOBAL_LIBVIPS=1 npm approve-builds
     SHARP_FORCE_GLOBAL_LIBVIPS=1 npm build

@@ -3,7 +3,7 @@ image galatea
 flag ip4 10.0.1.3
 
 build : root {
-    pkg install -y python311 node24 npm-node24 vips pkgconf
+    pkg install -y python node24 npm-node24 vips pkgconf
     npm i -g typescript
     npm i
     npm rebuild sharp

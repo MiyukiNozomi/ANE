@@ -1,7 +1,7 @@
 image authentication
 
 build : root {
-    pkg install -y python311 node24 npm-node24 vips pkgconf sqlite3
+    pkg install -y python node24 npm-node24 vips pkgconf sqlite3
     echo "DEVMODE=false >> /service/bin/.env"
     npm i -g typescript
     npm i
