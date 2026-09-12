@@ -20,27 +20,37 @@ export async function finalHandling(req: IncomingMessage, res: ServerResponse) {
   }
 
   // This check still has to be done here, we don't search the targetHost until the last stage anyway.
-  if (
-    targetHost &&
-    req.headers["origin"] &&
-    CORSCheck(res, targetHost, req.headers["origin"])
-  ) {
-    return;
+  if (targetHost && req.headers["origin"]) {
+    try {
+      let origin = new URL(req.headers["origin"]).hostname;
+      if (CORSCheck(res, targetHost, origin)) {
+        return;
+      }
+    } catch (err) {
+      res.writeHead(400, { "content-type": "text/plain; charset-utf8;" });
+      res.write(
+        "自分の人生で何か有意義なことをする代わりに、限られた寿命を誰かのサーバーを攻撃することに無駄遣いしようとしてるけど、いったい何のため？バグバウンティ？こっちは貧乏で、そんなものにお金を払う余裕なんてまったくないんだ。だから、お願いだからもう消えてくれ。",
+      );
+      return res.end();
+    }
   }
 
   targetHost = targetHost ?? "<root>";
 
   Sys.println("[request] maps to '" + targetHost + "'");
 
+  // by the way, this is a relatively accidental SSRF protection, since nothing can change routes.conf
+  // but still.. proper handling, would have been a bliss for invalid targetHosts.
+  // what i mean is that some punk could try to use something like ane.jp.net.nsa-hacks.gov.us and the code above would not even care :/
   let localPort = mappings.get(targetHost);
   if (!localPort) {
     return writeGatewayError(
-      504,
+      421,
       "Unregistered gateway host: '" +
         targetHost +
         "' (not found in mappings).",
       req,
-      res
+      res,
     );
   }
 

@@ -17,7 +17,7 @@ export function CORSCheck(
   if (calleeHost === DOMAIN_NAME || calleeHost.endsWith("." + DOMAIN_NAME)) {
     res.setHeader("Access-Control-Allow-Origin", calleeHost);
   } else {
-    res.writeHead(403, "text/plain");
+    res.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
     res.write(`You're attempting to a request from hostname ${calleeHost} which is not allowed.
 Either ensure you're sending the Host header (if you're trying to use my API from something like Java or cURL)
 Or verify the URL you're using, note you should not access my web server through it's IP address directly, this reverse proxy wont

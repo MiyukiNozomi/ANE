@@ -40,7 +40,7 @@ export async function securityMiddleware(
   // do we really need this check?
   if (!req.url || req.url.includes("..") || req.url.includes("%00")) {
     console.log("Request has been denied!");
-    res.writeHead(403);
+    res.writeHead(403, { "content-type": "text/plain; charset-utf8;" });
     res.write(
       "俺の返答はこれだ：NO（ノー）だ。マジでNO、消え失せろ！てか、お前ボットか？だったら…くたばれ！",
     );

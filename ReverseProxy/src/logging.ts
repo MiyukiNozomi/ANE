@@ -1,4 +1,6 @@
 /*** straight from haxe, lmao */
+// You really love that language dont ya?
+// want me to rewrite the proxy for you? cutie?
 const println = info;
 
 function info(...b: any[]) {

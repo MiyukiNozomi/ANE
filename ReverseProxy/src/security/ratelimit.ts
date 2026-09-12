@@ -3,7 +3,12 @@ import Sys from "../logging";
 import { IS_DEV_MODE } from "../constants";
 import { getASNInfoByIp } from "./asn";
 
-const MAX_REQUEST_COUNT_PER_ASN = 400;
+// TODO: i am too tired today, appraiser, please make this a sliding window rate limiter.
+// Although, our server is more than capable of handling 800+ requests in 1 a minute and a half, this is still not
+// what we want.
+
+// I've temporarialy reduced the max count to 200 just in case.
+const MAX_REQUEST_COUNT_PER_ASN = 200;
 const MAX_REQUEST_COUNT_UNBOUND = MAX_REQUEST_COUNT_PER_ASN / 4;
 
 const WINDOW_DURATION = 60 * 1000; // 1 minute (in millis)
@@ -28,7 +33,7 @@ class WindowRateLimiter {
           (now - this.timestamp) +
           " (duration of window in millis: " +
           WINDOW_DURATION +
-          ");"
+          ");",
       );
 
     // reinitialize window if window is no longer valid.
@@ -43,7 +48,7 @@ class WindowRateLimiter {
     if (this.count >= this.limit) {
       if (IS_DEV_MODE)
         Sys.println(
-          "Window has had it's maximum request count exceeded: " + this.count
+          "Window has had it's maximum request count exceeded: " + this.count,
         );
       return false; // exceed count = out.
     }
@@ -61,7 +66,7 @@ let rateLimiters: Record<string, WindowRateLimiter> = {};
 export function shouldNotRateLimit(req: IncomingMessage) {
   if (!req.socket.remoteAddress) {
     Sys.println(
-      "[ratelimit] No remote address! defaulting to the unbound rate limiter."
+      "[ratelimit] No remote address! defaulting to the unbound rate limiter.",
     );
     return unboundRateLimiter.allowed();
   }
@@ -77,7 +82,7 @@ export function shouldNotRateLimit(req: IncomingMessage) {
     Sys.println(
       "[ratelimit] ASN Region not found for " +
         remoteAddress +
-        "! defaulting to the unbound rate limiter."
+        "! defaulting to the unbound rate limiter.",
     );
     ratelimiter = unboundRateLimiter;
   } else {
@@ -85,7 +90,7 @@ export function shouldNotRateLimit(req: IncomingMessage) {
       "[ratelimit] ASN Region found for " + remoteAddress + "! ",
       asnRegion.asn,
       asnRegion.cidr,
-      asnRegion.countryCode
+      asnRegion.countryCode,
     );
 
     ratelimiter = rateLimiters[asnRegion.asn];
@@ -103,7 +108,7 @@ export function shouldNotRateLimit(req: IncomingMessage) {
       (asnRegion?.asn ?? "<unbound>") +
       " received " +
       ratelimiter.getCount() +
-      " requests."
+      " requests.",
   );
   return ratelimiter.allowed();
 }
