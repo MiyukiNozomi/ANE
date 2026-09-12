@@ -10,7 +10,7 @@ build : root {
     tsc
     SHARP_FORCE_GLOBAL_LIBVIPS=1 node \
         --max-old-space-size=1400 --single-threaded-gc \
-         bin/prebuild.js --force
+         dist/prebuild.js --force
 }
 
 run : azki {
