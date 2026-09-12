@@ -1,12 +1,11 @@
 image authentication
 
 build : root {
-    pkg install -y python node24 npm-node24 vips pkgconf sqlite3
+    pkg install -y python node26 npm-node26 vips pkgconf sqlite3
     echo "DEVMODE=false >> /service/bin/.env"
-    npm approve-scripts --all
     npm i -g typescript
     npm i
-    npm approve-builds
+    npm approve-scripts --all
     SHARP_FORCE_GLOBAL_LIBVIPS=1 npm build
 }
 

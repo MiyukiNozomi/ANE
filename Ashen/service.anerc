@@ -3,12 +3,12 @@ image ashensv
 flag ip4 10.0.1.4
 
 build : root {
-    pkg install -y python node24 npm-node24
+    pkg install -y python node26 npm-node26
     cd / && npm i -g typescript
-    npm approve-scripts --all
     npm i
-    npm approve-builds
-    npm build
+    npm approve-scripts --all
+    npm rebuild better-sqlite3
+    npm run build
 }
 
 run : azki {

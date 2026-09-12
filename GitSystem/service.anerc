@@ -3,12 +3,12 @@ image gitsystem
 flag ip4 10.0.1.5
 
 build : root {
-    pkg install -y python node24 npm-node24 pkgconf git
-    npm approve-scripts --all
+    pkg install -y python node26 npm-node26 pkgconf git
     npm i -g typescript
     npm i
-    npm approve-builds
-    npm build
+    npm approve-scripts --all
+    npm rebuild better-sqlite3
+    npm run build
 }
 
 run : azki {

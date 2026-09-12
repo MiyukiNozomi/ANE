@@ -1,7 +1,7 @@
 image Test
 
 installdeps : root {
-    pkg install -y node24 npm-node24
+    pkg install -y node26 npm-node26
     npm i
 }
 

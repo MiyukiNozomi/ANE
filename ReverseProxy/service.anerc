@@ -4,10 +4,11 @@ flag expose true
 flag rootServiceInit true
 
 build : root {
-    pkg install -y security/py-certbot python node24 npm-node24 sqlite3
-    npm approve-scripts --all
+    pkg install -y security/py-certbot python node26 npm-node26 sqlite3
     npm i -g typescript
     npm i
+    npm approve-scripts --all
+    npm rebuild better-sqlite3
     tsc
     su - azki -c "cd /service/bin && /usr/local/bin/node bin/prebuild.js"
 
