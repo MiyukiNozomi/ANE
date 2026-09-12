@@ -15,7 +15,7 @@ export const MIPMAP_JSON_PATH = IS_DEV_MODE
   : path.join("/service/storage/mipmaps.info.json");
 
 export const PORT = 3000;
-export const MAX_AGE = "max-age=302800";
+export const MAX_AGE = "max-age=31536000";
 
 export type ImageScales = {
   path: string;

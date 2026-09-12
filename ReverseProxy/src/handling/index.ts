@@ -42,6 +42,9 @@ export async function finalHandling(req: IncomingMessage, res: ServerResponse) {
   // by the way, this is a relatively accidental SSRF protection, since nothing can change routes.conf
   // but still.. proper handling, would have been a bliss for invalid targetHosts.
   // what i mean is that some punk could try to use something like ane.jp.net.nsa-hacks.gov.us and the code above would not even care :/
+
+  // are you drunk? go back to your silly anomaly hunting game!
+  // the upstream middleware does checks on the host header anyway, we only do that stupid check to properly parse it!
   let localPort = mappings.get(targetHost);
   if (!localPort) {
     return writeGatewayError(

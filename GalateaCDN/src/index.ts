@@ -79,7 +79,12 @@ async function init() {
         "{script-here}",
         readFileSync("./galatea-scripts.html").toString(),
       ),
-    directoryListPage: readFileSync("./directory.html").toString(),
+    directoryListPage: readFileSync("./directory.html")
+      .toString()
+      .replace(
+        "{script-here}",
+        readFileSync("./galatea-scripts.html").toString(),
+      ),
     imageMipmaps,
     availableFiles,
     availableFolders,
@@ -94,6 +99,7 @@ init().then(
     availableFiles,
     availableFolders,
   }) => {
+    console.log(availableFolders);
     async function replyImageResized(
       res: ServerResponse,
       path: string,
@@ -140,7 +146,7 @@ init().then(
 
       res.writeHead(200, {
         "content-type": "image/webp",
-        "cache-control": IS_DEV_MODE ? "no-cache" : "max-age=302800",
+        "cache-control": IS_DEV_MODE ? "no-cache" : "max-age=31536000",
       });
       res.write(buff);
       res.end();
@@ -217,11 +223,7 @@ init().then(
         res.write(
           directoryListPage
             .replace("{list}", list)
-            .replaceAll("{path}", url.pathname)
-            .replace(
-              "{script-here}",
-              readFileSync("./galatea-scripts.html").toString(),
-            ),
+            .replaceAll("{path}", url.pathname),
         );
         return res.end();
       } else if (availableFiles[pathname]) {
