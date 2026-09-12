@@ -103,7 +103,7 @@ async function prebuild() {
   db.pragma("journal_mode = WAL");
 
   const stmt = db.prepare(
-    "INSERT INTO asnMap (addressType, fromIp, toIp, cidr, asn, countryCode) VALUES (?, ?,?,?,?,?)"
+    "INSERT INTO asnMap (addressType, fromIp, toIp, cidr, asn, countryCode) VALUES (?, ?,?,?,?,?)",
   );
 
   const insertTransaction = db.transaction((rows: Array<ASNRow>) => {
@@ -114,7 +114,7 @@ async function prebuild() {
         row.toIp,
         row.cidr,
         row.asn,
-        row.countryCode
+        row.countryCode,
       );
     }
   });
@@ -127,7 +127,7 @@ async function prebuild() {
     if (keys.length < 5) {
       throw new Error(
         "Oh shit! keys does not match 5 values! did the schema of that csv change?, got: \n" +
-          line
+          line,
       );
     }
 
@@ -149,6 +149,11 @@ async function prebuild() {
     } satisfies ASNRow;
 
     rows.push(obj);
+  }
+
+  if (rows.length > 0) {
+    insertTransaction(rows);
+    rows = [];
   }
 
   console.log("Creating indexes..");

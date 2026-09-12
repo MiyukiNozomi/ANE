@@ -5,7 +5,7 @@ import { DOMAIN_NAME } from "../constants";
 export function CORSCheck(
   res: http.ServerResponse,
   desiredHost: string,
-  calleeHost: string
+  calleeHost: string,
 ) {
   if (NoCORSCheckList.includes(desiredHost)) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -14,7 +14,7 @@ export function CORSCheck(
     return false;
   }
 
-  if (calleeHost.endsWith(DOMAIN_NAME)) {
+  if (calleeHost === DOMAIN_NAME || calleeHost.endsWith("." + DOMAIN_NAME)) {
     res.setHeader("Access-Control-Allow-Origin", calleeHost);
   } else {
     res.writeHead(403, "text/plain");

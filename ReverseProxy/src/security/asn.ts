@@ -21,7 +21,7 @@ export function initASN() {
   Sys.println("Opening database at " + DATABASE_FILE);
   db = new Database(DATABASE_FILE);
   asnQueryStatement = db.prepare(
-    "SELECT cidr, asn, countryCode FROM asnMap WHERE addressType = ? AND fromIp <= ? AND ? <= toIp LIMIT 1"
+    "SELECT cidr, asn, countryCode FROM asnMap WHERE addressType = ? AND fromIp <= ? AND ? <= toIp LIMIT 1",
   );
 }
 
@@ -32,14 +32,14 @@ export function getASNInfoByIp(ipAddr: string): ASNInfo | null {
 
   // TODO: remove later
   Sys.println(
-    "Formatted " + ipAddr + " into " + ipAddrInfo.buffer.toString("hex")
+    "Formatted " + ipAddr + " into " + ipAddrInfo.buffer.toString("hex"),
   );
 
-  return asnQueryStatement.all(
+  return (asnQueryStatement.all(
     ipAddrInfo.addressType,
     ipAddrInfo.buffer,
-    ipAddrInfo.buffer
-  )[0] as ASNInfo;
+    ipAddrInfo.buffer,
+  )[0] ?? null) as ASNInfo;
 }
 
 export function IPvNtoBlob(addr: string): {
@@ -56,7 +56,7 @@ export function IPvNtoBlob(addr: string): {
           .flatMap((part) => {
             const hex = part.padStart(4, "0"); // Ensure each part is 4 characters
             return [parseInt(hex.slice(0, 2), 16), parseInt(hex.slice(2), 16)];
-          })
+          }),
       ),
     };
   }
