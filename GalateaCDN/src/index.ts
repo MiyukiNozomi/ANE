@@ -103,14 +103,14 @@ init().then(
     console.log(availableFolders);
     async function replyImageResized(
       res: ServerResponse,
-      path: string,
+      pathStr: string,
       width: number,
       height: number,
     ) {
-      const mipmaps = imageMipmaps[path];
+      const mipmaps = imageMipmaps[path.join(CURRENT_STORAGE_FOLDER, pathStr)];
       let targetPath: string | null = null;
 
-      if (mipmaps && !isNaN(width) && !isNaN(height)) {
+      if (mipmaps) {
         let lowestDistance = Number.MAX_SAFE_INTEGER;
 
         for (const mipmap of mipmaps) {
@@ -131,14 +131,16 @@ init().then(
         }
       }
 
-      if (targetPath)
-        targetPath = targetPath.substring(CURRENT_STORAGE_FOLDER.length);
-
       if (IS_DEV_MODE) {
-        console.log("Chosen image: " + (targetPath ?? path));
+        console.log("Chosen image: " + (targetPath ?? pathStr));
       }
 
-      const buff = availableFiles[targetPath ?? path];
+      if (targetPath)
+        targetPath = IS_DEV_MODE
+          ? "/" + targetPath.substring(CURRENT_STORAGE_FOLDER.length - 1)
+          : "/" + targetPath.substring(CURRENT_STORAGE_FOLDER.length + 1);
+
+      const buff = availableFiles[targetPath ?? pathStr];
 
       if (!buff) {
         res.writeHead(400);
