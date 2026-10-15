@@ -1,4 +1,4 @@
-![ANE Logo](ANE/fs-raw/GalateaCDN/default/images/logos/ane-logo-final.png)
+![ANE Logo](GalateaCDN/default/images/logos/ane-logo-final.png)
 
 #
 
